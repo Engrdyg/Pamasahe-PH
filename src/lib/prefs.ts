@@ -1,16 +1,19 @@
 /** Small typed wrapper around localStorage for device preferences (FR-3, §7). */
 import type { Lang } from '../engine/types'
+import type { Theme } from './theme'
 
 export interface Prefs {
   discount: boolean
   lang: Lang
+  theme: Theme
   lastMode: string | null
   lastCategory: string | null
   dismissedUpdate: string | null
+  installDismissed: boolean
 }
 
 const KEY = 'pamasahe-ph:prefs'
-const defaults: Prefs = { discount: false, lang: 'en', lastMode: null, lastCategory: null, dismissedUpdate: null }
+const defaults: Prefs = { discount: false, lang: 'en', theme: 'system', lastMode: null, lastCategory: null, dismissedUpdate: null, installDismissed: false }
 
 function readAll(): Prefs {
   try {

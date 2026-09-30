@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import i18n from './i18n'
 import type { Lang, Manifest, Mode } from './engine/types'
 import { getPref, setPref } from './lib/prefs'
+import { applyTheme, watchSystemTheme, type Theme } from './lib/theme'
 import { checkForUpdate, loadFareData } from './lib/updater'
 
 interface AppState {
@@ -12,6 +13,8 @@ interface AppState {
   setDiscount: (v: boolean) => void
   lang: Lang
   setLang: (l: Lang) => void
+  theme: Theme
+  setTheme: (t: Theme) => void
   updated: Manifest | null
   dismissUpdate: () => void
 }
@@ -22,7 +25,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState(() => loadFareData())
   const [discount, setDiscountState] = useState(() => getPref('discount'))
   const [lang, setLangState] = useState<Lang>(() => getPref('lang'))
+  const [theme, setThemeState] = useState<Theme>(() => getPref('theme'))
   const [updated, setUpdated] = useState<Manifest | null>(null)
+
+  useEffect(() => {
+    applyTheme(theme)
+  }, [theme])
+  useEffect(() => watchSystemTheme(() => getPref('theme')), [])
 
   useEffect(() => {
     let cancelled = false
@@ -46,6 +55,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
     void i18n.changeLanguage(l)
     document.documentElement.lang = l
   }, [])
+  const setTheme = useCallback((t: Theme) => {
+    setThemeState(t)
+    setPref('theme', t)
+  }, [])
   const dismissUpdate = useCallback(() => {
     if (updated) setPref('dismissedUpdate', updated.version)
     setUpdated(null)
@@ -60,10 +73,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setDiscount,
       lang,
       setLang,
+      theme,
+      setTheme,
       updated,
       dismissUpdate,
     }),
-    [data, discount, setDiscount, lang, setLang, updated, dismissUpdate],
+    [data, discount, setDiscount, lang, setLang, theme, setTheme, updated, dismissUpdate],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

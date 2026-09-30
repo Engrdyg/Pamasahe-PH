@@ -79,7 +79,7 @@ export function Calculator({ category }: { category: Category }) {
       ) : (
         <DistanceCalc mode={mode} />
       )}
-      {mode.notes && <p className="text-xs text-slate-500">{localized(mode.notes, lang)}</p>}
+      {mode.notes && <p className="text-xs text-muted">{localized(mode.notes, lang)}</p>}
     </main>
   )
 }
@@ -181,12 +181,12 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
         />
         <Select label={t('input.origin')} value={from} options={stations} onChange={changeFrom} placeholder="—" />
         {from && dests.length === 0 ? (
-          <p className="text-sm text-slate-600">{t('input.noDestinations')}</p>
+          <p className="text-sm text-ink-2">{t('input.noDestinations')}</p>
         ) : (
           <Select label={t('input.destination')} value={to} options={dests} onChange={setTo} placeholder="—" />
         )}
-        {!from && <p className="text-sm text-slate-500">{t('input.pickStations')}</p>}
-        <p className="text-xs text-slate-500">
+        {!from && <p className="text-sm text-muted">{t('input.pickStations')}</p>}
+        <p className="text-xs text-muted">
           {t('fare.minFare', {
             regular: formatPesos(toCentavos(mode.minFare.regular)),
             discounted: formatPesos(toCentavos(mode.minFare.discounted)),

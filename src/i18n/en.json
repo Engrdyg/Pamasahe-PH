@@ -117,5 +117,21 @@
     "min": "min",
     "m": "m",
     "pending": "Awaiting LTFRB data"
+  },
+  "install": {
+    "title": "Download the app",
+    "body": "Install Magkano Pamasahe on your phone. It opens like a normal app and works offline.",
+    "button": "Download app",
+    "installed": "App installed",
+    "ios": "On iPhone: tap Share, then \"Add to Home Screen\".",
+    "manual": "In your browser menu, choose \"Install app\" or \"Add to Home screen\".",
+    "later": "Not now"
+  },
+  "theme": {
+    "title": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggle": "Appearance: {{mode}}"
   }
 }

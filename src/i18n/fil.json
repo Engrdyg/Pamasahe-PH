@@ -117,5 +117,21 @@
     "min": "min",
     "m": "m",
     "pending": "Hinihintay ang datos ng LTFRB"
+  },
+  "install": {
+    "title": "I-download ang app",
+    "body": "I-install ang Magkano Pamasahe sa iyong phone. Bubukas ito na parang normal na app at gumagana offline.",
+    "button": "I-download ang app",
+    "installed": "Naka-install na ang app",
+    "ios": "Sa iPhone: pindutin ang Share, tapos \"Add to Home Screen\".",
+    "manual": "Sa menu ng browser, piliin ang \"Install app\" o \"Add to Home screen\".",
+    "later": "Mamaya na"
+  },
+  "theme": {
+    "title": "Itsura",
+    "light": "Maliwanag",
+    "dark": "Madilim",
+    "system": "Sistema",
+    "toggle": "Itsura: {{mode}}"
   }
 }

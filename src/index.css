@@ -1,9 +1,35 @@
 @import 'tailwindcss';
 
+/* Dark mode is driven by <html class="dark">, set from the Light / Dark /
+   System preference (src/lib/theme.ts), so `dark:` utilities work too. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-brand: #0b3d91;
   --color-accent: #ffc72c;
+  /* Semantic surfaces and text; overridden for dark mode below. */
+  --color-canvas: #f8fafc;
+  --color-canvas-2: #f1f5f9;
+  --color-surface: #ffffff;
+  --color-ink: #0f172a;
+  --color-ink-2: #334155;
+  --color-muted: #64748b;
+  --color-line: #e2e8f0;
+  --color-line-strong: #cbd5e1;
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+.dark {
+  --color-brand: #5b8def;
+  --color-canvas: #0b1220;
+  --color-canvas-2: #111a2e;
+  --color-surface: #16213a;
+  --color-ink: #e6ecf7;
+  --color-ink-2: #c3cde0;
+  --color-muted: #8fa0bd;
+  --color-line: #263351;
+  --color-line-strong: #34456b;
+  color-scheme: dark;
 }
 
 html {
@@ -13,7 +39,8 @@ html {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: #f8fafc;
+  background: var(--color-canvas);
+  color: var(--color-ink);
   -webkit-tap-highlight-color: transparent;
 }
 

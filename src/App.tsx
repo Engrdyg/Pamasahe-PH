@@ -17,7 +17,7 @@ function UpdateBanner() {
   const { updated, dismissUpdate, lang } = useApp()
   if (!updated) return null
   return (
-    <div role="status" className="flex items-center justify-between gap-3 bg-accent px-4 py-2 text-sm text-slate-900">
+    <div role="status" className="flex items-center justify-between gap-3 bg-accent px-4 py-2 text-sm text-ink">
       <span>{t('update.banner', { date: formatEffective(updated.effective, lang) })}</span>
       <button type="button" onClick={dismissUpdate} className="min-h-9 rounded-full px-3 font-medium underline">
         {t('update.dismiss')}
@@ -55,7 +55,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-dvh bg-slate-50 pb-20 text-slate-900">
+    <div className="min-h-dvh bg-canvas pb-20 text-ink">
       <TopBar title={title} back={back} />
       <UpdateBanner />
       {screen}

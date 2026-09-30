@@ -23,7 +23,7 @@ export function Compare() {
 
   return (
     <main className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-4">
-      <p className="text-sm text-slate-600">{t('compare.intro')}</p>
+      <p className="text-sm text-ink-2">{t('compare.intro')}</p>
       <DiscountToggle compact />
       <Card>
         <NumberField label={t('input.distance')} value={km} onChange={setKm} min={1} max={100} step={1} slider unit={t('common.km')} />
@@ -33,14 +33,14 @@ export function Compare() {
           const primary = discount ? fare.discounted : fare.regular
           const secondary = discount ? fare.regular : fare.discounted
           return (
-            <li key={mode.id} className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3">
+            <li key={mode.id} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-surface px-4 py-3">
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-slate-900">{localized(mode.name, lang)}</p>
-                {fare.beyondTable && <p className="text-xs text-amber-700">⚠ {t('compare.beyond')}</p>}
+                <p className="truncate text-sm font-medium text-ink">{localized(mode.name, lang)}</p>
+                {fare.beyondTable && <p className="text-xs text-amber-700 dark:text-amber-300">⚠ {t('compare.beyond')}</p>}
               </div>
               <div className="text-right">
-                <p className="text-xl font-bold tabular-nums text-slate-900">{formatPesos(primary)}</p>
-                <p className="text-xs tabular-nums text-slate-500">{formatPesos(secondary)}</p>
+                <p className="text-xl font-bold tabular-nums text-ink">{formatPesos(primary)}</p>
+                <p className="text-xs tabular-nums text-muted">{formatPesos(secondary)}</p>
               </div>
             </li>
           )

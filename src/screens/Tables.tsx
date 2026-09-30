@@ -23,7 +23,7 @@ export function Tables() {
         onChange={setModeId}
       />
       {/* The select shows ids; render the human name too */}
-      {mode && <p className="text-sm font-medium text-slate-800">{localized(mode.name, lang)}</p>}
+      {mode && <p className="text-sm font-medium text-ink">{localized(mode.name, lang)}</p>}
       {mode?.method === 'MATRIX' ? <MatrixTable mode={mode} /> : mode ? <KmTable mode={mode as DistanceMode} /> : null}
     </main>
   )
@@ -43,10 +43,10 @@ function KmTable({ mode }: { mode: DistanceMode }) {
       <Card>
         <NumberField label={t('tables.searchKm')} value={find} onChange={setFind} min={mode.tableRange?.minKm} unit={t('common.km')} />
       </Card>
-      <p className="text-xs text-slate-500">{t('tables.generated')}</p>
-      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+      <p className="text-xs text-muted">{t('tables.generated')}</p>
+      <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
         <table className="w-full text-sm tabular-nums" data-testid="km-table">
-          <thead className="sticky top-0 bg-slate-100 text-xs uppercase text-slate-600">
+          <thead className="sticky top-0 bg-canvas-2 text-xs uppercase text-ink-2">
             <tr>
               <th rowSpan={2} className="px-2 py-2 text-left">{t('tables.km')}</th>
               <th colSpan={2} className="px-2 py-1 text-center">{t('tables.new')}</th>
@@ -63,13 +63,13 @@ function KmTable({ mode }: { mode: DistanceMode }) {
             {visible.map((r) => (
               <tr
                 key={r.km}
-                className={`border-t border-slate-100 ${highlight != null && r.chargedKm >= highlight && r.chargedKm - (mode.tableRange?.stepKm ?? 1) < highlight ? 'bg-accent/20 font-semibold' : ''}`}
+                className={`border-t border-line ${highlight != null && r.chargedKm >= highlight && r.chargedKm - (mode.tableRange?.stepKm ?? 1) < highlight ? 'bg-accent/20 font-semibold dark:bg-accent/30' : ''}`}
               >
                 <td className="px-2 py-1.5">{r.km}</td>
                 <td className="px-2 py-1.5 text-right">{formatPesos(r.regular)}</td>
                 <td className="px-2 py-1.5 text-right">{formatPesos(r.discounted)}</td>
-                {hasOld && <td className="px-2 py-1.5 text-right text-slate-500">{formatPesos(r.previous!.regular)}</td>}
-                {hasOld && <td className="px-2 py-1.5 text-right text-slate-500">{formatPesos(r.previous!.discounted)}</td>}
+                {hasOld && <td className="px-2 py-1.5 text-right text-muted">{formatPesos(r.previous!.regular)}</td>}
+                {hasOld && <td className="px-2 py-1.5 text-right text-muted">{formatPesos(r.previous!.discounted)}</td>}
               </tr>
             ))}
           </tbody>
@@ -101,9 +101,9 @@ function MatrixTable({ mode }: { mode: MatrixMode }) {
         />
         <Select label={t('tables.from')} value={d.stations[i]} options={d.stations} onChange={setFrom} />
       </Card>
-      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+      <div className="overflow-x-auto rounded-2xl border border-line bg-surface">
         <table className="w-full text-sm tabular-nums">
-          <thead className="sticky top-0 bg-slate-100 text-xs uppercase text-slate-600">
+          <thead className="sticky top-0 bg-canvas-2 text-xs uppercase text-ink-2">
             <tr>
               <th className="px-2 py-2 text-left">{t('input.destination')}</th>
               <th className="px-2 py-2 text-right">{t('fare.regular')}</th>
@@ -114,7 +114,7 @@ function MatrixTable({ mode }: { mode: MatrixMode }) {
             {d.stations.slice(i + 1).map((s, k) => {
               const j = i + 1 + k
               return (
-                <tr key={s} className="border-t border-slate-100">
+                <tr key={s} className="border-t border-line">
                   <td className="px-2 py-1.5">{s}</td>
                   <td className="px-2 py-1.5 text-right">{formatPesos(toCentavos(d.regular[i][j]!))}</td>
                   <td className="px-2 py-1.5 text-right">{formatPesos(toCentavos(d.discounted[i][j]!))}</td>

@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from '../App'
-import '../i18n'
+import i18n from '../i18n'
 import { AppProvider } from '../state'
 
 vi.stubGlobal('fetch', vi.fn(async () => ({ ok: false }) as Response))
@@ -16,9 +16,11 @@ function renderApp(hash = '#/') {
   )
 }
 
-beforeEach(() => {
+beforeEach(async () => {
   localStorage.clear()
   window.location.hash = ''
+  document.documentElement.classList.remove('dark')
+  await i18n.changeLanguage('en')
 })
 
 describe('Home', () => {
@@ -173,5 +175,28 @@ describe('Compare, tables, about, language', () => {
     await user.click(screen.getByRole('radio', { name: 'Filipino' }))
     expect(screen.getByText('Mag-ulat ng sobrang singil')).toBeInTheDocument()
     expect(localStorage.getItem('pamasahe-ph:prefs')).toContain('"lang":"fil"')
+  })
+})
+
+describe('Appearance and install', () => {
+  it('cycles light → dark → system from the top bar and persists', async () => {
+    const user = userEvent.setup()
+    renderApp('#/about')
+    await user.click(screen.getByRole('radio', { name: 'Light' }))
+    expect(document.documentElement.classList.contains('dark')).toBe(false)
+    await user.click(screen.getByTestId('theme-toggle'))
+    expect(document.documentElement.classList.contains('dark')).toBe(true)
+    expect(localStorage.getItem('pamasahe-ph:prefs')).toContain('"theme":"dark"')
+    await user.click(screen.getByTestId('theme-toggle'))
+    expect(screen.getByRole('radio', { name: 'System' })).toHaveAttribute('aria-checked', 'true')
+  })
+  it('shows the download card with instructions when no install prompt is available', async () => {
+    const user = userEvent.setup()
+    renderApp('#/')
+    const card = screen.getByTestId('install-card')
+    await user.click(within(card).getByRole('button', { name: 'Download app' }))
+    expect(within(card).getByRole('status')).toHaveTextContent(/Install app/)
+    await user.click(within(card).getByRole('button', { name: 'Not now' }))
+    expect(screen.queryByTestId('install-card')).toBeNull()
   })
 })
