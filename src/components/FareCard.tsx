@@ -49,14 +49,18 @@ export function FareCard(p: FareCardProps) {
 
   return (
     <Card className="flex flex-col gap-3" data-testid="fare-card">
-      <div className="flex items-start justify-between gap-3">
-        <div>
+      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+        <div className="min-w-0">
           <p className="text-xs font-medium uppercase tracking-wide text-muted">{primaryLabel}</p>
-          <p className="text-5xl font-bold tabular-nums leading-tight text-ink" data-testid="fare-primary">
+          <p
+            className="font-bold tabular-nums leading-tight text-ink"
+            style={{ fontSize: 'clamp(2rem, 11vw, 3rem)' }}
+            data-testid="fare-primary"
+          >
             {formatPesos(primary)}
           </p>
         </div>
-        <div className="text-right">
+        <div className="min-w-0">
           <p className="text-xs font-medium uppercase tracking-wide text-muted">{secondaryLabel}</p>
           <p className="text-2xl font-semibold tabular-nums text-ink-2" data-testid="fare-secondary">
             {formatPesos(secondary)}
