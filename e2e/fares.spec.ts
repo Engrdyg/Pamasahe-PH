@@ -15,9 +15,10 @@ test('busway station pick: Monumento → PITX southbound = ₱85.00', async ({ p
   await page.getByLabel('To').selectOption('PITX')
   await expect(page.getByTestId('fare-primary')).toHaveText('₱85.00')
   await expect(page.getByTestId('fare-secondary')).toHaveText('₱67.75')
-  // Destination list never contains stations at or before the origin.
-  await page.getByLabel('From').selectOption('Ayala Malls/Aseana')
-  await expect(page.getByLabel('To').locator('option:not([disabled])')).toHaveCount(1)
+  // Direction is inferred: the reverse trip is northbound.
+  await page.getByLabel('From').selectOption('PITX')
+  await page.getByLabel('To').selectOption('Monumento')
+  await expect(page.getByText('Direction: Northbound')).toBeVisible()
 })
 
 test('taxi breakdown: regular taxi 10 km, 20 min', async ({ page }) => {

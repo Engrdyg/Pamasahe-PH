@@ -137,24 +137,33 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
   const { t } = useTranslation()
   const { lang } = useApp()
   const dirs = Object.keys(mode.directions)
-  const [dir, setDir] = useState(dirs[0])
+  // One combined station list (order of the first direction, then any
+  // stations that only exist in the other direction, in their own order).
+  const stations = useMemo(() => {
+    const out: string[] = []
+    for (const d of dirs) for (const st of mode.directions[d].stations) if (!out.includes(st)) out.push(st)
+    return out
+  }, [mode, dirs])
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
-  const stations = mode.directions[dir].stations
-  const dests = from ? destinationsFrom(mode, dir, from) : []
 
-  const changeDir = (d: string) => {
-    setDir(d)
-    setFrom('')
-    setTo('')
-  }
+  // Destinations reachable from `from` in either direction; the direction
+  // is inferred from which matrix lists the destination after the origin.
+  const dests = useMemo(() => {
+    const m = new Map<string, string>()
+    if (!from) return m
+    for (const d of dirs) for (const st of destinationsFrom(mode, d, from)) if (!m.has(st)) m.set(st, d)
+    return m
+  }, [mode, dirs, from])
+  const dir = dests.get(to)
+
   const changeFrom = (s: string) => {
     setFrom(s)
-    if (!destinationsFrom(mode, dir, s).includes(to)) setTo('')
+    setTo('')
   }
 
   let body = null
-  if (from && to) {
+  if (from && to && dir) {
     try {
       const f = matrixFare(mode, dir, from, to)
       body = (
@@ -163,6 +172,7 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
           tripLabel={`${from} → ${to}`}
           regular={f.regular}
           discounted={f.discounted}
+          notes={[`${t('input.direction')}: ${t(`input.${dir}`)}`]}
         />
       )
     } catch (e) {
@@ -173,17 +183,11 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
   return (
     <>
       <Card className="flex flex-col gap-4">
-        <Chips
-          label={t('input.direction')}
-          options={dirs.map((d) => ({ id: d, label: t(`input.${d}`) }))}
-          value={dir}
-          onChange={changeDir}
-        />
         <Select label={t('input.origin')} value={from} options={stations} onChange={changeFrom} placeholder="—" />
-        {from && dests.length === 0 ? (
+        {from && dests.size === 0 ? (
           <p className="text-sm text-ink-2">{t('input.noDestinations')}</p>
         ) : (
-          <Select label={t('input.destination')} value={to} options={dests} onChange={setTo} placeholder="—" />
+          <Select label={t('input.destination')} value={to} options={[...dests.keys()]} onChange={setTo} placeholder="—" />
         )}
         {!from && <p className="text-sm text-muted">{t('input.pickStations')}</p>}
         <p className="text-xs text-muted">
