@@ -55,3 +55,9 @@ test('offline reload: app and fare data work without network', async ({ page, co
   await expect(page.getByTestId('fare-primary')).toHaveText('₱30.00')
   await context.setOffline(false)
 })
+
+test('loading screen shows on launch and disappears once the app renders', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('#splash')).toBeHidden({ timeout: 5000 })
+  await expect(page.getByTestId('tile-jeepney')).toBeVisible()
+})

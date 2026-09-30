@@ -8,8 +8,86 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>Pamasahe PH — LTFRB Fare Checker</title>
+    <style>
+      /* Loading screen: inline so it shows before any JS or CSS bundle arrives. */
+      #splash {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: #0b3d91;
+        color: #fff;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        text-align: center;
+        padding: 24px;
+        transition: opacity 0.35s ease;
+      }
+      #splash.hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #splash .logo {
+        width: 88px;
+        height: 88px;
+        border-radius: 22px;
+        background: #ffc72c;
+        color: #0b3d91;
+        font-size: 52px;
+        font-weight: 700;
+        line-height: 88px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        animation: splash-pop 0.5s ease-out;
+      }
+      #splash h1 {
+        margin: 8px 0 0;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      #splash p {
+        margin: 0;
+        font-size: 14px;
+        opacity: 0.85;
+      }
+      #splash .spinner {
+        margin-top: 20px;
+        width: 28px;
+        height: 28px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #ffc72c;
+        border-radius: 50%;
+        animation: splash-spin 0.8s linear infinite;
+      }
+      #splash .foot {
+        position: absolute;
+        bottom: calc(24px + env(safe-area-inset-bottom));
+        font-size: 12px;
+        opacity: 0.7;
+      }
+      @keyframes splash-spin {
+        to { transform: rotate(360deg); }
+      }
+      @keyframes splash-pop {
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #splash, #splash .logo, #splash .spinner { animation: none; transition: none; }
+      }
+    </style>
   </head>
   <body>
+    <div id="splash" role="status" aria-live="polite" aria-label="Loading Pamasahe PH">
+      <div class="logo" aria-hidden="true">₱</div>
+      <h1>Pamasahe PH</h1>
+      <p>LTFRB land transport fare checker</p>
+      <div class="spinner" aria-hidden="true"></div>
+      <p class="foot">Effective Sept 28, 2026 · LTFRB</p>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -4,6 +4,7 @@ import { registerSW } from 'virtual:pwa-register'
 import App from './App'
 import './i18n'
 import './index.css'
+import { hideSplash } from './lib/splash'
 import { AppProvider } from './state'
 
 registerSW({ immediate: true })
@@ -15,3 +16,6 @@ createRoot(document.getElementById('root')!).render(
     </AppProvider>
   </StrictMode>,
 )
+
+// The first paint of the app is enough to dismiss the loading screen.
+requestAnimationFrame(() => hideSplash())
