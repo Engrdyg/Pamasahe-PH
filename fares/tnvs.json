@@ -1,0 +1,62 @@
+{
+ "id": "tnvs",
+ "name": {
+  "en": "TNVS (ride-hailing)",
+  "fil": "TNVS (ride-hailing)"
+ },
+ "category": "tnvs",
+ "method": "METERED",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "variant": "tnvs",
+ "discountPct": 20,
+ "pickupPerKm": 15.0,
+ "pickupRounding": "floor",
+ "vehicles": [
+  {
+   "id": "hatchback",
+   "name": {
+    "en": "Hatchback / Sub-compact",
+    "fil": "Hatchback / Sub-compact"
+   },
+   "flagDown": 55,
+   "perKm": 13,
+   "perMin": 2
+  },
+  {
+   "id": "sedan",
+   "name": {
+    "en": "Sedan",
+    "fil": "Sedan"
+   },
+   "flagDown": 65,
+   "perKm": 15,
+   "perMin": 2
+  },
+  {
+   "id": "suv",
+   "name": {
+    "en": "AUV / SUV",
+    "fil": "AUV / SUV"
+   },
+   "flagDown": 75,
+   "perKm": 18,
+   "perMin": 2
+  },
+  {
+   "id": "premium",
+   "name": {
+    "en": "Premium",
+    "fil": "Premium"
+   },
+   "flagDown": 165,
+   "perKm": 36,
+   "perMin": 4
+  }
+ ],
+ "sourceDoc": "TNVS.pdf",
+ "notes": {
+  "en": "Shown value is the LTFRB base fare. The app price may include surge.",
+  "fil": "LTFRB base fare ang ipinapakita. Maaaring may surge ang presyo sa app."
+ }
+}

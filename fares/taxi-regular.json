@@ -1,0 +1,17 @@
+{
+ "id": "taxi-regular",
+ "name": {
+  "en": "Regular Taxi",
+  "fil": "Regular na Taxi"
+ },
+ "category": "taxi",
+ "method": "METERED",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "variant": "time-distance",
+ "discountPct": 20,
+ "flagDown": 65.0,
+ "perKm": 13.5,
+ "perMin": 2.0,
+ "sourceDoc": "Regular Taxi.pdf"
+}

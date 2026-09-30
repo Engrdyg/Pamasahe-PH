@@ -1,0 +1,40 @@
+{
+ "id": "pub-prov-ordinary",
+ "name": {
+  "en": "Provincial Bus \u00b7 Ordinary",
+  "fil": "Bus Probinsya \u00b7 Ordinaryo"
+ },
+ "category": "bus-provincial",
+ "method": "ADD_ON",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "rounding": 0.25,
+ "regular": {
+  "baseKm": 5,
+  "baseFare": 12.0,
+  "perKm": 2.2
+ },
+ "discounted": {
+  "baseKm": 5,
+  "baseFare": 9.6,
+  "perKm": 1.76
+ },
+ "previous": {
+  "regular": {
+   "baseKm": 5,
+   "baseFare": 11.0,
+   "perKm": 1.9
+  },
+  "discounted": {
+   "baseKm": 5,
+   "baseFare": 8.8,
+   "perKm": 1.52
+  }
+ },
+ "tableRange": {
+  "minKm": 5,
+  "maxKm": 600,
+  "stepKm": 5
+ },
+ "sourceDoc": "PUB Provincial_Ordinary.pdf"
+}

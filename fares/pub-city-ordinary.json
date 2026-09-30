@@ -1,0 +1,40 @@
+{
+ "id": "pub-city-ordinary",
+ "name": {
+  "en": "City Bus \u00b7 Ordinary (Metro Manila)",
+  "fil": "Bus Siyudad \u00b7 Ordinaryo (Metro Manila)"
+ },
+ "category": "bus-city",
+ "method": "ADD_ON",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "rounding": 0.25,
+ "regular": {
+  "baseKm": 5,
+  "baseFare": 15.0,
+  "perKm": 2.49
+ },
+ "discounted": {
+  "baseKm": 5,
+  "baseFare": 12.0,
+  "perKm": 1.99
+ },
+ "previous": {
+  "regular": {
+   "baseKm": 5,
+   "baseFare": 13.0,
+   "perKm": 2.25
+  },
+  "discounted": {
+   "baseKm": 5,
+   "baseFare": 10.4,
+   "perKm": 1.8
+  }
+ },
+ "tableRange": {
+  "minKm": 1,
+  "maxKm": 60,
+  "stepKm": 1
+ },
+ "sourceDoc": "PUB City_Ordinary.pdf"
+}

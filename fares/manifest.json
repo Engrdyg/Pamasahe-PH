@@ -1,0 +1,24 @@
+{
+ "version": "2026.09.28-1",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "modes": [
+  "puj-traditional",
+  "puj-modern",
+  "uv-traditional",
+  "uv-modern",
+  "pub-prov-ordinary",
+  "pub-prov-aircon",
+  "pub-prov-deluxe",
+  "pub-prov-super-deluxe",
+  "pub-prov-luxury",
+  "pub-city-aircon",
+  "pub-city-ordinary",
+  "edsa-busway",
+  "taxi-regular",
+  "taxi-silver",
+  "taxi-gold",
+  "taxi-airport",
+  "tnvs"
+ ]
+}

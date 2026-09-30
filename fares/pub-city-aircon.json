@@ -1,0 +1,40 @@
+{
+ "id": "pub-city-aircon",
+ "name": {
+  "en": "City Bus \u00b7 Aircon (Metro Manila)",
+  "fil": "Bus Siyudad \u00b7 Aircon (Metro Manila)"
+ },
+ "category": "bus-city",
+ "method": "ADD_ON",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "rounding": 0.25,
+ "regular": {
+  "baseKm": 5,
+  "baseFare": 18.0,
+  "perKm": 2.98
+ },
+ "discounted": {
+  "baseKm": 5,
+  "baseFare": 14.4,
+  "perKm": 2.38
+ },
+ "previous": {
+  "regular": {
+   "baseKm": 5,
+   "baseFare": 15.0,
+   "perKm": 2.65
+  },
+  "discounted": {
+   "baseKm": 5,
+   "baseFare": 12.0,
+   "perKm": 2.12
+  }
+ },
+ "tableRange": {
+  "minKm": 1,
+  "maxKm": 60,
+  "stepKm": 1
+ },
+ "sourceDoc": "PUB City_Aircon.pdf"
+}

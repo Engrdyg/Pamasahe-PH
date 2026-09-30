@@ -1,0 +1,40 @@
+{
+ "id": "puj-modern",
+ "name": {
+  "en": "Modern / Aircon / Electric Jeepney",
+  "fil": "Modernong Jeep"
+ },
+ "category": "jeepney",
+ "method": "ADD_ON",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "rounding": 0.25,
+ "regular": {
+  "baseKm": 4,
+  "baseFare": 17.0,
+  "perKm": 2.4
+ },
+ "discounted": {
+  "baseKm": 4,
+  "baseFare": 13.6,
+  "perKm": 1.92
+ },
+ "previous": {
+  "regular": {
+   "baseKm": 4,
+   "baseFare": 15.0,
+   "perKm": 2.2
+  },
+  "discounted": {
+   "baseKm": 4,
+   "baseFare": 12.0,
+   "perKm": 1.76
+  }
+ },
+ "tableRange": {
+  "minKm": 1,
+  "maxKm": 50,
+  "stepKm": 1
+ },
+ "sourceDoc": "Modern PUJ.pdf"
+}

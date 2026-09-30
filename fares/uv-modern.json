@@ -1,0 +1,23 @@
+{
+ "id": "uv-modern",
+ "name": {
+  "en": "Modern UV Express",
+  "fil": "Modernong UV Express"
+ },
+ "category": "uv",
+ "method": "PER_KM",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "rounding": 0.25,
+ "regular": {
+  "perKm": 3.0
+ },
+ "discounted": {
+  "perKm": 2.4
+ },
+ "sourceDoc": "Modern UVE.pdf",
+ "notes": {
+  "en": "The LTFRB notice gives only a per-kilometer rate. No minimum fare is published.",
+  "fil": "Per-kilometro na singil lang ang nasa abiso ng LTFRB. Walang nakalathalang minimum na pamasahe."
+ }
+}

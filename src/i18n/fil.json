@@ -1,0 +1,103 @@
+{
+  "app": { "name": "Pamasahe PH", "tagline": "Tagasuri ng pamasahe ayon sa LTFRB" },
+  "nav": { "home": "Home", "compare": "Ikumpara", "tables": "Talaan", "about": "Tungkol" },
+  "effective": "Simula {{date}} · LTFRB",
+  "effectiveDate": "Set. 28, 2026",
+  "discountToggle": "Estudyante / Senior / PWD (20% diskwento)",
+  "discountToggleShort": "Estudyante / Senior / PWD",
+  "category": {
+    "jeepney": "Jeep",
+    "uv": "UV Express",
+    "bus-city": "Bus Siyudad",
+    "bus-provincial": "Bus Probinsya",
+    "busway": "EDSA Busway",
+    "taxi": "Taxi",
+    "tnvs": "TNVS / Grab"
+  },
+  "categoryHint": {
+    "jeepney": "Tradisyonal · Moderno",
+    "uv": "Tradisyonal · Moderno",
+    "bus-city": "Metro Manila aircon · ordinaryo",
+    "bus-provincial": "Ordinaryo hanggang Luxury",
+    "busway": "Istasyon papuntang istasyon",
+    "taxi": "Regular · Premium · Airport",
+    "tnvs": "Base fare ng ride-hailing"
+  },
+  "input": {
+    "distance": "Distansya (km)",
+    "distanceMeters": "Distansya (m)",
+    "time": "Tagal ng biyahe (min)",
+    "pickup": "Distansya ng driver papunta sa iyo (km, opsyonal)",
+    "direction": "Direksyon",
+    "southbound": "Pa-timog (Southbound)",
+    "northbound": "Pa-hilaga (Northbound)",
+    "origin": "Mula sa",
+    "destination": "Papunta sa",
+    "vehicle": "Sasakyan",
+    "pickStations": "Piliin ang pinanggalingan at patutunguhang istasyon",
+    "noDestinations": "Ito ang huling istasyon sa direksyong ito."
+  },
+  "fare": {
+    "regular": "Regular",
+    "discounted": "Estudyante / Senior / PWD",
+    "chargedKm": "Sinisingil bilang {{km}} km",
+    "beyondTable": "Lampas sa nakalathalang talaan ({{max}} km) — kinuwenta mula sa pormula",
+    "old": "Dating pamasahe",
+    "increase": "{{amount}} ({{pct}})",
+    "noOld": "Walang nakalathalang dating singil para sa mode na ito",
+    "share": "Ibahagi",
+    "copied": "Nakopya!",
+    "breakdown": "Detalye",
+    "flagDown": "Flag-down",
+    "distanceCharge": "Distansya",
+    "timeCharge": "Oras",
+    "pickupCharge": "Pick-up",
+    "total": "Kabuuan",
+    "errors": {
+      "INVALID_DISTANCE": "Maglagay ng distansyang higit sa 0.",
+      "INVALID_TIME": "Maglagay ng tagal na 0 o higit pa.",
+      "DESTINATION_BEFORE_ORIGIN": "Dapat nasa unahan ng pinanggalingan ang patutunguhan sa direksyong ito.",
+      "SAME_STATION": "Pumili ng dalawang magkaibang istasyon.",
+      "UNKNOWN_STATION": "Hindi kilalang istasyon.",
+      "UNKNOWN_DIRECTION": "Hindi kilalang direksyon.",
+      "UNKNOWN_VEHICLE": "Hindi kilalang uri ng sasakyan."
+    },
+    "shareText": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} may diskwento) — LTFRB {{date}}",
+    "shareTextMetered": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} may diskwento, LTFRB base fare) — LTFRB {{date}}",
+    "minFare": "Minimum na pamasahe {{regular}} / {{discounted}}"
+  },
+  "compare": {
+    "title": "Ikumpara ang mga mode",
+    "intro": "Pamasahe sa parehong distansya sa lahat ng mode na nakabatay sa distansya, pinakamura muna.",
+    "beyond": "lampas sa talaan"
+  },
+  "tables": {
+    "title": "Talaan ng pamasahe",
+    "mode": "Mode",
+    "searchKm": "Hanapin ang km",
+    "km": "km",
+    "new": "Bago",
+    "old": "Dati",
+    "noTable": "Walang nakalathalang talaan ang mode na ito. Fixed per-kilometro o metered ang singil.",
+    "generated": "Kinuwenta mula sa pormula ng LTFRB; tugma sa nakalathalang gabay bawat hilera.",
+    "from": "Mula sa istasyon"
+  },
+  "about": {
+    "title": "Tungkol & pag-uulat",
+    "report": "Mag-ulat ng sobrang singil",
+    "hotline": "LTFRB 24/7 Hotline",
+    "portal": "LTFRB web portal",
+    "dataVersion": "Bersyon ng datos",
+    "sources": "Pinagmulan",
+    "disclaimer": "Batay ang mga pamasahe sa mga fare guide ng LTFRB na epektibo simula Setyembre 28, 2026. Sanggunian lamang ito. Maaaring mag-iba ang aktwal na pamasahe ayon sa ruta, ordinansa ng LGU o operator. Para sa reklamo o paglilinaw, tumawag sa LTFRB 24/7 Hotline 1342 o bisitahin ang www.ltfrb.gov.ph. Hindi kaanib ng LTFRB ang app na ito.",
+    "rules": "Mga tuntunin sa pamasahe",
+    "rule1": "Ini-round ang pamasahe sa pinakamalapit na ₱0.25 para sa jeep, UV Express at bus.",
+    "rule2": "Ini-round pataas ang bahagi ng kilometro sa susunod na buong kilometro.",
+    "rule3": "Araw-araw ang diskwento ng Estudyante / Senior / PWD, kasama ang Sabado, Linggo at holiday (MC 2017-024).",
+    "rule4": "Hanggang sentimo ang ipinapakitang kabuuan sa taxi at TNVS; maaaring iba ang pag-round ng metro.",
+    "offline": "Gumagana offline pagkatapos ng unang pagbisita.",
+    "language": "Wika"
+  },
+  "update": { "banner": "Na-update ang pamasahe — epektibo {{date}}", "dismiss": "Isara" },
+  "common": { "back": "Bumalik", "km": "km", "min": "min", "m": "m", "pending": "Hinihintay ang datos ng LTFRB" }
+}

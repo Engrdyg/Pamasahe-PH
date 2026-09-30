@@ -1,0 +1,1326 @@
+{
+ "source": "0335d190-PUB_Provincial__Luxury.pdf",
+ "mode": "pub-prov-luxury",
+ "rows": [
+  {
+   "km": 5,
+   "old": {
+    "regular": 14.5,
+    "discounted": 11.5
+   },
+   "new": {
+    "regular": 16.75,
+    "discounted": 13.5
+   }
+  },
+  {
+   "km": 10,
+   "old": {
+    "regular": 29.0,
+    "discounted": 23.25
+   },
+   "new": {
+    "regular": 33.5,
+    "discounted": 26.75
+   }
+  },
+  {
+   "km": 15,
+   "old": {
+    "regular": 43.5,
+    "discounted": 34.75
+   },
+   "new": {
+    "regular": 50.25,
+    "discounted": 40.25
+   }
+  },
+  {
+   "km": 20,
+   "old": {
+    "regular": 58.0,
+    "discounted": 46.5
+   },
+   "new": {
+    "regular": 67.0,
+    "discounted": 53.5
+   }
+  },
+  {
+   "km": 25,
+   "old": {
+    "regular": 72.5,
+    "discounted": 58.0
+   },
+   "new": {
+    "regular": 83.75,
+    "discounted": 67.0
+   }
+  },
+  {
+   "km": 30,
+   "old": {
+    "regular": 87.0,
+    "discounted": 69.5
+   },
+   "new": {
+    "regular": 100.5,
+    "discounted": 80.5
+   }
+  },
+  {
+   "km": 35,
+   "old": {
+    "regular": 101.5,
+    "discounted": 81.25
+   },
+   "new": {
+    "regular": 117.25,
+    "discounted": 93.75
+   }
+  },
+  {
+   "km": 40,
+   "old": {
+    "regular": 116.0,
+    "discounted": 92.75
+   },
+   "new": {
+    "regular": 134.0,
+    "discounted": 107.25
+   }
+  },
+  {
+   "km": 45,
+   "old": {
+    "regular": 130.5,
+    "discounted": 104.5
+   },
+   "new": {
+    "regular": 150.75,
+    "discounted": 120.5
+   }
+  },
+  {
+   "km": 50,
+   "old": {
+    "regular": 145.0,
+    "discounted": 116.0
+   },
+   "new": {
+    "regular": 167.5,
+    "discounted": 134.0
+   }
+  },
+  {
+   "km": 55,
+   "old": {
+    "regular": 159.5,
+    "discounted": 127.5
+   },
+   "new": {
+    "regular": 184.25,
+    "discounted": 147.5
+   }
+  },
+  {
+   "km": 60,
+   "old": {
+    "regular": 174.0,
+    "discounted": 139.25
+   },
+   "new": {
+    "regular": 201.0,
+    "discounted": 160.75
+   }
+  },
+  {
+   "km": 65,
+   "old": {
+    "regular": 188.5,
+    "discounted": 150.75
+   },
+   "new": {
+    "regular": 217.75,
+    "discounted": 174.25
+   }
+  },
+  {
+   "km": 70,
+   "old": {
+    "regular": 203.0,
+    "discounted": 162.5
+   },
+   "new": {
+    "regular": 234.5,
+    "discounted": 187.5
+   }
+  },
+  {
+   "km": 75,
+   "old": {
+    "regular": 217.5,
+    "discounted": 174.0
+   },
+   "new": {
+    "regular": 251.25,
+    "discounted": 201.0
+   }
+  },
+  {
+   "km": 80,
+   "old": {
+    "regular": 232.0,
+    "discounted": 185.5
+   },
+   "new": {
+    "regular": 268.0,
+    "discounted": 214.5
+   }
+  },
+  {
+   "km": 85,
+   "old": {
+    "regular": 246.5,
+    "discounted": 197.25
+   },
+   "new": {
+    "regular": 284.75,
+    "discounted": 227.75
+   }
+  },
+  {
+   "km": 90,
+   "old": {
+    "regular": 261.0,
+    "discounted": 208.75
+   },
+   "new": {
+    "regular": 301.5,
+    "discounted": 241.25
+   }
+  },
+  {
+   "km": 95,
+   "old": {
+    "regular": 275.5,
+    "discounted": 220.5
+   },
+   "new": {
+    "regular": 318.25,
+    "discounted": 254.5
+   }
+  },
+  {
+   "km": 100,
+   "old": {
+    "regular": 290.0,
+    "discounted": 232.0
+   },
+   "new": {
+    "regular": 335.0,
+    "discounted": 268.0
+   }
+  },
+  {
+   "km": 105,
+   "old": {
+    "regular": 304.5,
+    "discounted": 243.5
+   },
+   "new": {
+    "regular": 351.75,
+    "discounted": 281.5
+   }
+  },
+  {
+   "km": 110,
+   "old": {
+    "regular": 319.0,
+    "discounted": 255.25
+   },
+   "new": {
+    "regular": 368.5,
+    "discounted": 294.75
+   }
+  },
+  {
+   "km": 115,
+   "old": {
+    "regular": 333.5,
+    "discounted": 266.75
+   },
+   "new": {
+    "regular": 385.25,
+    "discounted": 308.25
+   }
+  },
+  {
+   "km": 120,
+   "old": {
+    "regular": 348.0,
+    "discounted": 278.5
+   },
+   "new": {
+    "regular": 402.0,
+    "discounted": 321.5
+   }
+  },
+  {
+   "km": 125,
+   "old": {
+    "regular": 362.5,
+    "discounted": 290.0
+   },
+   "new": {
+    "regular": 418.75,
+    "discounted": 335.0
+   }
+  },
+  {
+   "km": 130,
+   "old": {
+    "regular": 377.0,
+    "discounted": 301.5
+   },
+   "new": {
+    "regular": 435.5,
+    "discounted": 348.5
+   }
+  },
+  {
+   "km": 135,
+   "old": {
+    "regular": 391.5,
+    "discounted": 313.25
+   },
+   "new": {
+    "regular": 452.25,
+    "discounted": 361.75
+   }
+  },
+  {
+   "km": 140,
+   "old": {
+    "regular": 406.0,
+    "discounted": 324.75
+   },
+   "new": {
+    "regular": 469.0,
+    "discounted": 375.25
+   }
+  },
+  {
+   "km": 145,
+   "old": {
+    "regular": 420.5,
+    "discounted": 336.5
+   },
+   "new": {
+    "regular": 485.75,
+    "discounted": 388.5
+   }
+  },
+  {
+   "km": 150,
+   "old": {
+    "regular": 435.0,
+    "discounted": 348.0
+   },
+   "new": {
+    "regular": 502.5,
+    "discounted": 402.0
+   }
+  },
+  {
+   "km": 155,
+   "old": {
+    "regular": 449.5,
+    "discounted": 359.5
+   },
+   "new": {
+    "regular": 519.25,
+    "discounted": 415.5
+   }
+  },
+  {
+   "km": 160,
+   "old": {
+    "regular": 464.0,
+    "discounted": 371.25
+   },
+   "new": {
+    "regular": 536.0,
+    "discounted": 428.75
+   }
+  },
+  {
+   "km": 165,
+   "old": {
+    "regular": 478.5,
+    "discounted": 382.75
+   },
+   "new": {
+    "regular": 552.75,
+    "discounted": 442.25
+   }
+  },
+  {
+   "km": 170,
+   "old": {
+    "regular": 493.0,
+    "discounted": 394.5
+   },
+   "new": {
+    "regular": 569.5,
+    "discounted": 455.5
+   }
+  },
+  {
+   "km": 175,
+   "old": {
+    "regular": 507.5,
+    "discounted": 406.0
+   },
+   "new": {
+    "regular": 586.25,
+    "discounted": 469.0
+   }
+  },
+  {
+   "km": 180,
+   "old": {
+    "regular": 522.0,
+    "discounted": 417.5
+   },
+   "new": {
+    "regular": 603.0,
+    "discounted": 482.5
+   }
+  },
+  {
+   "km": 185,
+   "old": {
+    "regular": 536.5,
+    "discounted": 429.25
+   },
+   "new": {
+    "regular": 619.75,
+    "discounted": 495.75
+   }
+  },
+  {
+   "km": 190,
+   "old": {
+    "regular": 551.0,
+    "discounted": 440.75
+   },
+   "new": {
+    "regular": 636.5,
+    "discounted": 509.25
+   }
+  },
+  {
+   "km": 195,
+   "old": {
+    "regular": 565.5,
+    "discounted": 452.5
+   },
+   "new": {
+    "regular": 653.25,
+    "discounted": 522.5
+   }
+  },
+  {
+   "km": 200,
+   "old": {
+    "regular": 580.0,
+    "discounted": 464.0
+   },
+   "new": {
+    "regular": 670.0,
+    "discounted": 536.0
+   }
+  },
+  {
+   "km": 205,
+   "old": {
+    "regular": 594.5,
+    "discounted": 475.5
+   },
+   "new": {
+    "regular": 686.75,
+    "discounted": 549.5
+   }
+  },
+  {
+   "km": 210,
+   "old": {
+    "regular": 609.0,
+    "discounted": 487.25
+   },
+   "new": {
+    "regular": 703.5,
+    "discounted": 562.75
+   }
+  },
+  {
+   "km": 215,
+   "old": {
+    "regular": 623.5,
+    "discounted": 498.75
+   },
+   "new": {
+    "regular": 720.25,
+    "discounted": 576.25
+   }
+  },
+  {
+   "km": 220,
+   "old": {
+    "regular": 638.0,
+    "discounted": 510.5
+   },
+   "new": {
+    "regular": 737.0,
+    "discounted": 589.5
+   }
+  },
+  {
+   "km": 225,
+   "old": {
+    "regular": 652.5,
+    "discounted": 522.0
+   },
+   "new": {
+    "regular": 753.75,
+    "discounted": 603.0
+   }
+  },
+  {
+   "km": 230,
+   "old": {
+    "regular": 667.0,
+    "discounted": 533.5
+   },
+   "new": {
+    "regular": 770.5,
+    "discounted": 616.5
+   }
+  },
+  {
+   "km": 235,
+   "old": {
+    "regular": 681.5,
+    "discounted": 545.25
+   },
+   "new": {
+    "regular": 787.25,
+    "discounted": 629.75
+   }
+  },
+  {
+   "km": 240,
+   "old": {
+    "regular": 696.0,
+    "discounted": 556.75
+   },
+   "new": {
+    "regular": 804.0,
+    "discounted": 643.25
+   }
+  },
+  {
+   "km": 245,
+   "old": {
+    "regular": 710.5,
+    "discounted": 568.5
+   },
+   "new": {
+    "regular": 820.75,
+    "discounted": 656.5
+   }
+  },
+  {
+   "km": 250,
+   "old": {
+    "regular": 725.0,
+    "discounted": 580.0
+   },
+   "new": {
+    "regular": 837.5,
+    "discounted": 670.0
+   }
+  },
+  {
+   "km": 255,
+   "old": {
+    "regular": 739.5,
+    "discounted": 591.5
+   },
+   "new": {
+    "regular": 854.25,
+    "discounted": 683.5
+   }
+  },
+  {
+   "km": 260,
+   "old": {
+    "regular": 754.0,
+    "discounted": 603.25
+   },
+   "new": {
+    "regular": 871.0,
+    "discounted": 696.75
+   }
+  },
+  {
+   "km": 265,
+   "old": {
+    "regular": 768.5,
+    "discounted": 614.75
+   },
+   "new": {
+    "regular": 887.75,
+    "discounted": 710.25
+   }
+  },
+  {
+   "km": 270,
+   "old": {
+    "regular": 783.0,
+    "discounted": 626.5
+   },
+   "new": {
+    "regular": 904.5,
+    "discounted": 723.5
+   }
+  },
+  {
+   "km": 275,
+   "old": {
+    "regular": 797.5,
+    "discounted": 638.0
+   },
+   "new": {
+    "regular": 921.25,
+    "discounted": 737.0
+   }
+  },
+  {
+   "km": 280,
+   "old": {
+    "regular": 812.0,
+    "discounted": 649.5
+   },
+   "new": {
+    "regular": 938.0,
+    "discounted": 750.5
+   }
+  },
+  {
+   "km": 285,
+   "old": {
+    "regular": 826.5,
+    "discounted": 661.25
+   },
+   "new": {
+    "regular": 954.75,
+    "discounted": 763.75
+   }
+  },
+  {
+   "km": 290,
+   "old": {
+    "regular": 841.0,
+    "discounted": 672.75
+   },
+   "new": {
+    "regular": 971.5,
+    "discounted": 777.25
+   }
+  },
+  {
+   "km": 295,
+   "old": {
+    "regular": 855.5,
+    "discounted": 684.5
+   },
+   "new": {
+    "regular": 988.25,
+    "discounted": 790.5
+   }
+  },
+  {
+   "km": 300,
+   "old": {
+    "regular": 870.0,
+    "discounted": 696.0
+   },
+   "new": {
+    "regular": 1005.0,
+    "discounted": 804.0
+   }
+  },
+  {
+   "km": 305,
+   "old": {
+    "regular": 884.5,
+    "discounted": 707.5
+   },
+   "new": {
+    "regular": 1021.75,
+    "discounted": 817.5
+   }
+  },
+  {
+   "km": 310,
+   "old": {
+    "regular": 899.0,
+    "discounted": 719.25
+   },
+   "new": {
+    "regular": 1038.5,
+    "discounted": 830.75
+   }
+  },
+  {
+   "km": 315,
+   "old": {
+    "regular": 913.5,
+    "discounted": 730.75
+   },
+   "new": {
+    "regular": 1055.25,
+    "discounted": 844.25
+   }
+  },
+  {
+   "km": 320,
+   "old": {
+    "regular": 928.0,
+    "discounted": 742.5
+   },
+   "new": {
+    "regular": 1072.0,
+    "discounted": 857.5
+   }
+  },
+  {
+   "km": 325,
+   "old": {
+    "regular": 942.5,
+    "discounted": 754.0
+   },
+   "new": {
+    "regular": 1088.75,
+    "discounted": 871.0
+   }
+  },
+  {
+   "km": 330,
+   "old": {
+    "regular": 957.0,
+    "discounted": 765.5
+   },
+   "new": {
+    "regular": 1105.5,
+    "discounted": 884.5
+   }
+  },
+  {
+   "km": 335,
+   "old": {
+    "regular": 971.5,
+    "discounted": 777.25
+   },
+   "new": {
+    "regular": 1122.25,
+    "discounted": 897.75
+   }
+  },
+  {
+   "km": 340,
+   "old": {
+    "regular": 986.0,
+    "discounted": 788.75
+   },
+   "new": {
+    "regular": 1139.0,
+    "discounted": 911.25
+   }
+  },
+  {
+   "km": 345,
+   "old": {
+    "regular": 1000.5,
+    "discounted": 800.5
+   },
+   "new": {
+    "regular": 1155.75,
+    "discounted": 924.5
+   }
+  },
+  {
+   "km": 350,
+   "old": {
+    "regular": 1015.0,
+    "discounted": 812.0
+   },
+   "new": {
+    "regular": 1172.5,
+    "discounted": 938.0
+   }
+  },
+  {
+   "km": 355,
+   "old": {
+    "regular": 1029.5,
+    "discounted": 823.5
+   },
+   "new": {
+    "regular": 1189.25,
+    "discounted": 951.5
+   }
+  },
+  {
+   "km": 360,
+   "old": {
+    "regular": 1044.0,
+    "discounted": 835.25
+   },
+   "new": {
+    "regular": 1206.0,
+    "discounted": 964.75
+   }
+  },
+  {
+   "km": 365,
+   "old": {
+    "regular": 1058.5,
+    "discounted": 846.75
+   },
+   "new": {
+    "regular": 1222.75,
+    "discounted": 978.25
+   }
+  },
+  {
+   "km": 370,
+   "old": {
+    "regular": 1073.0,
+    "discounted": 858.5
+   },
+   "new": {
+    "regular": 1239.5,
+    "discounted": 991.5
+   }
+  },
+  {
+   "km": 375,
+   "old": {
+    "regular": 1087.5,
+    "discounted": 870.0
+   },
+   "new": {
+    "regular": 1256.25,
+    "discounted": 1005.0
+   }
+  },
+  {
+   "km": 380,
+   "old": {
+    "regular": 1102.0,
+    "discounted": 881.5
+   },
+   "new": {
+    "regular": 1273.0,
+    "discounted": 1018.5
+   }
+  },
+  {
+   "km": 385,
+   "old": {
+    "regular": 1116.5,
+    "discounted": 893.25
+   },
+   "new": {
+    "regular": 1289.75,
+    "discounted": 1031.75
+   }
+  },
+  {
+   "km": 390,
+   "old": {
+    "regular": 1131.0,
+    "discounted": 904.75
+   },
+   "new": {
+    "regular": 1306.5,
+    "discounted": 1045.25
+   }
+  },
+  {
+   "km": 395,
+   "old": {
+    "regular": 1145.5,
+    "discounted": 916.5
+   },
+   "new": {
+    "regular": 1323.25,
+    "discounted": 1058.5
+   }
+  },
+  {
+   "km": 400,
+   "old": {
+    "regular": 1160.0,
+    "discounted": 928.0
+   },
+   "new": {
+    "regular": 1340.0,
+    "discounted": 1072.0
+   }
+  },
+  {
+   "km": 405,
+   "old": {
+    "regular": 1174.5,
+    "discounted": 939.5
+   },
+   "new": {
+    "regular": 1356.75,
+    "discounted": 1085.5
+   }
+  },
+  {
+   "km": 410,
+   "old": {
+    "regular": 1189.0,
+    "discounted": 951.25
+   },
+   "new": {
+    "regular": 1373.5,
+    "discounted": 1098.75
+   }
+  },
+  {
+   "km": 415,
+   "old": {
+    "regular": 1203.5,
+    "discounted": 962.75
+   },
+   "new": {
+    "regular": 1390.25,
+    "discounted": 1112.25
+   }
+  },
+  {
+   "km": 420,
+   "old": {
+    "regular": 1218.0,
+    "discounted": 974.5
+   },
+   "new": {
+    "regular": 1407.0,
+    "discounted": 1125.5
+   }
+  },
+  {
+   "km": 425,
+   "old": {
+    "regular": 1232.5,
+    "discounted": 986.0
+   },
+   "new": {
+    "regular": 1423.75,
+    "discounted": 1139.0
+   }
+  },
+  {
+   "km": 430,
+   "old": {
+    "regular": 1247.0,
+    "discounted": 997.5
+   },
+   "new": {
+    "regular": 1440.5,
+    "discounted": 1152.5
+   }
+  },
+  {
+   "km": 435,
+   "old": {
+    "regular": 1261.5,
+    "discounted": 1009.25
+   },
+   "new": {
+    "regular": 1457.25,
+    "discounted": 1165.75
+   }
+  },
+  {
+   "km": 440,
+   "old": {
+    "regular": 1276.0,
+    "discounted": 1020.75
+   },
+   "new": {
+    "regular": 1474.0,
+    "discounted": 1179.25
+   }
+  },
+  {
+   "km": 445,
+   "old": {
+    "regular": 1290.5,
+    "discounted": 1032.5
+   },
+   "new": {
+    "regular": 1490.75,
+    "discounted": 1192.5
+   }
+  },
+  {
+   "km": 450,
+   "old": {
+    "regular": 1305.0,
+    "discounted": 1044.0
+   },
+   "new": {
+    "regular": 1507.5,
+    "discounted": 1206.0
+   }
+  },
+  {
+   "km": 455,
+   "old": {
+    "regular": 1319.5,
+    "discounted": 1055.5
+   },
+   "new": {
+    "regular": 1524.25,
+    "discounted": 1219.5
+   }
+  },
+  {
+   "km": 460,
+   "old": {
+    "regular": 1334.0,
+    "discounted": 1067.25
+   },
+   "new": {
+    "regular": 1541.0,
+    "discounted": 1232.75
+   }
+  },
+  {
+   "km": 465,
+   "old": {
+    "regular": 1348.5,
+    "discounted": 1078.75
+   },
+   "new": {
+    "regular": 1557.75,
+    "discounted": 1246.25
+   }
+  },
+  {
+   "km": 470,
+   "old": {
+    "regular": 1363.0,
+    "discounted": 1090.5
+   },
+   "new": {
+    "regular": 1574.5,
+    "discounted": 1259.5
+   }
+  },
+  {
+   "km": 475,
+   "old": {
+    "regular": 1377.5,
+    "discounted": 1102.0
+   },
+   "new": {
+    "regular": 1591.25,
+    "discounted": 1273.0
+   }
+  },
+  {
+   "km": 480,
+   "old": {
+    "regular": 1392.0,
+    "discounted": 1113.5
+   },
+   "new": {
+    "regular": 1608.0,
+    "discounted": 1286.5
+   }
+  },
+  {
+   "km": 485,
+   "old": {
+    "regular": 1406.5,
+    "discounted": 1125.25
+   },
+   "new": {
+    "regular": 1624.75,
+    "discounted": 1299.75
+   }
+  },
+  {
+   "km": 490,
+   "old": {
+    "regular": 1421.0,
+    "discounted": 1136.75
+   },
+   "new": {
+    "regular": 1641.5,
+    "discounted": 1313.25
+   }
+  },
+  {
+   "km": 495,
+   "old": {
+    "regular": 1435.5,
+    "discounted": 1148.5
+   },
+   "new": {
+    "regular": 1658.25,
+    "discounted": 1326.5
+   }
+  },
+  {
+   "km": 500,
+   "old": {
+    "regular": 1450.0,
+    "discounted": 1160.0
+   },
+   "new": {
+    "regular": 1675.0,
+    "discounted": 1340.0
+   }
+  },
+  {
+   "km": 505,
+   "old": {
+    "regular": 1464.5,
+    "discounted": 1171.5
+   },
+   "new": {
+    "regular": 1691.75,
+    "discounted": 1353.5
+   }
+  },
+  {
+   "km": 510,
+   "old": {
+    "regular": 1479.0,
+    "discounted": 1183.25
+   },
+   "new": {
+    "regular": 1708.5,
+    "discounted": 1366.75
+   }
+  },
+  {
+   "km": 515,
+   "old": {
+    "regular": 1493.5,
+    "discounted": 1194.75
+   },
+   "new": {
+    "regular": 1725.25,
+    "discounted": 1380.25
+   }
+  },
+  {
+   "km": 520,
+   "old": {
+    "regular": 1508.0,
+    "discounted": 1206.5
+   },
+   "new": {
+    "regular": 1742.0,
+    "discounted": 1393.5
+   }
+  },
+  {
+   "km": 525,
+   "old": {
+    "regular": 1522.5,
+    "discounted": 1218.0
+   },
+   "new": {
+    "regular": 1758.75,
+    "discounted": 1407.0
+   }
+  },
+  {
+   "km": 530,
+   "old": {
+    "regular": 1537.0,
+    "discounted": 1229.5
+   },
+   "new": {
+    "regular": 1775.5,
+    "discounted": 1420.5
+   }
+  },
+  {
+   "km": 535,
+   "old": {
+    "regular": 1551.5,
+    "discounted": 1241.25
+   },
+   "new": {
+    "regular": 1792.25,
+    "discounted": 1433.75
+   }
+  },
+  {
+   "km": 540,
+   "old": {
+    "regular": 1566.0,
+    "discounted": 1252.75
+   },
+   "new": {
+    "regular": 1809.0,
+    "discounted": 1447.25
+   }
+  },
+  {
+   "km": 545,
+   "old": {
+    "regular": 1580.5,
+    "discounted": 1264.5
+   },
+   "new": {
+    "regular": 1825.75,
+    "discounted": 1460.5
+   }
+  },
+  {
+   "km": 550,
+   "old": {
+    "regular": 1595.0,
+    "discounted": 1276.0
+   },
+   "new": {
+    "regular": 1842.5,
+    "discounted": 1474.0
+   }
+  },
+  {
+   "km": 555,
+   "old": {
+    "regular": 1609.5,
+    "discounted": 1287.5
+   },
+   "new": {
+    "regular": 1859.25,
+    "discounted": 1487.5
+   }
+  },
+  {
+   "km": 560,
+   "old": {
+    "regular": 1624.0,
+    "discounted": 1299.25
+   },
+   "new": {
+    "regular": 1876.0,
+    "discounted": 1500.75
+   }
+  },
+  {
+   "km": 565,
+   "old": {
+    "regular": 1638.5,
+    "discounted": 1310.75
+   },
+   "new": {
+    "regular": 1892.75,
+    "discounted": 1514.25
+   }
+  },
+  {
+   "km": 570,
+   "old": {
+    "regular": 1653.0,
+    "discounted": 1322.5
+   },
+   "new": {
+    "regular": 1909.5,
+    "discounted": 1527.5
+   }
+  },
+  {
+   "km": 575,
+   "old": {
+    "regular": 1667.5,
+    "discounted": 1334.0
+   },
+   "new": {
+    "regular": 1926.25,
+    "discounted": 1541.0
+   }
+  },
+  {
+   "km": 580,
+   "old": {
+    "regular": 1682.0,
+    "discounted": 1345.5
+   },
+   "new": {
+    "regular": 1943.0,
+    "discounted": 1554.5
+   }
+  },
+  {
+   "km": 585,
+   "old": {
+    "regular": 1696.5,
+    "discounted": 1357.25
+   },
+   "new": {
+    "regular": 1959.75,
+    "discounted": 1567.75
+   }
+  },
+  {
+   "km": 590,
+   "old": {
+    "regular": 1711.0,
+    "discounted": 1368.75
+   },
+   "new": {
+    "regular": 1976.5,
+    "discounted": 1581.25
+   }
+  },
+  {
+   "km": 595,
+   "old": {
+    "regular": 1725.5,
+    "discounted": 1380.5
+   },
+   "new": {
+    "regular": 1993.25,
+    "discounted": 1594.5
+   }
+  },
+  {
+   "km": 600,
+   "old": {
+    "regular": 1740.0,
+    "discounted": 1392.0
+   },
+   "new": {
+    "regular": 2010.0,
+    "discounted": 1608.0
+   }
+  }
+ ]
+}

@@ -1,0 +1,103 @@
+{
+  "app": { "name": "Pamasahe PH", "tagline": "LTFRB land transport fare checker" },
+  "nav": { "home": "Home", "compare": "Compare", "tables": "Fare tables", "about": "About" },
+  "effective": "Effective {{date}} · LTFRB",
+  "effectiveDate": "Sept 28, 2026",
+  "discountToggle": "Student / Senior / PWD (20% off)",
+  "discountToggleShort": "Student / Senior / PWD",
+  "category": {
+    "jeepney": "Jeepney",
+    "uv": "UV Express",
+    "bus-city": "City Bus",
+    "bus-provincial": "Provincial Bus",
+    "busway": "EDSA Busway",
+    "taxi": "Taxi",
+    "tnvs": "TNVS / Grab"
+  },
+  "categoryHint": {
+    "jeepney": "Traditional · Modern",
+    "uv": "Traditional · Modern",
+    "bus-city": "Metro Manila aircon · ordinary",
+    "bus-provincial": "Ordinary to Luxury",
+    "busway": "Station to station",
+    "taxi": "Regular · Premium · Airport",
+    "tnvs": "Ride-hailing base fare"
+  },
+  "input": {
+    "distance": "Distance (km)",
+    "distanceMeters": "Distance (m)",
+    "time": "Travel time (min)",
+    "pickup": "Driver pick-up distance (km, optional)",
+    "direction": "Direction",
+    "southbound": "Southbound",
+    "northbound": "Northbound",
+    "origin": "From",
+    "destination": "To",
+    "vehicle": "Vehicle",
+    "pickStations": "Pick your origin and destination stations",
+    "noDestinations": "This is the last station in this direction."
+  },
+  "fare": {
+    "regular": "Regular",
+    "discounted": "Student / Senior / PWD",
+    "chargedKm": "Charged as {{km}} km",
+    "beyondTable": "Beyond published table ({{max}} km) — computed from the formula",
+    "old": "Old fare",
+    "increase": "{{amount}} ({{pct}})",
+    "noOld": "No previous rate published for this mode",
+    "share": "Share",
+    "copied": "Copied!",
+    "breakdown": "Breakdown",
+    "flagDown": "Flag-down",
+    "distanceCharge": "Distance",
+    "timeCharge": "Time",
+    "pickupCharge": "Pick-up",
+    "total": "Total",
+    "errors": {
+      "INVALID_DISTANCE": "Enter a distance greater than 0.",
+      "INVALID_TIME": "Enter a travel time of 0 or more.",
+      "DESTINATION_BEFORE_ORIGIN": "Destination must come after the origin in this direction.",
+      "SAME_STATION": "Pick two different stations.",
+      "UNKNOWN_STATION": "Unknown station.",
+      "UNKNOWN_DIRECTION": "Unknown direction.",
+      "UNKNOWN_VEHICLE": "Unknown vehicle type."
+    },
+    "shareText": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} discounted) — LTFRB {{date}}",
+    "shareTextMetered": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} discounted, LTFRB base fare) — LTFRB {{date}}",
+    "minFare": "Minimum fare {{regular}} / {{discounted}}"
+  },
+  "compare": {
+    "title": "Compare modes",
+    "intro": "Fare for the same distance across all distance-based modes, cheapest first.",
+    "beyond": "beyond table"
+  },
+  "tables": {
+    "title": "Fare tables",
+    "mode": "Mode",
+    "searchKm": "Find km",
+    "km": "km",
+    "new": "New",
+    "old": "Old",
+    "noTable": "This mode has no published table. It is a fixed per-kilometer or metered rate.",
+    "generated": "Generated from the LTFRB formula; matches the published guide row for row.",
+    "from": "From station"
+  },
+  "about": {
+    "title": "About & report",
+    "report": "Report an overcharge",
+    "hotline": "LTFRB 24/7 Hotline",
+    "portal": "LTFRB web portal",
+    "dataVersion": "Fare data version",
+    "sources": "Sources",
+    "disclaimer": "Fares are based on LTFRB fare guides effective September 28, 2026. They are for reference only. Actual fares may vary by route, LGU ordinance or operator. For complaints or clarification, call the LTFRB 24/7 Hotline 1342 or visit www.ltfrb.gov.ph. This app is not affiliated with LTFRB.",
+    "rules": "Fare rules",
+    "rule1": "Fares are rounded to the nearest ₱0.25 for jeepney, UV Express and bus.",
+    "rule2": "Partial kilometres are rounded up to the next whole kilometre.",
+    "rule3": "The Student / Senior / PWD discount applies every day, including weekends and holidays (MC 2017-024).",
+    "rule4": "Taxi and TNVS totals are shown to the centavo; the meter may round differently.",
+    "offline": "Works offline after the first visit.",
+    "language": "Language"
+  },
+  "update": { "banner": "Fares updated — effective {{date}}", "dismiss": "Dismiss" },
+  "common": { "back": "Back", "km": "km", "min": "min", "m": "m", "pending": "Awaiting LTFRB data" }
+}

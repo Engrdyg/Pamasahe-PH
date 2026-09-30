@@ -1,0 +1,32 @@
+{
+ "id": "pub-prov-aircon",
+ "name": {
+  "en": "Provincial Bus \u00b7 Regular Aircon",
+  "fil": "Bus Probinsya \u00b7 Regular Aircon"
+ },
+ "category": "bus-provincial",
+ "method": "PER_KM",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "rounding": 0.25,
+ "regular": {
+  "perKm": 2.45
+ },
+ "discounted": {
+  "perKm": 1.96
+ },
+ "previous": {
+  "regular": {
+   "perKm": 2.1
+  },
+  "discounted": {
+   "perKm": 1.68
+  }
+ },
+ "tableRange": {
+  "minKm": 5,
+  "maxKm": 600,
+  "stepKm": 5
+ },
+ "sourceDoc": "PUB Provincial_Aircon.pdf"
+}

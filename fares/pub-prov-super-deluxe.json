@@ -1,0 +1,32 @@
+{
+ "id": "pub-prov-super-deluxe",
+ "name": {
+  "en": "Provincial Bus \u00b7 Super Deluxe",
+  "fil": "Bus Probinsya \u00b7 Super Deluxe"
+ },
+ "category": "bus-provincial",
+ "method": "PER_KM",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "rounding": 0.25,
+ "regular": {
+  "perKm": 2.7
+ },
+ "discounted": {
+  "perKm": 2.16
+ },
+ "previous": {
+  "regular": {
+   "perKm": 2.35
+  },
+  "discounted": {
+   "perKm": 1.88
+  }
+ },
+ "tableRange": {
+  "minKm": 5,
+  "maxKm": 600,
+  "stepKm": 5
+ },
+ "sourceDoc": "PUB Provincial_ Super Deluxe.pdf"
+}

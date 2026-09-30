@@ -1,0 +1,17 @@
+{
+ "id": "taxi-gold",
+ "name": {
+  "en": "Premium Gold Taxi",
+  "fil": "Premium Gold Taxi"
+ },
+ "category": "taxi",
+ "method": "METERED",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "variant": "time-distance",
+ "discountPct": 20,
+ "flagDown": 95.0,
+ "perKm": 20.5,
+ "perMin": 3.0,
+ "sourceDoc": "Gold Premium Taxi.pdf"
+}

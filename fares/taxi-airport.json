@@ -1,0 +1,24 @@
+{
+ "id": "taxi-airport",
+ "name": {
+  "en": "Airport Taxi",
+  "fil": "Airport Taxi"
+ },
+ "category": "taxi",
+ "method": "METERED",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "variant": "stepped",
+ "discountPct": 20,
+ "flagDown": 115.0,
+ "flagDownCoversMeters": 500,
+ "distanceStep": {
+  "meters": 300,
+  "fare": 4.0
+ },
+ "timeStep": {
+  "minutes": 2,
+  "fare": 4.0
+ },
+ "sourceDoc": "Airport Taxi.pdf"
+}

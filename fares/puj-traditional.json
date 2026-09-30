@@ -1,0 +1,40 @@
+{
+ "id": "puj-traditional",
+ "name": {
+  "en": "Traditional Jeepney",
+  "fil": "Tradisyonal na Jeep"
+ },
+ "category": "jeepney",
+ "method": "ADD_ON",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "rounding": 0.25,
+ "regular": {
+  "baseKm": 4,
+  "baseFare": 14.0,
+  "perKm": 2.0
+ },
+ "discounted": {
+  "baseKm": 4,
+  "baseFare": 11.2,
+  "perKm": 1.6
+ },
+ "previous": {
+  "regular": {
+   "baseKm": 4,
+   "baseFare": 13.0,
+   "perKm": 1.8
+  },
+  "discounted": {
+   "baseKm": 4,
+   "baseFare": 10.4,
+   "perKm": 1.44
+  }
+ },
+ "tableRange": {
+  "minKm": 1,
+  "maxKm": 50,
+  "stepKm": 1
+ },
+ "sourceDoc": "Traditional PUJ.pdf"
+}

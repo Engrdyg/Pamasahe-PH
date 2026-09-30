@@ -1,0 +1,17 @@
+{
+ "id": "taxi-silver",
+ "name": {
+  "en": "Premium Silver Taxi",
+  "fil": "Premium Silver Taxi"
+ },
+ "category": "taxi",
+ "method": "METERED",
+ "effective": "2026-09-28",
+ "source": "LTFRB",
+ "variant": "time-distance",
+ "discountPct": 20,
+ "flagDown": 80.0,
+ "perKm": 17.5,
+ "perMin": 2.5,
+ "sourceDoc": "Silver Premium Taxi.pdf"
+}
