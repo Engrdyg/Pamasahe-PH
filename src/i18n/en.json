@@ -1,6 +1,14 @@
 {
-  "app": { "name": "Magkano Pamasahe", "tagline": "LTFRB land transport fare checker" },
-  "nav": { "home": "Home", "compare": "Compare", "tables": "Fare tables", "about": "About" },
+  "app": {
+    "name": "Magkano Pamasahe",
+    "tagline": "LTFRB land transport fare checker"
+  },
+  "nav": {
+    "home": "Home",
+    "compare": "Compare",
+    "tables": "Fare tables",
+    "about": "About"
+  },
   "effective": "Effective {{date}} · LTFRB",
   "effectiveDate": "Sept 28, 2026",
   "discountToggle": "Student / Senior / PWD (20% off)",
@@ -96,8 +104,18 @@
     "rule3": "The Student / Senior / PWD discount applies every day, including weekends and holidays (MC 2017-024).",
     "rule4": "Taxi and TNVS totals are shown to the centavo; the meter may round differently.",
     "offline": "Works offline after the first visit.",
-    "language": "Language"
+    "language": "Language",
+    "officialSource": "Official LTFRB fare rates"
   },
-  "update": { "banner": "Fares updated — effective {{date}}", "dismiss": "Dismiss" },
-  "common": { "back": "Back", "km": "km", "min": "min", "m": "m", "pending": "Awaiting LTFRB data" }
+  "update": {
+    "banner": "Fares updated — effective {{date}}",
+    "dismiss": "Dismiss"
+  },
+  "common": {
+    "back": "Back",
+    "km": "km",
+    "min": "min",
+    "m": "m",
+    "pending": "Awaiting LTFRB data"
+  }
 }

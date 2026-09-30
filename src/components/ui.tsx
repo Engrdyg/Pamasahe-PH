@@ -167,7 +167,7 @@ export function EffectiveBadge() {
   const { manifest, lang } = useApp()
   return (
     <a
-      href="https://ltfrb.gov.ph"
+      href={manifest.sourceUrl ?? 'https://ltfrb.gov.ph/fare-rates/'}
       target="_blank"
       rel="noreferrer"
       className="inline-flex items-center gap-1 rounded-full bg-brand/10 px-3 py-1 text-xs font-medium text-brand"

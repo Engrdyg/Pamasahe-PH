@@ -5,7 +5,8 @@ Live at https://magkano-pamasahe.vercel.app
 Mobile-first PWA that shows the official LTFRB fare for a trip on any land-based
 public transport mode in the Philippines: jeepney, UV Express, city and
 provincial bus, EDSA Busway, taxi and TNVS. Fares are effective
-**September 28, 2026** and come from the LTFRB fare guides. The data lives in
+**September 28, 2026** and come from the LTFRB fare guides published at
+https://ltfrb.gov.ph/fare-rates/. The data lives in
 `fares/`; the published tables extracted from the PDFs live in `fixtures/`.
 
 Pick a mode, enter a distance (or pick Busway stations), and see the regular

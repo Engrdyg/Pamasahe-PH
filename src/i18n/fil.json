@@ -1,6 +1,14 @@
 {
-  "app": { "name": "Magkano Pamasahe", "tagline": "Tagasuri ng pamasahe ayon sa LTFRB" },
-  "nav": { "home": "Home", "compare": "Ikumpara", "tables": "Talaan", "about": "Tungkol" },
+  "app": {
+    "name": "Magkano Pamasahe",
+    "tagline": "Tagasuri ng pamasahe ayon sa LTFRB"
+  },
+  "nav": {
+    "home": "Home",
+    "compare": "Ikumpara",
+    "tables": "Talaan",
+    "about": "Tungkol"
+  },
   "effective": "Simula {{date}} · LTFRB",
   "effectiveDate": "Set. 28, 2026",
   "discountToggle": "Estudyante / Senior / PWD (20% diskwento)",
@@ -96,8 +104,18 @@
     "rule3": "Araw-araw ang diskwento ng Estudyante / Senior / PWD, kasama ang Sabado, Linggo at holiday (MC 2017-024).",
     "rule4": "Hanggang sentimo ang ipinapakitang kabuuan sa taxi at TNVS; maaaring iba ang pag-round ng metro.",
     "offline": "Gumagana offline pagkatapos ng unang pagbisita.",
-    "language": "Wika"
+    "language": "Wika",
+    "officialSource": "Opisyal na fare rates ng LTFRB"
   },
-  "update": { "banner": "Na-update ang pamasahe — epektibo {{date}}", "dismiss": "Isara" },
-  "common": { "back": "Bumalik", "km": "km", "min": "min", "m": "m", "pending": "Hinihintay ang datos ng LTFRB" }
+  "update": {
+    "banner": "Na-update ang pamasahe — epektibo {{date}}",
+    "dismiss": "Isara"
+  },
+  "common": {
+    "back": "Bumalik",
+    "km": "km",
+    "min": "min",
+    "m": "m",
+    "pending": "Hinihintay ang datos ng LTFRB"
+  }
 }

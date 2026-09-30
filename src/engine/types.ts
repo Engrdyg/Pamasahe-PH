@@ -118,6 +118,7 @@ export interface Manifest {
   version: string
   effective: string
   source: string
+  sourceUrl?: string
   modes: string[]
 }
 

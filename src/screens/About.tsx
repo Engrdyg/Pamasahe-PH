@@ -47,6 +47,14 @@ export function About() {
 
       <Card className="flex flex-col gap-2">
         <h2 className="text-base font-bold text-slate-900">{t('about.sources')}</h2>
+        <a
+          href={manifest.sourceUrl ?? 'https://ltfrb.gov.ph/fare-rates/'}
+          target="_blank"
+          rel="noreferrer"
+          className="text-sm text-brand underline"
+        >
+          {t('about.officialSource')}: ltfrb.gov.ph/fare-rates
+        </a>
         <p className="text-sm text-slate-700">
           {t('about.dataVersion')}: <span className="font-mono">{manifest.version}</span> ·{' '}
           {formatEffective(manifest.effective, lang)}
