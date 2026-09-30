@@ -1,4 +1,6 @@
-# Pamasahe PH — LTFRB Land Transport Fare Checker
+# Magkano Pamasahe — LTFRB Land Transport Fare Checker
+
+Live at https://magkano-pamasahe.vercel.app
 
 Mobile-first PWA that shows the official LTFRB fare for a trip on any land-based
 public transport mode in the Philippines: jeepney, UV Express, city and

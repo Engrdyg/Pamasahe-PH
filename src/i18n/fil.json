@@ -1,5 +1,5 @@
 {
-  "app": { "name": "Pamasahe PH", "tagline": "Tagasuri ng pamasahe ayon sa LTFRB" },
+  "app": { "name": "Magkano Pamasahe", "tagline": "Tagasuri ng pamasahe ayon sa LTFRB" },
   "nav": { "home": "Home", "compare": "Ikumpara", "tables": "Talaan", "about": "Tungkol" },
   "effective": "Simula {{date}} · LTFRB",
   "effectiveDate": "Set. 28, 2026",

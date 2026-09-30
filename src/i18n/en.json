@@ -1,5 +1,5 @@
 {
-  "app": { "name": "Pamasahe PH", "tagline": "LTFRB land transport fare checker" },
+  "app": { "name": "Magkano Pamasahe", "tagline": "LTFRB land transport fare checker" },
   "nav": { "home": "Home", "compare": "Compare", "tables": "Fare tables", "about": "About" },
   "effective": "Effective {{date}} · LTFRB",
   "effectiveDate": "Sept 28, 2026",

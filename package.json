@@ -1,9 +1,9 @@
 {
-  "name": "pamasahe-ph",
+  "name": "magkano-pamasahe",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Pamasahe PH — LTFRB land transport fare checker (PWA)",
+  "description": "Magkano Pamasahe — LTFRB land transport fare checker (PWA)",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

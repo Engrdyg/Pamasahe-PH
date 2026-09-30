@@ -41,8 +41,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Pamasahe PH — LTFRB Fare Checker',
-        short_name: 'Pamasahe PH',
+        name: 'Magkano Pamasahe — LTFRB Fare Checker',
+        short_name: 'Magkano Pamasahe',
         description: 'Check the official LTFRB fare for jeepney, UV Express, bus, EDSA Busway, taxi and TNVS.',
         theme_color: '#0b3d91',
         background_color: '#f8fafc',
