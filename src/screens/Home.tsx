@@ -5,11 +5,11 @@ import { InstallCard } from '../components/InstallCard'
 import { DiscountToggle } from '../components/ui'
 
 const categories: { id: Category; emoji: string }[] = [
+  { id: 'busway', emoji: '🛣️' },
   { id: 'jeepney', emoji: '🚙' },
   { id: 'uv', emoji: '🚐' },
   { id: 'bus-city', emoji: '🚌' },
   { id: 'bus-provincial', emoji: '🚍' },
-  { id: 'busway', emoji: '🛣️' },
   { id: 'taxi', emoji: '🚕' },
   { id: 'tnvs', emoji: '📱' },
 ]
