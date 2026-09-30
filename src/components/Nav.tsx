@@ -21,7 +21,7 @@ export function TopBar({ title, back }: { title?: string; back?: string }) {
           ‹
         </a>
       ) : (
-        <span aria-hidden="true" className="text-2xl">🚌</span>
+        <img src={`${import.meta.env.BASE_URL}logo-mark.svg`} alt="" width={36} height={36} className="h-9 w-9" />
       )}
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-lg font-bold text-ink">{title ?? t('app.name')}</h1>
