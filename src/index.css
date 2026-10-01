@@ -48,46 +48,55 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- Home parallax hero ---------- */
+/* ---------- Home hero: bus windshield POV ---------- */
 .hero {
   position: relative;
   z-index: 0;
   isolation: isolate;
-  height: 200px;
+  height: 230px;
   overflow: hidden;
   background: var(--hero-sky-bottom);
-  --hero-sky-top: #7cc0ff;
-  --hero-sky-bottom: #d9efff;
+  --tilt: 0;
+  --hero-sky-top: #6fb8ff;
+  --hero-sky-bottom: #dff1ff;
   --hero-sun: #ffc72c;
   --hero-cloud: rgba(255, 255, 255, 0.85);
-  --hero-far: #9bbbe0;
-  --hero-near: #35568a;
-  --hero-window: #ffe9a3;
-  --hero-road: #2d3748;
-  --hero-dash: #e2e8f0;
+  --hero-far: #a9c4e6;
+  --hero-ground: #c9d3df;
+  --hero-road: #3a4556;
+  --hero-dash: #f1f5f9;
   --hero-lane: #ffc72c;
-  --hero-text: #0b3d91;
-  --hero-text-sub: #1e3a8a;
+  --hero-b0: #4a6fa5;
+  --hero-b1: #35568a;
+  --hero-b2: #6b8cc2;
+  --hero-window: #fff3c4;
+  --hero-window-op: 0.35;
+  --hero-interior: #1b2030;
+  --hero-interior-2: #262d40;
 }
 .dark .hero {
   --hero-sky-top: #050a1a;
-  --hero-sky-bottom: #0f1f45;
+  --hero-sky-bottom: #10204a;
   --hero-sun: #e8ecf7;
   --hero-cloud: rgba(255, 255, 255, 0.08);
   --hero-far: #1b2d55;
-  --hero-near: #0c1731;
-  --hero-window: #ffd96a;
-  --hero-road: #0a0f1d;
-  --hero-dash: #4a5a7a;
+  --hero-ground: #141b2c;
+  --hero-road: #0d1322;
+  --hero-dash: #9fb0cc;
   --hero-lane: #ffc72c;
-  --hero-text: #ffffff;
-  --hero-text-sub: #c3cde0;
+  --hero-b0: #15264a;
+  --hero-b1: #0e1a38;
+  --hero-b2: #1d3160;
+  --hero-window: #ffd96a;
+  --hero-window-op: 1;
+  --hero-interior: #090c14;
+  --hero-interior-2: #11161f;
 }
 .hero-layer {
   position: absolute;
-  inset: -12px 0 0 0;
+  inset: -14px 0 0 0;
   width: 100%;
-  height: calc(100% + 12px);
+  height: calc(100% + 14px);
   will-change: transform;
 }
 .hero-sky-top { stop-color: var(--hero-sky-top); }
@@ -97,31 +106,114 @@ body {
 .dark .hero-stars { opacity: 0.9; }
 .hero-clouds { fill: var(--hero-cloud); }
 .hero-far { fill: var(--hero-far); }
-.hero-near { fill: var(--hero-near); }
-.hero-windows { fill: var(--hero-window); opacity: 0.35; }
-.dark .hero-windows { opacity: 1; }
+.hero-ground { fill: var(--hero-ground); }
 .hero-road { fill: var(--hero-road); }
 .hero-lane { fill: var(--hero-lane); }
-.hero-dash { fill: var(--hero-dash); }
-.hero-bus { transform: translate(-140px, 206px); animation: hero-drive 14s linear infinite; }
-.hero-bus-body { fill: #0b3d91; }
-.dark .hero-bus-body { fill: #5b8def; }
-.hero-bus-glass { fill: #bfe3ff; }
-.hero-bus-stripe { fill: #ffc72c; }
-.hero-bus-wheel { fill: #111827; }
-@keyframes hero-drive {
-  from { transform: translate(-140px, 206px); }
-  to { transform: translate(820px, 206px); }
+.dash { fill: var(--hero-dash); }
+.bldg-0 rect:first-child { fill: var(--hero-b0); }
+.bldg-1 rect:first-child { fill: var(--hero-b1); }
+.bldg-2 rect:first-child { fill: var(--hero-b2); }
+.bldg-win { fill: var(--hero-window); opacity: var(--hero-window-op); }
+
+/* Objects approach the viewer by scaling from the vanishing point. */
+.drive {
+  transform-box: view-box;
+  transform-origin: 400px 120px;
+  animation: hero-approach var(--dur, 7s) cubic-bezier(0.55, 0, 1, 0.45) infinite;
+}
+@keyframes hero-approach {
+  0% { transform: scale(0.03); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: scale(1.4); opacity: 1; }
+}
+
+/* Windshield frame */
+.ws-pillar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 11%;
+  background: linear-gradient(90deg, var(--hero-interior), var(--hero-interior-2));
+  z-index: 2;
+}
+.ws-pillar-left { left: 0; clip-path: polygon(0 0, 100% 0, 45% 100%, 0 100%); }
+.ws-pillar-right { right: 0; background: linear-gradient(270deg, var(--hero-interior), var(--hero-interior-2)); clip-path: polygon(0 0, 100% 0, 100% 100%, 55% 100%); }
+.ws-top {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 22px;
+  background: var(--hero-interior);
+  border-bottom-left-radius: 50% 14px;
+  border-bottom-right-radius: 50% 14px;
+  z-index: 2;
+}
+.ws-dash {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 40px;
+  background: linear-gradient(180deg, var(--hero-interior-2), var(--hero-interior));
+  border-top-left-radius: 50% 26px;
+  border-top-right-radius: 50% 26px;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding-top: 16px;
+}
+.ws-vent { width: 34px; height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.12); }
+.ws-mirror {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  width: 96px;
+  height: 26px;
+  transform: translateX(-50%);
+  background: var(--hero-interior);
+  border-radius: 6px;
+  padding: 3px;
+  z-index: 3;
+}
+.ws-mirror-glass { width: 100%; height: 100%; border-radius: 4px; background: linear-gradient(180deg, #9fc9ff, #334a6e); opacity: 0.9; }
+.dark .ws-mirror-glass { background: linear-gradient(180deg, #243a66, #0b1120); }
+.ws-charm {
+  position: absolute;
+  top: 38px;
+  left: 50%;
+  margin-left: 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: 50% 0;
+  transform: rotate(calc(var(--tilt) * -10deg));
+  animation: hero-sway 3.2s ease-in-out infinite alternate;
+  z-index: 3;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.3));
+}
+.ws-charm-string { width: 1.5px; height: 22px; background: rgba(255, 255, 255, 0.6); }
+@keyframes hero-sway {
+  from { rotate: -5deg; }
+  to { rotate: 5deg; }
+}
+.ws-glare {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.14) 45%, rgba(255, 255, 255, 0) 60%);
 }
 .hero-text {
   position: absolute;
-  z-index: 1;
-  left: 16px;
-  top: 16px;
-  color: var(--hero-text);
+  z-index: 4;
+  left: 12%;
+  right: 12%;
+  top: 108px;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7), 0 0 12px rgba(0, 0, 0, 0.35);
 }
-.hero-title { font-size: 1.6rem; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em; margin: 0; }
-.hero-sub { font-size: 0.875rem; color: var(--hero-text-sub); margin: 2px 0 0; max-width: 60%; }
+.hero-title { font-size: 1.45rem; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em; margin: 0; }
+.hero-sub { font-size: 0.78rem; color: #e2e8f0; margin: 4px 0 0; }
 @media (prefers-reduced-motion: reduce) {
-  .hero-bus { animation: none; transform: translate(300px, 206px); }
+  .drive, .ws-charm { animation: none; }
+  .drive { transform: scale(0.6); opacity: 1; }
 }

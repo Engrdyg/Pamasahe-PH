@@ -2,10 +2,51 @@ import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 /**
- * Decorative parallax header for the Home screen: Metro Manila skyline with
- * the EDSA Busway. Pure SVG + CSS transforms. Layers move at different rates
- * on scroll and on device tilt. Disabled when the user prefers reduced motion.
+ * Decorative hero for the Home screen: first-person view through a bus
+ * windshield on EDSA. The road, lane markings and buildings approach the
+ * viewer (CSS scale from the vanishing point), the sky lags on scroll, and
+ * the scene shifts slightly when the phone is tilted. Pure SVG + CSS.
+ * All motion is disabled under prefers-reduced-motion.
  */
+
+// Buildings drawn at their "nearest" position; they animate from a dot at
+// the vanishing point (400,120) up to this size. [x, width, height, delay, tone]
+const LEFT_BUILDINGS: [number, number, number, number, number][] = [
+  [150, 90, 150, 0, 0],
+  [40, 110, 200, -2.4, 1],
+  [200, 60, 110, -4.8, 2],
+]
+const RIGHT_BUILDINGS: [number, number, number, number, number][] = [
+  [560, 90, 170, -1.2, 1],
+  [650, 110, 130, -3.6, 2],
+  [540, 60, 220, -6, 0],
+]
+
+function Building({ x, w, h, delay, tone }: { x: number; w: number; h: number; delay: number; tone: number }) {
+  const base = 190
+  const cols = Math.max(2, Math.floor(w / 26))
+  const rows = Math.max(2, Math.floor(h / 30))
+  return (
+    <g className={`drive bldg bldg-${tone}`} style={{ animationDelay: `${delay}s`, ['--dur' as string]: '7s' }}>
+      <rect x={x} y={base - h} width={w} height={h} />
+      <g className="bldg-win">
+        {Array.from({ length: rows }, (_, r) =>
+          Array.from({ length: cols }, (_, c) => (
+            <rect
+              key={`${r}-${c}`}
+              x={x + 7 + (c * (w - 14)) / cols}
+              y={base - h + 10 + r * 28}
+              width="9"
+              height="12"
+              opacity={(r * 3 + c + tone) % 4 === 0 ? 0.25 : 0.85}
+            />
+          )),
+        )}
+      </g>
+    </g>
+  )
+}
+
 export function ParallaxHero() {
   const { t } = useTranslation()
   const root = useRef<HTMLDivElement>(null)
@@ -13,8 +54,7 @@ export function ParallaxHero() {
   useEffect(() => {
     const el = root.current
     if (!el) return
-    const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-    if (reduced) return
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
     const layers = Array.from(el.querySelectorAll<HTMLElement>('[data-depth]'))
     let scrollY = 0
     let tiltX = 0
@@ -23,9 +63,10 @@ export function ParallaxHero() {
       raf = 0
       for (const l of layers) {
         const depth = Number(l.dataset.depth)
-        // Far layers lag behind the page (move down as it scrolls up); the road keeps pace.
-        l.style.transform = `translate3d(${(tiltX * depth * 24).toFixed(1)}px, ${(scrollY * (0.8 - depth) * 0.5).toFixed(1)}px, 0)`
+        // Far layers lag behind the page as it scrolls; the frame never moves.
+        l.style.transform = `translate3d(${(tiltX * depth * 30).toFixed(1)}px, ${(scrollY * (0.8 - depth) * 0.5).toFixed(1)}px, 0)`
       }
+      el.style.setProperty('--tilt', tiltX.toFixed(3))
     }
     const schedule = () => {
       if (!raf) raf = requestAnimationFrame(apply)
@@ -36,7 +77,6 @@ export function ParallaxHero() {
     }
     const onTilt = (e: DeviceOrientationEvent) => {
       if (e.gamma == null) return
-      // Smooth and clamp left/right tilt to -1..1
       const target = Math.max(-1, Math.min(1, e.gamma / 30))
       tiltX = tiltX + (target - tiltX) * 0.2
       schedule()
@@ -53,8 +93,8 @@ export function ParallaxHero() {
 
   return (
     <div ref={root} className="hero" aria-hidden="true" data-testid="parallax-hero">
-      {/* Layer 0: sky, sun/moon, stars */}
-      <svg className="hero-layer hero-sky" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice">
+      {/* Back layer: sky, sun/moon, stars, clouds, far skyline */}
+      <svg className="hero-layer" data-depth="0.2" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice">
         <defs>
           <linearGradient id="hero-sky-g" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" className="hero-sky-top" />
@@ -63,100 +103,66 @@ export function ParallaxHero() {
         </defs>
         <rect width="800" height="260" fill="url(#hero-sky-g)" />
         <g className="hero-stars">
-          {[60, 140, 230, 310, 420, 500, 590, 680, 750, 180, 360, 640].map((x, i) => (
-            <circle key={x} cx={x} cy={20 + ((i * 37) % 80)} r={i % 3 === 0 ? 1.8 : 1.2} />
+          {[180, 230, 290, 350, 420, 470, 530, 590, 640, 260, 500, 560].map((x, i) => (
+            <circle key={x} cx={x} cy={14 + ((i * 37) % 70)} r={i % 3 === 0 ? 1.8 : 1.2} />
           ))}
         </g>
-        <circle className="hero-sun" cx="640" cy="70" r="30" />
-      </svg>
-
-      {/* Layer 1: clouds (slowest) */}
-      <svg className="hero-layer" data-depth="0.15" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice">
+        <circle className="hero-sun" cx="560" cy="62" r="22" />
         <g className="hero-clouds">
-          <ellipse cx="120" cy="60" rx="56" ry="18" />
-          <ellipse cx="160" cy="52" rx="40" ry="20" />
-          <ellipse cx="430" cy="40" rx="48" ry="15" />
-          <ellipse cx="465" cy="34" rx="34" ry="17" />
-          <ellipse cx="700" cy="110" rx="46" ry="14" />
+          <ellipse cx="250" cy="52" rx="46" ry="14" />
+          <ellipse cx="282" cy="46" rx="32" ry="16" />
+          <ellipse cx="620" cy="90" rx="40" ry="12" />
         </g>
-      </svg>
-
-      {/* Layer 2: far skyline */}
-      <svg className="hero-layer" data-depth="0.3" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice">
         <g className="hero-far">
-          <rect x="0" y="150" width="40" height="110" />
-          <rect x="48" y="120" width="30" height="140" />
-          <rect x="90" y="140" width="50" height="120" />
-          <rect x="150" y="100" width="26" height="160" />
-          <rect x="185" y="130" width="44" height="130" />
-          <rect x="240" y="90" width="34" height="170" />
-          <rect x="283" y="125" width="60" height="135" />
-          <rect x="352" y="110" width="28" height="150" />
-          <rect x="390" y="80" width="40" height="180" />
-          <rect x="438" y="128" width="52" height="132" />
-          <rect x="500" y="100" width="30" height="160" />
-          <rect x="540" y="135" width="46" height="125" />
-          <rect x="595" y="95" width="36" height="165" />
-          <rect x="640" y="120" width="56" height="140" />
-          <rect x="705" y="105" width="30" height="155" />
-          <rect x="745" y="140" width="55" height="120" />
-          <polygon points="240,90 257,66 274,90" />
-          <polygon points="390,80 410,50 430,80" />
-          <rect x="408" y="36" width="4" height="16" />
-        </g>
-      </svg>
-
-      {/* Layer 3: near buildings with windows */}
-      <svg className="hero-layer" data-depth="0.5" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice">
-        <g className="hero-near">
-          <rect x="-10" y="165" width="90" height="100" />
-          <rect x="110" y="150" width="70" height="115" />
-          <rect x="230" y="175" width="110" height="90" />
-          <rect x="400" y="155" width="60" height="110" />
-          <rect x="520" y="170" width="95" height="95" />
-          <rect x="670" y="150" width="80" height="115" />
-          <rect x="760" y="180" width="60" height="85" />
-        </g>
-        <g className="hero-windows">
           {[
-            [0, 175, 80, 3], [120, 160, 60, 3], [240, 185, 100, 4], [410, 165, 50, 2], [530, 180, 85, 3], [680, 160, 70, 3],
-          ].flatMap(([x, y, w, cols], bi) =>
-            Array.from({ length: 4 }, (_, r) =>
-              Array.from({ length: cols }, (_, c) => (
-                <rect
-                  key={`${bi}-${r}-${c}`}
-                  x={x + 8 + (c * (w - 16)) / cols}
-                  y={y + 8 + r * 16}
-                  width="8"
-                  height="8"
-                  opacity={(r + c + bi) % 3 === 0 ? 0.25 : 0.8}
-                />
-              )),
-            ),
-          )}
-        </g>
-      </svg>
-
-      {/* Layer 4: road, busway lane and bus (fastest) */}
-      <svg className="hero-layer" data-depth="0.8" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice">
-        <rect className="hero-road" x="0" y="212" width="800" height="48" />
-        <rect className="hero-lane" x="0" y="214" width="800" height="3" />
-        <g className="hero-dash">
-          {Array.from({ length: 14 }, (_, i) => (
-            <rect key={i} x={i * 60} y="236" width="30" height="3" />
+            [150, 96, 24], [180, 88, 18], [205, 100, 30], [242, 80, 20], [268, 92, 26], [300, 72, 16], [322, 86, 34],
+            [362, 94, 22], [390, 78, 20], [416, 90, 28], [450, 70, 18], [474, 84, 30], [510, 92, 20], [536, 76, 24],
+            [566, 88, 32], [604, 98, 22], [632, 82, 18], [656, 94, 28],
+          ].map(([x, y, w]) => (
+            <rect key={x} x={x} y={y} width={w} height={120 - y + 2} />
           ))}
         </g>
-        <g className="hero-bus">
-          <rect x="0" y="0" width="118" height="40" rx="8" className="hero-bus-body" />
-          <rect x="8" y="7" width="22" height="16" rx="2" className="hero-bus-glass" />
-          <rect x="36" y="7" width="22" height="16" rx="2" className="hero-bus-glass" />
-          <rect x="64" y="7" width="22" height="16" rx="2" className="hero-bus-glass" />
-          <rect x="92" y="7" width="20" height="16" rx="2" className="hero-bus-glass" />
-          <rect x="0" y="28" width="118" height="5" className="hero-bus-stripe" />
-          <circle cx="26" cy="41" r="7" className="hero-bus-wheel" />
-          <circle cx="92" cy="41" r="7" className="hero-bus-wheel" />
-        </g>
       </svg>
+
+      {/* Scene layer: ground, road, markings and buildings approaching */}
+      <svg className="hero-layer hero-scene" data-depth="0.6" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice">
+        <rect className="hero-ground" x="0" y="120" width="800" height="140" />
+        <polygon className="hero-road" points="392,120 408,120 760,260 40,260" />
+        {/* Solid yellow line on the left (busway / median side) */}
+        <polygon className="hero-lane" points="397,121 399,121 232,260 222,260" />
+        {/* Dashed white line on the right, driving toward the viewer */}
+        {[0, 1, 2, 3, 4].map((i) => (
+          <polygon
+            key={i}
+            className="drive dash"
+            style={{ animationDelay: `${(-i * 1.6) / 5}s`, ['--dur' as string]: '1.6s' }}
+            points="548,222 556,221 604,258 594,260"
+          />
+        ))}
+        {LEFT_BUILDINGS.map(([x, w, h, delay, tone]) => (
+          <Building key={`l${x}`} x={x} w={w} h={h} delay={delay} tone={tone} />
+        ))}
+        {RIGHT_BUILDINGS.map(([x, w, h, delay, tone]) => (
+          <Building key={`r${x}`} x={x} w={w} h={h} delay={delay} tone={tone} />
+        ))}
+      </svg>
+
+      {/* Windshield frame (never moves) */}
+      <div className="ws-glare" />
+      <div className="ws-pillar ws-pillar-left" />
+      <div className="ws-pillar ws-pillar-right" />
+      <div className="ws-top" />
+      <div className="ws-mirror">
+        <div className="ws-mirror-glass" />
+      </div>
+      <div className="ws-charm">
+        <span className="ws-charm-string" />
+        <img src={`${import.meta.env.BASE_URL}logo-mark.svg`} alt="" width={30} height={30} />
+      </div>
+      <div className="ws-dash">
+        <span className="ws-vent" />
+        <span className="ws-vent" />
+      </div>
 
       <div className="hero-text">
         <p className="hero-title">{t('hero.title')}</p>
