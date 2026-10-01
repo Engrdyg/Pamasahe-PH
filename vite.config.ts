@@ -76,6 +76,11 @@ export default defineConfig({
       },
     }),
   ],
+  define: {
+    // Vercel sets VERCEL=1 in its build environment; the GitHub Pages build
+    // and local dev do not. Gates the Web Analytics script (src/main.tsx).
+    __VERCEL__: JSON.stringify(process.env.VERCEL === '1'),
+  },
   build: {
     target: 'es2020',
     sourcemap: false,

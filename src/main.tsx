@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { registerSW } from 'virtual:pwa-register'
 import App from './App'
+import { Analytics } from './components/Analytics'
 import './i18n'
 import './index.css'
 import { hideSplash } from './lib/splash'
@@ -14,6 +15,7 @@ createRoot(document.getElementById('root')!).render(
     <AppProvider>
       <App />
     </AppProvider>
+    {__VERCEL__ && <Analytics />}
   </StrictMode>,
 )
 

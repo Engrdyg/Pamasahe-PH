@@ -94,6 +94,11 @@ the Playwright suite, and deploys `main` to GitHub Pages. For a project site
 the build uses `BASE_PATH=/<repo>/`; any static host works with the default
 `/` base.
 
+Vercel Web Analytics (`@vercel/analytics`) is injected only in Vercel builds
+(`VERCEL=1`), so local dev and the GitHub Pages site never load the script.
+Page views are reported per hash route (`/`, `/calc/[category]`, `/compare`,
+`/tables`, `/about`) from `src/components/Analytics.tsx`.
+
 ## Open questions (need LTFRB confirmation)
 
 See §10 of the spec: partial-km rounding, UV Express minimum fare, taxi
