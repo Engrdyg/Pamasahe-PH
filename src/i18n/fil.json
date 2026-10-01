@@ -133,5 +133,9 @@
     "dark": "Madilim",
     "system": "Sistema",
     "toggle": "Itsura: {{mode}}"
+  },
+  "hero": {
+    "title": "Magkano ang pamasahe?",
+    "sub": "Alamin ang opisyal na pamasahe bago sumakay."
   }
 }

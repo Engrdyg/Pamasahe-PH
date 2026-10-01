@@ -47,3 +47,81 @@ body {
 .tabular-nums {
   font-variant-numeric: tabular-nums;
 }
+
+/* ---------- Home parallax hero ---------- */
+.hero {
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  height: 200px;
+  overflow: hidden;
+  background: var(--hero-sky-bottom);
+  --hero-sky-top: #7cc0ff;
+  --hero-sky-bottom: #d9efff;
+  --hero-sun: #ffc72c;
+  --hero-cloud: rgba(255, 255, 255, 0.85);
+  --hero-far: #9bbbe0;
+  --hero-near: #35568a;
+  --hero-window: #ffe9a3;
+  --hero-road: #2d3748;
+  --hero-dash: #e2e8f0;
+  --hero-lane: #ffc72c;
+  --hero-text: #0b3d91;
+  --hero-text-sub: #1e3a8a;
+}
+.dark .hero {
+  --hero-sky-top: #050a1a;
+  --hero-sky-bottom: #0f1f45;
+  --hero-sun: #e8ecf7;
+  --hero-cloud: rgba(255, 255, 255, 0.08);
+  --hero-far: #1b2d55;
+  --hero-near: #0c1731;
+  --hero-window: #ffd96a;
+  --hero-road: #0a0f1d;
+  --hero-dash: #4a5a7a;
+  --hero-lane: #ffc72c;
+  --hero-text: #ffffff;
+  --hero-text-sub: #c3cde0;
+}
+.hero-layer {
+  position: absolute;
+  inset: -12px 0 0 0;
+  width: 100%;
+  height: calc(100% + 12px);
+  will-change: transform;
+}
+.hero-sky-top { stop-color: var(--hero-sky-top); }
+.hero-sky-bottom { stop-color: var(--hero-sky-bottom); }
+.hero-sun { fill: var(--hero-sun); }
+.hero-stars { fill: #fff; opacity: 0; }
+.dark .hero-stars { opacity: 0.9; }
+.hero-clouds { fill: var(--hero-cloud); }
+.hero-far { fill: var(--hero-far); }
+.hero-near { fill: var(--hero-near); }
+.hero-windows { fill: var(--hero-window); opacity: 0.35; }
+.dark .hero-windows { opacity: 1; }
+.hero-road { fill: var(--hero-road); }
+.hero-lane { fill: var(--hero-lane); }
+.hero-dash { fill: var(--hero-dash); }
+.hero-bus { transform: translate(-140px, 206px); animation: hero-drive 14s linear infinite; }
+.hero-bus-body { fill: #0b3d91; }
+.dark .hero-bus-body { fill: #5b8def; }
+.hero-bus-glass { fill: #bfe3ff; }
+.hero-bus-stripe { fill: #ffc72c; }
+.hero-bus-wheel { fill: #111827; }
+@keyframes hero-drive {
+  from { transform: translate(-140px, 206px); }
+  to { transform: translate(820px, 206px); }
+}
+.hero-text {
+  position: absolute;
+  z-index: 1;
+  left: 16px;
+  top: 16px;
+  color: var(--hero-text);
+}
+.hero-title { font-size: 1.6rem; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em; margin: 0; }
+.hero-sub { font-size: 0.875rem; color: var(--hero-text-sub); margin: 2px 0 0; max-width: 60%; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-bus { animation: none; transform: translate(300px, 206px); }
+}

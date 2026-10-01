@@ -133,5 +133,9 @@
     "dark": "Dark",
     "system": "System",
     "toggle": "Appearance: {{mode}}"
+  },
+  "hero": {
+    "title": "Magkano ang pamasahe?",
+    "sub": "Check the official fare before you ride."
   }
 }

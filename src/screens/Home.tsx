@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import type { Category } from '../engine/types'
 import { setPref } from '../lib/prefs'
 import { InstallCard } from '../components/InstallCard'
+import { ParallaxHero } from '../components/ParallaxHero'
 import { DiscountToggle } from '../components/ui'
 
 const categories: { id: Category; emoji: string }[] = [
@@ -17,8 +18,9 @@ const categories: { id: Category; emoji: string }[] = [
 export function Home() {
   const { t } = useTranslation()
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-4">
-      <p className="text-sm text-ink-2">{t('app.tagline')}</p>
+    <main className="mx-auto flex max-w-lg flex-col gap-4 pb-4">
+      <ParallaxHero />
+      <div className="flex flex-col gap-4 px-4">
       <DiscountToggle />
       <ul className="grid grid-cols-2 gap-3">
         {categories.map((c) => (
@@ -41,6 +43,7 @@ export function Home() {
         ))}
       </ul>
       <InstallCard />
+      </div>
     </main>
   )
 }
