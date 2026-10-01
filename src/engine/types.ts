@@ -97,8 +97,19 @@ export interface TnvsMode extends ModeBase {
 
 export type MeteredMode = TimeDistanceTaxiMode | SteppedTaxiMode | TnvsMode
 
+export interface StationInfo {
+  /** Name on the station map, when it differs from the fare matrix name. */
+  mapName: string
+  lat: number
+  lng: number
+  /** Short note from the map, e.g. "Connects to MRT-3 Ayala Station." */
+  note: string
+}
+
 export interface MatrixDirection {
   stations: string[]
+  /** Parallel to `stations`; null where no map data exists. */
+  stationInfo?: (StationInfo | null)[]
   /** fares[i][j] in pesos for i < j; null when j <= i */
   regular: (number | null)[][]
   discounted: (number | null)[][]
@@ -108,6 +119,7 @@ export interface MatrixMode extends ModeBase {
   method: 'MATRIX'
   minFare: { regular: number; discounted: number }
   basis?: Localized
+  stationSource?: string
   directions: Record<string, MatrixDirection>
 }
 

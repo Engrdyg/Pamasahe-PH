@@ -56,6 +56,12 @@ version. A new LTFRB circular means a data update, not a code change:
 4. Deploy. Installed apps fetch `fares/manifest.json` on launch and update
    quietly, showing a "Fares updated" banner.
 
+EDSA Busway station details (coordinates and notes shown in the route strip)
+come from `sources/EDSA_Busway_stations.kmz`. After replacing that file, run
+`python3 scripts/import-busway-stations.py` to refresh `stationInfo` in
+`fares/edsa-busway.json`; the LTFRB matrix remains the source of station
+names and fares.
+
 ## Project layout
 
 ```

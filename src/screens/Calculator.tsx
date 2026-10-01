@@ -20,6 +20,7 @@ import {
   type TnvsMode,
 } from '../engine'
 import { FareCard } from '../components/FareCard'
+import { RouteStrip } from '../components/RouteStrip'
 import { Card, Chips, DiscountToggle, ErrorNote, NumberField, Select } from '../components/ui'
 import { fmtKm, localized } from '../lib/format'
 import { getPref, setPref } from '../lib/prefs'
@@ -174,6 +175,17 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
           discounted={f.discounted}
           notes={[`${t('input.direction')}: ${t(`input.${dir}`)}`]}
         />
+      )
+      body = (
+        <>
+          {body}
+          <Card>
+            <h2 className="mb-3 text-sm font-semibold text-ink">
+              {t('busway.route')} · {t(`input.${dir}`)}
+            </h2>
+            <RouteStrip direction={mode.directions[dir]} from={from} to={to} />
+          </Card>
+        </>
       )
     } catch (e) {
       body = <ErrorNote>{errorText(t, e)}</ErrorNote>

@@ -137,5 +137,12 @@
   "hero": {
     "title": "Magkano ang pamasahe?",
     "sub": "Check the official fare before you ride."
+  },
+  "busway": {
+    "route": "Route",
+    "stop": "Stop {{n}} of {{total}}",
+    "map": "Open in Maps",
+    "boarding": "Board at",
+    "alighting": "Get off at"
   }
 }

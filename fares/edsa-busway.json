@@ -13,8 +13,8 @@
   "discounted": 14.5
  },
  "basis": {
-  "en": "PUB Aircon add-on method: \u20b118.00 first 5 km + \u20b12.98/km (\u20b114.40 + \u20b12.38/km discounted)",
-  "fil": "PUB Aircon add-on: \u20b118.00 unang 5 km + \u20b12.98/km (\u20b114.40 + \u20b12.38/km may diskwento)"
+  "en": "PUB Aircon add-on method: ₱18.00 first 5 km + ₱2.98/km (₱14.40 + ₱2.38/km discounted)",
+  "fil": "PUB Aircon add-on: ₱18.00 unang 5 km + ₱2.98/km (₱14.40 + ₱2.38/km may diskwento)"
  },
  "sourceDoc": "Fare Matrix_R1_EDSA Busway Southbound / Northbound (28 Sept 2026)",
  "directions": {
@@ -1296,6 +1296,152 @@
      null,
      null
     ]
+   ],
+   "stationInfo": [
+    {
+     "mapName": "Monumento",
+     "lat": 14.657211,
+     "lng": 120.986247,
+     "note": "Northern terminus; connects to LRT-1 Monumento Station."
+    },
+    {
+     "mapName": "Bagong Barrio",
+     "lat": 14.657379,
+     "lng": 120.998095,
+     "note": "Near Ayala Malls Cloverleaf."
+    },
+    {
+     "mapName": "Balintawak",
+     "lat": 14.657456,
+     "lng": 121.004832,
+     "note": "Connects to LRT-1 Balintawak Station."
+    },
+    {
+     "mapName": "Kaingin Road",
+     "lat": 14.657585,
+     "lng": 121.011515,
+     "note": "Median stop."
+    },
+    {
+     "mapName": "Roosevelt (Fernando Poe Jr.)",
+     "lat": 14.657653,
+     "lng": 121.019672,
+     "note": "Connects to LRT-1 Fernando Poe Jr. Station."
+    },
+    {
+     "mapName": "SM North EDSA",
+     "lat": 14.655766,
+     "lng": 121.029423,
+     "note": "First station with a full busway concourse; connects to North Triangle Common Station."
+    },
+    {
+     "mapName": "North Avenue",
+     "lat": 14.651129,
+     "lng": 121.03293,
+     "note": "Connects to MRT-3 North Avenue Station."
+    },
+    {
+     "mapName": "Philam (Quezon City)",
+     "lat": 14.647655,
+     "lng": 121.035233,
+     "note": "Near MRT-3 Quezon Avenue Station."
+    },
+    {
+     "mapName": "Quezon Avenue",
+     "lat": 14.641484,
+     "lng": 121.039234,
+     "note": "Connects to MRT-3 Quezon Avenue Station."
+    },
+    {
+     "mapName": "Kamuning",
+     "lat": 14.636142,
+     "lng": 121.04276,
+     "note": "Connects to MRT-3 GMA-Kamuning Station via footbridge."
+    },
+    {
+     "mapName": "Nepa Q-Mart",
+     "lat": 14.629049,
+     "lng": 121.046716,
+     "note": "Near Nepa Q-Mart, Quezon City."
+    },
+    {
+     "mapName": "Main Avenue",
+     "lat": 14.613853,
+     "lng": 121.053649,
+     "note": "Serves the Cubao area."
+    },
+    {
+     "mapName": "Santolan",
+     "lat": 14.609208,
+     "lng": 121.055826,
+     "note": "Connects to MRT-3 Santolan-Annapolis Station; near Camp Crame."
+    },
+    {
+     "mapName": "Ortigas (SM Megamall)",
+     "lat": 14.587087,
+     "lng": 121.056433,
+     "note": "Connects to MRT-3 Ortigas Station, across SM Megamall."
+    },
+    {
+     "mapName": "Guadalupe",
+     "lat": 14.568187,
+     "lng": 121.045904,
+     "note": "Connects to MRT-3 Guadalupe Station."
+    },
+    {
+     "mapName": "Buendia",
+     "lat": 14.554962,
+     "lng": 121.03494,
+     "note": "Connects to MRT-3 Buendia Station."
+    },
+    {
+     "mapName": "Ayala (One Ayala)",
+     "lat": 14.550729,
+     "lng": 121.028319,
+     "note": "Southbound boarding lane inside One Ayala Mall."
+    },
+    {
+     "mapName": "Tramo",
+     "lat": 14.53791,
+     "lng": 121.003398,
+     "note": "Southbound-only stop near Taft Avenue."
+    },
+    {
+     "mapName": "Taft Avenue",
+     "lat": 14.537613,
+     "lng": 120.999661,
+     "note": "Near MRT-3/LRT-1 Taft Avenue interchange."
+    },
+    {
+     "mapName": "Roxas Boulevard",
+     "lat": 14.53706,
+     "lng": 120.99219,
+     "note": "Near DoubleDragon Plaza / Heritage Hotel."
+    },
+    {
+     "mapName": "SM Mall of Asia",
+     "lat": 14.535444,
+     "lng": 120.983353,
+     "note": "Curbside stop near SM Mall of Asia."
+    },
+    {
+     "mapName": "DFA (Bradco Avenue)",
+     "lat": 14.53003,
+     "lng": 120.989634,
+     "note": "Near the Department of Foreign Affairs, Aseana City."
+    },
+    {
+     "mapName": "Ayala Malls Manila Bay (Aseana)",
+     "lat": 14.523377,
+     "lng": 120.990383,
+     "note": "Near City of Dreams / Ayala Malls Manila Bay."
+    },
+    {
+     "mapName": "PITX",
+     "lat": 14.510063,
+     "lng": 120.991257,
+     "note": "Southern terminus; Paranaque Integrated Terminal Exchange."
+    }
    ]
   },
   "northbound": {
@@ -2477,7 +2623,148 @@
      null,
      null
     ]
+   ],
+   "stationInfo": [
+    {
+     "mapName": "PITX",
+     "lat": 14.510063,
+     "lng": 120.991257,
+     "note": "Southern terminus; Paranaque Integrated Terminal Exchange."
+    },
+    {
+     "mapName": "Ayala Malls Manila Bay (Aseana)",
+     "lat": 14.523377,
+     "lng": 120.990383,
+     "note": "Near City of Dreams / Ayala Malls Manila Bay."
+    },
+    {
+     "mapName": "DFA (Bradco Avenue)",
+     "lat": 14.53003,
+     "lng": 120.989634,
+     "note": "Near the Department of Foreign Affairs, Aseana City."
+    },
+    {
+     "mapName": "SM Mall of Asia",
+     "lat": 14.535444,
+     "lng": 120.983353,
+     "note": "Curbside stop near SM Mall of Asia."
+    },
+    {
+     "mapName": "Roxas Boulevard",
+     "lat": 14.53706,
+     "lng": 120.99219,
+     "note": "Near DoubleDragon Plaza / Heritage Hotel."
+    },
+    {
+     "mapName": "Taft Avenue",
+     "lat": 14.537613,
+     "lng": 120.999661,
+     "note": "Near MRT-3/LRT-1 Taft Avenue interchange."
+    },
+    {
+     "mapName": "Ayala (Northbound)",
+     "lat": 14.549661,
+     "lng": 121.029001,
+     "note": "Northbound curbside stop, adjacent to MRT-3 Ayala Station."
+    },
+    {
+     "mapName": "Buendia",
+     "lat": 14.554962,
+     "lng": 121.03494,
+     "note": "Connects to MRT-3 Buendia Station."
+    },
+    {
+     "mapName": "Guadalupe",
+     "lat": 14.568187,
+     "lng": 121.045904,
+     "note": "Connects to MRT-3 Guadalupe Station."
+    },
+    {
+     "mapName": "Ortigas (SM Megamall)",
+     "lat": 14.587087,
+     "lng": 121.056433,
+     "note": "Connects to MRT-3 Ortigas Station, across SM Megamall."
+    },
+    {
+     "mapName": "Santolan",
+     "lat": 14.609208,
+     "lng": 121.055826,
+     "note": "Connects to MRT-3 Santolan-Annapolis Station; near Camp Crame."
+    },
+    {
+     "mapName": "Main Avenue",
+     "lat": 14.613853,
+     "lng": 121.053649,
+     "note": "Serves the Cubao area."
+    },
+    {
+     "mapName": "Nepa Q-Mart",
+     "lat": 14.629049,
+     "lng": 121.046716,
+     "note": "Near Nepa Q-Mart, Quezon City."
+    },
+    {
+     "mapName": "Kamuning",
+     "lat": 14.636142,
+     "lng": 121.04276,
+     "note": "Connects to MRT-3 GMA-Kamuning Station via footbridge."
+    },
+    {
+     "mapName": "Quezon Avenue",
+     "lat": 14.641484,
+     "lng": 121.039234,
+     "note": "Connects to MRT-3 Quezon Avenue Station."
+    },
+    {
+     "mapName": "Philam (Quezon City)",
+     "lat": 14.647655,
+     "lng": 121.035233,
+     "note": "Near MRT-3 Quezon Avenue Station."
+    },
+    {
+     "mapName": "North Avenue",
+     "lat": 14.651129,
+     "lng": 121.03293,
+     "note": "Connects to MRT-3 North Avenue Station."
+    },
+    {
+     "mapName": "SM North EDSA",
+     "lat": 14.655766,
+     "lng": 121.029423,
+     "note": "First station with a full busway concourse; connects to North Triangle Common Station."
+    },
+    {
+     "mapName": "Roosevelt (Fernando Poe Jr.)",
+     "lat": 14.657653,
+     "lng": 121.019672,
+     "note": "Connects to LRT-1 Fernando Poe Jr. Station."
+    },
+    {
+     "mapName": "Kaingin Road",
+     "lat": 14.657585,
+     "lng": 121.011515,
+     "note": "Median stop."
+    },
+    {
+     "mapName": "Balintawak",
+     "lat": 14.657456,
+     "lng": 121.004832,
+     "note": "Connects to LRT-1 Balintawak Station."
+    },
+    {
+     "mapName": "Bagong Barrio",
+     "lat": 14.657379,
+     "lng": 120.998095,
+     "note": "Near Ayala Malls Cloverleaf."
+    },
+    {
+     "mapName": "Monumento",
+     "lat": 14.657211,
+     "lng": 120.986247,
+     "note": "Northern terminus; connects to LRT-1 Monumento Station."
+    }
    ]
   }
- }
+ },
+ "stationSource": "EDSA_Busway_stations.kmz"
 }

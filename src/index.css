@@ -217,3 +217,53 @@ body {
   .drive, .ws-charm { animation: none; }
   .drive { transform: scale(0.6); opacity: 1; }
 }
+
+/* ---------- Busway route strip ---------- */
+.route-strip {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 4px;
+  position: relative;
+}
+.route-stop {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: 28px;
+  padding-bottom: 6px;
+}
+.route-stop::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 22px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--color-line-strong);
+}
+.route-stop:last-child::before { display: none; }
+.route-stop.is-between::before, .route-stop.is-active:not(:last-child)::before { background: var(--color-brand); }
+.route-stop.is-active.is-outside::before { background: var(--color-line-strong); }
+.route-marker {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  background: #0288d1;
+  color: #fff;
+  box-shadow: 0 0 0 2px var(--color-surface);
+}
+.is-outside .route-marker { background: var(--color-line-strong); color: var(--color-ink-2); }
+.is-active .route-marker { background: var(--color-accent); color: #0b3d91; transform: scale(1.15); }
+.route-name { font-size: 14px; color: var(--color-ink-2); padding-top: 3px; display: flex; flex-direction: column; gap: 2px; }
+.is-outside .route-name { color: var(--color-muted); font-size: 13px; }
+.is-active .route-name { color: var(--color-ink); font-weight: 600; }
+.route-role { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-brand); }
+.route-note { font-size: 12px; font-weight: 400; color: var(--color-muted); }
+.route-map { font-size: 12px; font-weight: 500; color: var(--color-brand); text-decoration: underline; width: fit-content; }

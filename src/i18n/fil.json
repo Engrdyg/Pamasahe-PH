@@ -137,5 +137,12 @@
   "hero": {
     "title": "Magkano ang pamasahe?",
     "sub": "Alamin ang opisyal na pamasahe bago sumakay."
+  },
+  "busway": {
+    "route": "Ruta",
+    "stop": "Istasyon {{n}} ng {{total}}",
+    "map": "Buksan sa Maps",
+    "boarding": "Sakay sa",
+    "alighting": "Baba sa"
   }
 }

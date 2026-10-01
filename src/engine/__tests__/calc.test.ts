@@ -162,6 +162,19 @@ describe('matrix', () => {
     expect(destinationsFrom(busway, 'southbound', 'PITX')).toEqual([])
     expect(destinationsFrom(busway, 'southbound', 'Monumento')).toHaveLength(23)
   })
+  it('has map details for every station in both directions', () => {
+    for (const [name, dir] of Object.entries(busway.directions)) {
+      expect(dir.stationInfo, name).toHaveLength(dir.stations.length)
+      dir.stationInfo!.forEach((info, k) => {
+        expect(info, `${name} ${dir.stations[k]}`).not.toBeNull()
+        // Metro Manila bounding box
+        expect(info!.lat).toBeGreaterThan(14.4)
+        expect(info!.lat).toBeLessThan(14.8)
+        expect(info!.lng).toBeGreaterThan(120.9)
+        expect(info!.lng).toBeLessThan(121.2)
+      })
+    }
+  })
   it('never goes below the minimum fare', () => {
     for (const dir of Object.values(busway.directions)) {
       dir.regular.flat().forEach((v) => v != null && expect(v).toBeGreaterThanOrEqual(18))

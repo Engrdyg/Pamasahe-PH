@@ -5,8 +5,8 @@ import { InstallCard } from '../components/InstallCard'
 import { ParallaxHero } from '../components/ParallaxHero'
 import { DiscountToggle } from '../components/ui'
 
-const categories: { id: Category; emoji: string }[] = [
-  { id: 'busway', emoji: '🛣️' },
+const categories: { id: Category; emoji?: string; icon?: string }[] = [
+  { id: 'busway', icon: 'busway-mark.svg' },
   { id: 'jeepney', emoji: '🚙' },
   { id: 'uv', emoji: '🚐' },
   { id: 'bus-city', emoji: '🚌' },
@@ -31,9 +31,13 @@ export function Home() {
               className="flex min-h-28 flex-col justify-between rounded-2xl border border-line bg-surface p-4 shadow-sm transition-colors hover:border-brand active:bg-brand/5"
               data-testid={`tile-${c.id}`}
             >
-              <span aria-hidden="true" className="text-3xl">
-                {c.emoji}
-              </span>
+              {c.icon ? (
+                <img src={`${import.meta.env.BASE_URL}${c.icon}`} alt="" width={40} height={40} className="h-10 w-10" />
+              ) : (
+                <span aria-hidden="true" className="text-3xl">
+                  {c.emoji}
+                </span>
+              )}
               <span>
                 <span className="block text-base font-semibold text-ink">{t(`category.${c.id}`)}</span>
                 <span className="block text-xs text-muted">{t(`categoryHint.${c.id}`)}</span>

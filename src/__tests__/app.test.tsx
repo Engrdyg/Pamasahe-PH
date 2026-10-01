@@ -110,6 +110,11 @@ describe('EDSA Busway', () => {
     await user.selectOptions(screen.getByLabelText('To'), 'PITX')
     expect(screen.getByText('Direction: Southbound')).toBeInTheDocument()
     expect(screen.getByTestId('fare-primary')).toHaveTextContent('₱29.75')
+    // Numbered route strip with notes and map links for the chosen stops
+    const strip = screen.getByTestId('route-strip')
+    expect(within(strip).getAllByRole('listitem')).toHaveLength(24)
+    expect(within(strip).getByText('Southbound boarding lane inside One Ayala Mall.')).toBeInTheDocument()
+    expect(within(strip).getAllByRole('link', { name: /Open in Maps/ })).toHaveLength(2)
   })
 })
 
