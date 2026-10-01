@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { InstallCard } from '../components/InstallCard'
+import { SupportCard } from '../components/SupportCard'
 import { Card, Chips } from '../components/ui'
 import type { Theme } from '../lib/theme'
 import { formatEffective } from '../lib/format'
@@ -25,6 +26,8 @@ export function About() {
       </Card>
 
       <InstallCard dismissible={false} />
+
+      <SupportCard />
 
       <Card className="flex flex-col gap-2">
         <h2 className="text-base font-bold text-ink">{t('theme.title')}</h2>

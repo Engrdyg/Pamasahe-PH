@@ -127,6 +127,16 @@
     "manual": "Sa menu ng browser, piliin ang \"Install app\" o \"Add to Home screen\".",
     "later": "Mamaya na"
   },
+  "support": {
+    "title": "Suportahan ang app",
+    "body": "Libre ang Magkano Pamasahe at walang ads. Kung nakatulong, pang-kape na lang para patuloy na ma-update ang pamasahe.",
+    "qrAlt": "GCash QR code",
+    "copy": "Kopyahin",
+    "copied": "Nakopya!",
+    "hint": "Sa phone: i-save ang QR at i-upload sa GCash scanner, o kopyahin ang number at gamitin ang Express Send.",
+    "saveQr": "I-save ang QR",
+    "kofi": "Card o PayPal sa Ko-fi"
+  },
   "theme": {
     "title": "Itsura",
     "light": "Maliwanag",

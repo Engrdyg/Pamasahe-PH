@@ -127,6 +127,16 @@
     "manual": "In your browser menu, choose \"Install app\" or \"Add to Home screen\".",
     "later": "Not now"
   },
+  "support": {
+    "title": "Support the app",
+    "body": "Magkano Pamasahe is free and has no ads. If it helped you, a coffee's worth keeps the fares updated.",
+    "qrAlt": "GCash QR code",
+    "copy": "Copy number",
+    "copied": "Copied!",
+    "hint": "On your phone: save the QR and upload it in the GCash scanner, or copy the number and use Express Send.",
+    "saveQr": "Save QR",
+    "kofi": "Card or PayPal via Ko-fi"
+  },
   "theme": {
     "title": "Appearance",
     "light": "Light",

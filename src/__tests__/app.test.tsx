@@ -186,6 +186,16 @@ describe('Compare, tables, about, language', () => {
     expect(screen.getByText('Mag-ulat ng sobrang singil')).toBeInTheDocument()
     expect(localStorage.getItem('pamasahe-ph:prefs')).toContain('"lang":"fil"')
   })
+  it('about shows the support card and copies the GCash number', async () => {
+    const user = userEvent.setup()
+    renderApp('#/about')
+    const card = within(screen.getByTestId('support-card'))
+    expect(card.getByRole('link', { name: 'Save QR' })).toHaveAttribute('download')
+    await user.click(card.getByRole('button', { name: 'Copy number' }))
+    expect(card.getByRole('button', { name: 'Copied!' })).toBeInTheDocument()
+    const shown = card.getByTestId('gcash-number').textContent ?? ''
+    expect(await navigator.clipboard.readText()).toBe(shown.replace(/\s/g, ''))
+  })
 })
 
 describe('Appearance and install', () => {
