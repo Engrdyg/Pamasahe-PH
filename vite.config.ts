@@ -63,6 +63,15 @@ export default defineConfig({
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'fares' },
           },
+          {
+            urlPattern: ({ url }) => url.hostname === 'tile.openstreetmap.org',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'osm-tiles',
+              expiration: { maxEntries: 200, maxAgeSeconds: 7 * 24 * 3600 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
         ],
       },
     }),

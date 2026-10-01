@@ -20,6 +20,7 @@ import {
   type TnvsMode,
 } from '../engine'
 import { FareCard } from '../components/FareCard'
+import { RoutePicker } from '../components/RoutePicker'
 import { RouteStrip } from '../components/RouteStrip'
 import { Card, Chips, DiscountToggle, ErrorNote, NumberField, Select } from '../components/ui'
 import { fmtKm, localized } from '../lib/format'
@@ -129,6 +130,7 @@ function DistanceCalc({ mode }: { mode: DistanceMode }) {
           unit={t('common.km')}
         />
       </Card>
+      <RoutePicker onUse={(k) => setKm(k.toFixed(1))} />
       {body}
     </>
   )
@@ -283,6 +285,12 @@ function MeteredCalc({ mode }: { mode: MeteredMode }) {
           <NumberField label={t('input.pickup')} value={pickup} onChange={setPickup} min={0} step={0.1} unit={t('common.km')} />
         )}
       </Card>
+      <RoutePicker
+        onUse={(k, min) => {
+          setDist(stepped ? String(Math.round(k * 1000)) : k.toFixed(1))
+          setMins(String(min))
+        }}
+      />
       {body}
     </>
   )

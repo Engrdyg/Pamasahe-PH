@@ -144,5 +144,22 @@
     "map": "Open in Maps",
     "boarding": "Board at",
     "alighting": "Get off at"
+  },
+  "map": {
+    "open": "Pin on map",
+    "title": "Pin your trip on the map",
+    "close": "Close",
+    "hintFrom": "Tap the map where you will get on (or use your location).",
+    "hintTo": "Now tap where you will get off.",
+    "hintDone": "Tap again to start a new pair of pins.",
+    "myLocation": "Use my location",
+    "reset": "Clear pins",
+    "loading": "Finding the route…",
+    "loadingMap": "Loading map…",
+    "result": "{{km}} km · about {{min}} min by road",
+    "use": "Use this distance",
+    "error": "Could not get a route. Check your connection and try again.",
+    "noGeo": "Location is not available. Tap the map instead.",
+    "estimate": "Road distance from OpenStreetMap / OSRM. Jeepney and bus routes may differ, so treat this as an estimate."
   }
 }

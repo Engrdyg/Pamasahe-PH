@@ -267,3 +267,16 @@ body {
 .route-role { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--color-brand); }
 .route-note { font-size: 12px; font-weight: 400; color: var(--color-muted); }
 .route-map { font-size: 12px; font-weight: 500; color: var(--color-brand); text-decoration: underline; width: fit-content; }
+
+/* ---------- Route map ---------- */
+.route-map {
+  height: 280px;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-canvas-2);
+  border: 1px solid var(--color-line);
+}
+.dark .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9); }
+.dark .leaflet-container { background: #0b1220; }
+.leaflet-tooltip { font-weight: 700; padding: 1px 6px; }

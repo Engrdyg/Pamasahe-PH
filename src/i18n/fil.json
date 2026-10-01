@@ -144,5 +144,22 @@
     "map": "Buksan sa Maps",
     "boarding": "Sakay sa",
     "alighting": "Baba sa"
+  },
+  "map": {
+    "open": "I-pin sa mapa",
+    "title": "I-pin ang biyahe mo sa mapa",
+    "close": "Isara",
+    "hintFrom": "Pindutin sa mapa kung saan ka sasakay (o gamitin ang lokasyon mo).",
+    "hintTo": "Ngayon pindutin kung saan ka bababa.",
+    "hintDone": "Pindutin ulit para magsimula ng bagong pares ng pin.",
+    "myLocation": "Gamitin ang lokasyon ko",
+    "reset": "Burahin ang mga pin",
+    "loading": "Hinahanap ang ruta…",
+    "loadingMap": "Nilo-load ang mapa…",
+    "result": "{{km}} km · mga {{min}} min sa kalsada",
+    "use": "Gamitin ang distansyang ito",
+    "error": "Hindi makuha ang ruta. Suriin ang koneksyon at subukan muli.",
+    "noGeo": "Hindi makuha ang lokasyon. Pindutin na lang ang mapa.",
+    "estimate": "Road distance mula sa OpenStreetMap / OSRM. Maaaring iba ang ruta ng jeep at bus, kaya estimate lang ito."
   }
 }

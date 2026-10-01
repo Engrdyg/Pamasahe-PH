@@ -62,6 +62,16 @@ come from `sources/EDSA_Busway_stations.kmz`. After replacing that file, run
 `fares/edsa-busway.json`; the LTFRB matrix remains the source of station
 names and fares.
 
+## Pin on map (route mode)
+
+Distance-based and metered calculators have a "Pin on map" helper: tap a
+pick-up and a drop-off pin (or use the phone's location), and the road
+distance and time come from the public OSRM demo server over OpenStreetMap
+tiles (Leaflet, loaded lazily so the main bundle stays small). The result is
+an estimate: jeepney and bus routes can differ from the car route, and the
+map needs a connection. The demo OSRM server is rate-limited; for heavy use
+point `OSRM_BASE` in `src/lib/routing.ts` at your own OSRM instance.
+
 ## Project layout
 
 ```

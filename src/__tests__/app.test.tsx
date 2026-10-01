@@ -210,3 +210,16 @@ describe('Appearance and install', () => {
     expect(screen.queryByTestId('install-card')).toBeNull()
   })
 })
+
+describe('Pin on map', () => {
+  it('opens the route picker from the jeepney calculator and closes it', async () => {
+    const user = userEvent.setup()
+    renderApp('#/calc/jeepney')
+    await user.click(screen.getByTestId('map-open'))
+    const picker = screen.getByTestId('route-picker')
+    expect(within(picker).getByText(/Tap the map where you will get on/)).toBeInTheDocument()
+    await user.click(within(picker).getByRole('button', { name: 'Close' }))
+    expect(screen.queryByTestId('route-picker')).toBeNull()
+    expect(screen.getByTestId('map-open')).toBeInTheDocument()
+  })
+})
