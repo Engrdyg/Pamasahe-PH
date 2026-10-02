@@ -71,6 +71,10 @@ body {
   --hero-b2: #6b8cc2;
   --hero-window: #fff3c4;
   --hero-window-op: 0.35;
+  --hero-viaduct: #8ea2bf;
+  --hero-train-body: #eef3fa;
+  --hero-train-band: #0b3d91;
+  --hero-train-win: #bfe3ff;
   --hero-interior: #1b2030;
   --hero-interior-2: #262d40;
 }
@@ -89,6 +93,10 @@ body {
   --hero-b2: #1d3160;
   --hero-window: #ffd96a;
   --hero-window-op: 1;
+  --hero-viaduct: #1d2a46;
+  --hero-train-body: #2a3a5e;
+  --hero-train-band: #0b1a3a;
+  --hero-train-win: #ffe9a3;
   --hero-interior: #090c14;
   --hero-interior-2: #11161f;
 }
@@ -114,6 +122,20 @@ body {
 .bldg-1 rect:first-child { fill: var(--hero-b1); }
 .bldg-2 rect:first-child { fill: var(--hero-b2); }
 .bldg-win { fill: var(--hero-window); opacity: var(--hero-window-op); }
+
+.hero-viaduct { fill: var(--hero-viaduct); }
+.train-body { fill: var(--hero-train-body); }
+.train-band { fill: var(--hero-train-band); }
+.train-win { fill: var(--hero-train-win); }
+.train-stripe { fill: #ffc72c; }
+.train-light { fill: #fff6c2; }
+/* The train rides the viaduct toward the viewer, then waits before the next one. */
+.train { animation-name: hero-train; animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5); }
+@keyframes hero-train {
+  0%, 40% { transform: scale(0.03); opacity: 0; }
+  46% { opacity: 1; }
+  100% { transform: scale(1.5); opacity: 1; }
+}
 
 /* Objects approach the viewer by scaling from the vanishing point. */
 .drive {
