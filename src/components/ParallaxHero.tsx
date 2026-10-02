@@ -71,9 +71,9 @@ export function ParallaxHero() {
     const apply = () => {
       raf = 0
       for (const l of layers) {
-        const depth = Number(l.dataset.depth)
-        // Far layers lag behind the page as it scrolls; the frame never moves.
-        l.style.transform = `translate3d(${(tiltX * depth * 30).toFixed(1)}px, ${(scrollY * (0.8 - depth) * 0.5).toFixed(1)}px, 0)`
+        const depth = Number(l.dataset.depth) // tilt response
+        const lag = Number(l.dataset.lag ?? 0) // scroll lag (only the sky lags; the ground stays put)
+        l.style.transform = `translate3d(${(tiltX * depth * 30).toFixed(1)}px, ${(scrollY * lag).toFixed(1)}px, 0)`
       }
       el.style.setProperty('--tilt', tiltX.toFixed(3))
     }
@@ -81,7 +81,7 @@ export function ParallaxHero() {
       if (!raf) raf = requestAnimationFrame(apply)
     }
     const onScroll = () => {
-      scrollY = Math.min(window.scrollY, 400)
+      scrollY = Math.min(window.scrollY, 300)
       schedule()
     }
     const onTilt = (e: DeviceOrientationEvent) => {
@@ -102,8 +102,8 @@ export function ParallaxHero() {
 
   return (
     <div ref={root} className="hero" aria-hidden="true" data-testid="parallax-hero">
-      {/* Back layer: sky, sun/moon, stars, clouds, far skyline */}
-      <svg className="hero-layer" data-depth="0.2" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice">
+      {/* Back layer: sky, sun/moon, stars, clouds (lags a little on scroll) */}
+      <svg className="hero-layer" data-depth="0.2" data-lag="0.25" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice">
         <defs>
           <linearGradient id="hero-sky-g" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" className="hero-sky-top" />
@@ -122,6 +122,10 @@ export function ParallaxHero() {
           <ellipse cx="282" cy="46" rx="32" ry="16" />
           <ellipse cx="620" cy="90" rx="40" ry="12" />
         </g>
+      </svg>
+
+      {/* Scene layer: ground, road, markings and buildings approaching */}
+      <svg className="hero-layer hero-scene" data-depth="0.6" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice">
         <g className="hero-far">
           {[
             [150, 96, 24], [180, 88, 18], [205, 100, 30], [242, 80, 20], [268, 92, 26], [300, 72, 16], [322, 86, 34],
@@ -131,10 +135,6 @@ export function ParallaxHero() {
             <rect key={x} x={x} y={y} width={w} height={120 - y + 2} />
           ))}
         </g>
-      </svg>
-
-      {/* Scene layer: ground, road, markings and buildings approaching */}
-      <svg className="hero-layer hero-scene" data-depth="0.6" viewBox="0 0 800 260" preserveAspectRatio="xMidYMax slice">
         <rect className="hero-ground" x="0" y="120" width="800" height="140" />
         <polygon className="hero-road" points="392,120 408,120 760,260 40,260" />
         {/* Solid yellow line on the left (busway / median side) */}

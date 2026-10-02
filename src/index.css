@@ -55,7 +55,8 @@ body {
   isolation: isolate;
   height: 230px;
   overflow: hidden;
-  background: var(--hero-sky-bottom);
+  /* Same as the top of the sky gradient, so the sky layer can lag on scroll without a visible seam. */
+  background: var(--hero-sky-top);
   --tilt: 0;
   --hero-sky-top: #6fb8ff;
   --hero-sky-bottom: #dff1ff;
