@@ -20,7 +20,8 @@
     "bus-provincial": "Bus Probinsya",
     "busway": "EDSA Busway",
     "taxi": "Taxi",
-    "tnvs": "TNVS / Grab"
+    "tnvs": "TNVS / Grab",
+    "rail": "Tren"
   },
   "categoryHint": {
     "jeepney": "Tradisyonal · Moderno",
@@ -29,7 +30,8 @@
     "bus-provincial": "Ordinaryo hanggang Luxury",
     "busway": "Istasyon papuntang istasyon",
     "taxi": "Regular · Premium · Airport",
-    "tnvs": "Base fare ng ride-hailing"
+    "tnvs": "Base fare ng ride-hailing",
+    "rail": "LRT-1 · LRT-2 · MRT-3"
   },
   "input": {
     "distance": "Distansya (km)",
@@ -43,7 +45,10 @@
     "destination": "Papunta sa",
     "vehicle": "Sasakyan",
     "pickStations": "Piliin ang pinanggalingan at patutunguhang istasyon",
-    "noDestinations": "Ito ang huling istasyon sa direksyong ito."
+    "noDestinations": "Ito ang huling istasyon sa direksyong ito.",
+    "ticket": "Tiket",
+    "single-journey": "Single Journey",
+    "stored-value": "Beep / Stored Value"
   },
   "fare": {
     "regular": "Regular",
@@ -70,9 +75,10 @@
       "UNKNOWN_DIRECTION": "Hindi kilalang direksyon.",
       "UNKNOWN_VEHICLE": "Hindi kilalang uri ng sasakyan."
     },
-    "shareText": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} may diskwento) — LTFRB {{date}}",
-    "shareTextMetered": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} may diskwento, LTFRB base fare) — LTFRB {{date}}",
-    "minFare": "Minimum na pamasahe {{regular}} / {{discounted}}"
+    "shareText": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} may diskwento) — {{source}}",
+    "shareTextMetered": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} may diskwento, LTFRB base fare) — {{source}}",
+    "minFare": "Minimum na pamasahe {{regular}} / {{discounted}}",
+    "sourceNote": "Source: {{source}} · epektibo {{date}}"
   },
   "compare": {
     "title": "Ikumpara ang mga mode",
@@ -116,7 +122,7 @@
     "km": "km",
     "min": "min",
     "m": "m",
-    "pending": "Hinihintay ang datos ng LTFRB"
+    "pending": "Hinihintay ang opisyal na datos"
   },
   "install": {
     "title": "I-download ang app",

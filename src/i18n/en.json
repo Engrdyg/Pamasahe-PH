@@ -20,7 +20,8 @@
     "bus-provincial": "Provincial Bus",
     "busway": "EDSA Busway",
     "taxi": "Taxi",
-    "tnvs": "TNVS / Grab"
+    "tnvs": "TNVS / Grab",
+    "rail": "Train"
   },
   "categoryHint": {
     "jeepney": "Traditional · Modern",
@@ -29,7 +30,8 @@
     "bus-provincial": "Ordinary to Luxury",
     "busway": "Station to station",
     "taxi": "Regular · Premium · Airport",
-    "tnvs": "Ride-hailing base fare"
+    "tnvs": "Ride-hailing base fare",
+    "rail": "LRT-1 · LRT-2 · MRT-3"
   },
   "input": {
     "distance": "Distance (km)",
@@ -43,7 +45,10 @@
     "destination": "To",
     "vehicle": "Vehicle",
     "pickStations": "Pick your origin and destination stations",
-    "noDestinations": "This is the last station in this direction."
+    "noDestinations": "This is the last station in this direction.",
+    "ticket": "Ticket",
+    "single-journey": "Single Journey",
+    "stored-value": "Beep / Stored Value"
   },
   "fare": {
     "regular": "Regular",
@@ -70,9 +75,10 @@
       "UNKNOWN_DIRECTION": "Unknown direction.",
       "UNKNOWN_VEHICLE": "Unknown vehicle type."
     },
-    "shareText": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} discounted) — LTFRB {{date}}",
-    "shareTextMetered": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} discounted, LTFRB base fare) — LTFRB {{date}}",
-    "minFare": "Minimum fare {{regular}} / {{discounted}}"
+    "shareText": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} discounted) — {{source}}",
+    "shareTextMetered": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} discounted, LTFRB base fare) — {{source}}",
+    "minFare": "Minimum fare {{regular}} / {{discounted}}",
+    "sourceNote": "Source: {{source}} · effective {{date}}"
   },
   "compare": {
     "title": "Compare modes",
@@ -116,7 +122,7 @@
     "km": "km",
     "min": "min",
     "m": "m",
-    "pending": "Awaiting LTFRB data"
+    "pending": "Awaiting official data"
   },
   "install": {
     "title": "Download the app",

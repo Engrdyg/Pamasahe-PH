@@ -9,7 +9,7 @@ export function Tables() {
   const { t } = useTranslation()
   const { modes, lang } = useApp()
   const tabular = modes.filter(
-    (m) => ((m.method === 'ADD_ON' || m.method === 'PER_KM') && m.tableRange) || m.method === 'MATRIX',
+    (m) => m.status !== 'pending_data' && (((m.method === 'ADD_ON' || m.method === 'PER_KM') && m.tableRange) || m.method === 'MATRIX'),
   )
   const [modeId, setModeId] = useState(tabular[0]?.id ?? '')
   const mode = tabular.find((m) => m.id === modeId) ?? tabular[0]
@@ -91,7 +91,7 @@ function MatrixTable({ mode }: { mode: MatrixMode }) {
     <>
       <Card className="flex flex-col gap-4">
         <Chips
-          label={t('input.direction')}
+          label={mode.kind === 'ticket' ? t('input.ticket') : t('input.direction')}
           options={dirs.map((x) => ({ id: x, label: t(`input.${x}`) }))}
           value={dir}
           onChange={(x) => {

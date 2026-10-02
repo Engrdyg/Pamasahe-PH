@@ -138,15 +138,25 @@ export function tnvsFare(
 export function matrixFare(mode: MatrixMode, direction: string, from: string, to: string): MatrixFare {
   const d = mode.directions[direction]
   if (!d) throw new FareError('UNKNOWN_DIRECTION')
-  const i = d.stations.indexOf(from)
-  const j = d.stations.indexOf(to)
+  let i = d.stations.indexOf(from)
+  let j = d.stations.indexOf(to)
   if (i < 0 || j < 0) throw new FareError('UNKNOWN_STATION')
   if (i === j) throw new FareError('SAME_STATION')
-  if (j < i) throw new FareError('DESTINATION_BEFORE_ORIGIN', 'Destination must be after origin for this direction')
+  if (j < i) {
+    if (mode.kind !== 'ticket') throw new FareError('DESTINATION_BEFORE_ORIGIN', 'Destination must be after origin for this direction')
+    ;[i, j] = [j, i] // symmetric fares: same price both ways
+  }
   const regular = d.regular[i][j]
   const discounted = d.discounted[i][j]
   if (regular == null || discounted == null) throw new FareError('UNKNOWN_STATION')
-  return { from, to, regular: toCentavos(regular), discounted: toCentavos(discounted) }
+  const prev = d.previous?.regular[i][j]
+  return {
+    from,
+    to,
+    regular: toCentavos(regular),
+    discounted: toCentavos(discounted),
+    previous: prev != null ? { regular: toCentavos(prev) } : undefined,
+  }
 }
 
 /** Destinations reachable from `from` in `direction` (those after it). */
@@ -154,7 +164,8 @@ export function destinationsFrom(mode: MatrixMode, direction: string, from: stri
   const d = mode.directions[direction]
   if (!d) return []
   const i = d.stations.indexOf(from)
-  return i < 0 ? [] : d.stations.slice(i + 1)
+  if (i < 0) return []
+  return mode.kind === 'ticket' ? d.stations.filter((s) => s !== from) : d.stations.slice(i + 1)
 }
 
 /** Generate the published-style table from the formula (FR-12). */

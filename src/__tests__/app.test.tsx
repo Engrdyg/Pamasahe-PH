@@ -223,3 +223,19 @@ describe('Pin on map', () => {
     expect(screen.getByTestId('map-open')).toBeInTheDocument()
   })
 })
+
+describe('Train (MRT/LRT)', () => {
+  it('LRT-2 Antipolo → Recto: single journey ₱18 (was ₱35), Beep ₱16.50, any order', async () => {
+    const user = userEvent.setup()
+    renderApp('#/calc/rail')
+    expect(screen.getByRole('radio', { name: 'LRT-1' })).toBeDisabled()
+    await user.click(screen.getByRole('radio', { name: 'LRT-2' }))
+    await user.selectOptions(screen.getByLabelText('From'), 'Antipolo')
+    await user.selectOptions(screen.getByLabelText('To'), 'Recto')
+    expect(screen.getByTestId('fare-primary')).toHaveTextContent('₱18.00')
+    expect(screen.getByTestId('fare-old')).toHaveTextContent('₱35.00')
+    await user.click(screen.getByRole('radio', { name: /Beep/ }))
+    expect(screen.getByTestId('fare-primary')).toHaveTextContent('₱16.50')
+    expect(screen.getByText('Source: LRTA · effective Mar 23, 2026')).toBeInTheDocument()
+  })
+})

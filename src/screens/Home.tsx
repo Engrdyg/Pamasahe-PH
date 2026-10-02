@@ -7,6 +7,7 @@ import { DiscountToggle } from '../components/ui'
 
 const categories: { id: Category; emoji?: string; icon?: string }[] = [
   { id: 'busway', icon: 'busway-mark.svg' },
+  { id: 'rail', icon: 'train-mark.svg' },
   { id: 'jeepney', emoji: '🚙' },
   { id: 'uv', emoji: '🚐' },
   { id: 'bus-city', emoji: '🚌' },

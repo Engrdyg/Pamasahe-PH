@@ -23,7 +23,7 @@ import { FareCard } from '../components/FareCard'
 import { RoutePicker } from '../components/RoutePicker'
 import { RouteStrip } from '../components/RouteStrip'
 import { Card, Chips, DiscountToggle, ErrorNote, NumberField, Select } from '../components/ui'
-import { fmtKm, localized } from '../lib/format'
+import { fmtKm, formatEffective, localized } from '../lib/format'
 import { getPref, setPref } from '../lib/prefs'
 import { useApp } from '../state'
 
@@ -140,6 +140,8 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
   const { t } = useTranslation()
   const { lang } = useApp()
   const dirs = Object.keys(mode.directions)
+  const ticketKind = mode.kind === 'ticket'
+  const [ticket, setTicket] = useState(dirs[0])
   // One combined station list (order of the first direction, then any
   // stations that only exist in the other direction, in their own order).
   const stations = useMemo(() => {
@@ -158,7 +160,8 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
     for (const d of dirs) for (const st of destinationsFrom(mode, d, from)) if (!m.has(st)) m.set(st, d)
     return m
   }, [mode, dirs, from])
-  const dir = dests.get(to)
+  const dir = ticketKind ? (to ? ticket : undefined) : dests.get(to)
+  const sourceLabel = `${mode.source} ${formatEffective(mode.effective, lang)}`
 
   const changeFrom = (s: string) => {
     setFrom(s)
@@ -175,7 +178,12 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
           tripLabel={`${from} → ${to}`}
           regular={f.regular}
           discounted={f.discounted}
-          notes={[`${t('input.direction')}: ${t(`input.${dir}`)}`]}
+          previous={f.previous ? { regular: f.previous.regular, discounted: Math.round(f.previous.regular * 0.8) } : undefined}
+          notes={[
+            ticketKind ? `${t('input.ticket')}: ${t(`input.${dir}`)}` : `${t('input.direction')}: ${t(`input.${dir}`)}`,
+            t('fare.sourceNote', { source: mode.source, date: formatEffective(mode.effective, lang) }),
+          ]}
+          sourceLabel={sourceLabel}
         />
       )
       body = (
@@ -183,7 +191,7 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
           {body}
           <Card>
             <h2 className="mb-3 text-sm font-semibold text-ink">
-              {t('busway.route')} · {t(`input.${dir}`)}
+              {t('busway.route')}{ticketKind ? '' : ` · ${t(`input.${dir}`)}`}
             </h2>
             <RouteStrip direction={mode.directions[dir]} from={from} to={to} />
           </Card>
@@ -197,6 +205,9 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
   return (
     <>
       <Card className="flex flex-col gap-4">
+        {ticketKind && dirs.length > 1 && (
+          <Chips label={t('input.ticket')} options={dirs.map((d) => ({ id: d, label: t(`input.${d}`) }))} value={ticket} onChange={setTicket} />
+        )}
         <Select label={t('input.origin')} value={from} options={stations} onChange={changeFrom} placeholder="—" />
         {from && dests.size === 0 ? (
           <p className="text-sm text-ink-2">{t('input.noDestinations')}</p>

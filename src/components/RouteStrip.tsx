@@ -8,8 +8,9 @@ import type { MatrixDirection } from '../engine/types'
  */
 export function RouteStrip({ direction, from, to }: { direction: MatrixDirection; from: string; to: string }) {
   const { t } = useTranslation()
-  const i = direction.stations.indexOf(from)
-  const j = direction.stations.indexOf(to)
+  const a = direction.stations.indexOf(from)
+  const b = direction.stations.indexOf(to)
+  const [i, j] = a <= b ? [a, b] : [b, a]
   return (
     <ol className="route-strip" aria-label={t('busway.route')} data-testid="route-strip">
       {direction.stations.map((st, k) => {
@@ -24,7 +25,7 @@ export function RouteStrip({ direction, from, to }: { direction: MatrixDirection
             <span className="route-name">
               {st}
               {active && (
-                <span className="route-role">{k === i ? t('busway.boarding') : t('busway.alighting')}</span>
+                <span className="route-role">{k === a ? t('busway.boarding') : t('busway.alighting')}</span>
               )}
               {active && info?.note && <span className="route-note">{info.note}</span>}
               {active && info && (

@@ -1,0 +1,22 @@
+{
+ "id": "lrt-1",
+ "name": {
+  "en": "LRT-1",
+  "fil": "LRT-1"
+ },
+ "category": "rail",
+ "method": "MATRIX",
+ "kind": "ticket",
+ "effective": "2026-03-23",
+ "source": "LRMC",
+ "status": "pending_data",
+ "minFare": {
+  "regular": 0,
+  "discounted": 0
+ },
+ "notes": {
+  "en": "Awaiting the official LRT-1 fare matrix.",
+  "fil": "Hinihintay ang opisyal na fare matrix ng LRT-1."
+ },
+ "directions": {}
+}

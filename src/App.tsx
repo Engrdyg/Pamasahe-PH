@@ -10,7 +10,7 @@ import { Home } from './screens/Home'
 import { Tables } from './screens/Tables'
 import { useApp } from './state'
 
-const CATEGORIES: Category[] = ['jeepney', 'uv', 'bus-city', 'bus-provincial', 'busway', 'taxi', 'tnvs']
+const CATEGORIES: Category[] = ['jeepney', 'uv', 'bus-city', 'bus-provincial', 'busway', 'rail', 'taxi', 'tnvs']
 
 function UpdateBanner() {
   const { t } = useTranslation()

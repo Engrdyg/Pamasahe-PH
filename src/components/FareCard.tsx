@@ -18,6 +18,8 @@ export interface FareCardProps {
   breakdown?: { label: string; value: Centavos }[]
   metered?: boolean
   showNoOld?: boolean
+  /** e.g. "LTFRB Sep 28, 2026" or "DOTr MRT-3 Mar 23, 2026"; used in the share text. */
+  sourceLabel?: string
 }
 
 export function FareCard(p: FareCardProps) {
@@ -38,7 +40,7 @@ export function FareCard(p: FareCardProps) {
       trip: p.tripLabel,
       regular: formatPesos(p.regular),
       discounted: formatPesos(p.discounted),
-      date: formatEffective(manifest.effective, lang),
+      source: p.sourceLabel ?? `${manifest.source} ${formatEffective(manifest.effective, lang)}`,
     })
     const r = await shareText(text)
     if (r === 'copied') {

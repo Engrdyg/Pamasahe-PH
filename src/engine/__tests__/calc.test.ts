@@ -31,6 +31,8 @@ const busway = modesById['edsa-busway'] as MatrixMode
 const taxiRegular = modesById['taxi-regular'] as TimeDistanceTaxiMode
 const airport = modesById['taxi-airport'] as SteppedTaxiMode
 const tnvs = modesById['tnvs'] as TnvsMode
+const mrt3 = modesById['mrt-3'] as MatrixMode
+const lrt2 = modesById['lrt-2'] as MatrixMode
 
 const pesos = (n: number) => Math.round(n * 100)
 
@@ -141,6 +143,27 @@ describe('metered', () => {
     expect(() => taxiFare(taxiRegular, -1, 0)).toThrow(FareError)
     expect(() => taxiFare(taxiRegular, 1, -1)).toThrow(FareError)
     expect(() => airportTaxiFare(airport, -1, 0)).toThrow(FareError)
+  })
+})
+
+describe('rail (symmetric ticket matrices)', () => {
+  it('MRT-3: North Avenue ↔ Taft Avenue is ₱14 either way, 20% off computed', () => {
+    const f = matrixFare(mrt3, 'single-journey', 'North Avenue', 'Taft Avenue')
+    expect(f.regular).toBe(1400)
+    expect(f.discounted).toBe(1120)
+    expect(matrixFare(mrt3, 'stored-value', 'Taft Avenue', 'North Avenue').regular).toBe(1400)
+    expect(matrixFare(mrt3, 'single-journey', 'Ayala', 'Buendia').regular).toBe(600)
+  })
+  it('LRT-2: Recto ↔ Antipolo single journey ₱18 (was ₱35), stored value ₱16.50', () => {
+    const sjt = matrixFare(lrt2, 'single-journey', 'Antipolo', 'Recto')
+    expect(sjt.regular).toBe(1800)
+    expect(sjt.previous?.regular).toBe(3500)
+    expect(matrixFare(lrt2, 'stored-value', 'Recto', 'Antipolo').regular).toBe(1650)
+    expect(matrixFare(lrt2, 'stored-value', 'Araneta Center-Cubao', 'Katipunan').regular).toBe(800)
+  })
+  it('lists every other station as a destination', () => {
+    expect(destinationsFrom(mrt3, 'single-journey', 'Taft Avenue')).toHaveLength(12)
+    expect(destinationsFrom(mrt3, 'single-journey', 'Taft Avenue')).not.toContain('Taft Avenue')
   })
 })
 

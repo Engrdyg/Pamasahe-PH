@@ -12,6 +12,7 @@ export type Category =
   | 'busway'
   | 'taxi'
   | 'tnvs'
+  | 'rail'
 
 export type Method = 'ADD_ON' | 'PER_KM' | 'METERED' | 'MATRIX'
 
@@ -110,6 +111,8 @@ export interface MatrixDirection {
   stations: string[]
   /** Parallel to `stations`; null where no map data exists. */
   stationInfo?: (StationInfo | null)[]
+  /** Fares before the latest change, same shape as `regular` (optional). */
+  previous?: { regular: (number | null)[][] }
   /** fares[i][j] in pesos for i < j; null when j <= i */
   regular: (number | null)[][]
   discounted: (number | null)[][]
@@ -117,6 +120,15 @@ export interface MatrixDirection {
 
 export interface MatrixMode extends ModeBase {
   method: 'MATRIX'
+  /**
+   * 'direction' (default): keys of `directions` are travel directions with
+   * their own station order; destination must come after the origin.
+   * 'ticket': keys are ticket types (e.g. single-journey, stored-value) over
+   * one symmetric station list; any origin/destination order is valid.
+   */
+  kind?: 'direction' | 'ticket'
+  discountPct?: number
+  sourceUrl?: string
   minFare: { regular: number; discounted: number }
   basis?: Localized
   stationSource?: string
@@ -161,4 +173,5 @@ export interface MatrixFare {
   to: string
   regular: Centavos
   discounted: Centavos
+  previous?: { regular: Centavos }
 }

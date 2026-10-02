@@ -16,7 +16,8 @@ const isMoney = (v) => Number.isFinite(v) && v >= 0 && Math.abs(v * 100 - Math.r
 for (const f of files) {
   const m = JSON.parse(readFileSync(join(dir, f), 'utf8'))
   if (m.id !== f.replace('.json', '')) errors.push(`${f}: id "${m.id}" does not match file name`)
-  if (m.effective !== manifest.effective) errors.push(`${f}: effective ${m.effective} != manifest ${manifest.effective}`)
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(m.effective ?? '')) errors.push(`${f}: effective must be an ISO date`)
+  if (m.status === 'pending_data') continue
   if (!m.name?.en || !m.name?.fil) errors.push(`${f}: name must have en and fil`)
   switch (m.method) {
     case 'ADD_ON':
@@ -43,6 +44,7 @@ for (const f of files) {
         const n = dir.stations.length
         for (const k of ['regular', 'discounted']) {
           if (dir[k].length !== n) errors.push(`${f}: ${d}.${k} has ${dir[k].length} rows, expected ${n}`)
+          if (k === 'discounted' && m.kind === 'ticket') continue // computed 20% off, may have centavos
           for (let i = 0; i < n; i++)
             for (let j = 0; j < n; j++) {
               const v = dir[k][i]?.[j]

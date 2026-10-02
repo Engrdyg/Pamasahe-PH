@@ -20,6 +20,9 @@
   "taxi-silver",
   "taxi-gold",
   "taxi-airport",
-  "tnvs"
+  "tnvs",
+  "lrt-1",
+  "lrt-2",
+  "mrt-3"
  ]
 }

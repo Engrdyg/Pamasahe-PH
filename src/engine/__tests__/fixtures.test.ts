@@ -29,8 +29,10 @@ interface MatrixFixture {
 }
 
 const files = readdirSync(FIXTURES).filter((f) => f.endsWith('.json'))
-const kmFiles = files.filter((f) => !f.startsWith('edsa-busway'))
-const matrixFiles = files.filter((f) => f.startsWith('edsa-busway'))
+const matrixModes = Object.values(modesById).filter((m): m is MatrixMode => m.method === 'MATRIX' && m.status !== 'pending_data')
+const matrixOf = (f: string) => matrixModes.find((m) => f.startsWith(`${m.id}-`))
+const kmFiles = files.filter((f) => !matrixOf(f))
+const matrixFiles = files.filter((f) => matrixOf(f))
 
 describe('km table fixtures', () => {
   it('cover every ADD_ON / PER_KM mode that has a published table', () => {
@@ -77,22 +79,27 @@ describe('km table fixtures', () => {
   }
 })
 
-describe('EDSA Busway matrix fixtures', () => {
-  const busway = modesById['edsa-busway'] as MatrixMode
-  it('has both directions', () => {
-    expect(matrixFiles.sort()).toEqual(['edsa-busway-northbound.json', 'edsa-busway-southbound.json'])
+describe('matrix fixtures (EDSA Busway, MRT-3, LRT-2)', () => {
+  it('has a fixture for every direction / ticket type of every matrix mode', () => {
+    const expected = matrixModes.flatMap((m) => Object.keys(m.directions).map((k) => `${m.id}-${k}.json`)).sort()
+    expect(matrixFiles.sort()).toEqual(expected)
   })
   for (const file of matrixFiles) {
-    const dir = file.replace('edsa-busway-', '').replace('.json', '')
+    const mode = matrixOf(file)!
+    const key = file.slice(mode.id.length + 1).replace('.json', '')
     const fx = JSON.parse(readFileSync(join(FIXTURES, file), 'utf8')) as MatrixFixture
-    it(`${dir}: every station pair matches (${fx.source})`, () => {
-      expect(busway.directions[dir].stations).toEqual(fx.stations)
+    it(`${mode.id} ${key}: every station pair matches (${fx.source})`, () => {
+      expect(mode.directions[key].stations).toEqual(fx.stations)
       let pairs = 0
       for (let i = 0; i < fx.stations.length; i++) {
         for (let j = i + 1; j < fx.stations.length; j++) {
-          const f = matrixFare(busway, dir, fx.stations[i], fx.stations[j])
+          const f = matrixFare(mode, key, fx.stations[i], fx.stations[j])
           expect(f.regular).toBe(toCentavos(fx.regular[i][j]!))
           expect(f.discounted).toBe(toCentavos(fx.discounted[i][j]!))
+          if (mode.kind === 'ticket') {
+            // symmetric: the reverse trip costs the same
+            expect(matrixFare(mode, key, fx.stations[j], fx.stations[i]).regular).toBe(f.regular)
+          }
           pairs++
         }
       }
