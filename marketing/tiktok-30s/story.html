@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="fil">
+<head>
+<meta charset="utf-8" />
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0b1220; font-family: "DejaVu Sans", "Liberation Sans", system-ui, sans-serif; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+  .bg { position: absolute; inset: 0; }
+  .bg-navy { background: radial-gradient(1200px 900px at 50% 30%, #163a7a, #0b1220 70%); }
+  .bg-light { background: linear-gradient(180deg, #e8f2ff, #f8fafc 60%); }
+  .bg-yellow { background: radial-gradient(900px 700px at 50% 40%, #ffd65c, #ffc72c 70%); }
+  .abs { position: absolute; left: 0; top: 0; will-change: transform, opacity; }
+  .center { left: 50%; top: 50%; transform: translate(-50%, -50%); }
+  .t { font-weight: 700; letter-spacing: -0.02em; text-align: center; width: 1080px; }
+  .t-xl { font-size: 150px; line-height: 1; }
+  .t-l { font-size: 96px; line-height: 1.05; }
+  .t-m { font-size: 60px; line-height: 1.15; }
+  .t-s { font-size: 42px; line-height: 1.2; font-weight: 400; }
+  .white { color: #fff; } .navy { color: #0b3d91; } .yellow { color: #ffc72c; } .ink { color: #0f172a; } .muted { color: #475569; }
+  .shadow { text-shadow: 0 6px 24px rgba(0,0,0,.35); }
+  .logo { width: 360px; height: 360px; }
+  .phone { position: absolute; width: 600px; height: 1240px; border-radius: 72px; background: #0f172a; padding: 20px; box-shadow: 0 50px 100px rgba(0,0,0,.45); }
+  .phone .screen { position: relative; width: 100%; height: 100%; border-radius: 54px; overflow: hidden; background: #f8fafc; }
+  .phone-sm { width: 520px; height: 1085px; padding: 16px; border-radius: 62px; }
+  .phone-sm .screen { border-radius: 48px; }
+  .phone .screen img { position: absolute; left: 0; top: 0; width: 100%; height: auto; }
+  .phone .notch { position: absolute; left: 50%; top: 14px; width: 150px; height: 34px; background: #0f172a; border-radius: 20px; transform: translateX(-50%); z-index: 2; }
+  .chip { position: absolute; padding: 18px 34px; border-radius: 999px; background: #fff; color: #0b3d91; font-weight: 700; font-size: 40px; box-shadow: 0 14px 30px rgba(11,61,145,.18); border: 3px solid #0b3d9122; white-space: nowrap; }
+  .card { position: absolute; background: #fff; border-radius: 40px; padding: 40px 48px; box-shadow: 0 30px 70px rgba(0,0,0,.25); }
+  .card .label { font-size: 34px; color: #64748b; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; }
+  .card .big { font-size: 150px; font-weight: 800; color: #0f172a; letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .card .sub { font-size: 40px; color: #334155; margin-top: 10px; }
+  .pill { display: inline-block; padding: 14px 30px; border-radius: 999px; background: #ffc72c; color: #0b3d91; font-weight: 800; font-size: 38px; }
+  .feature { position: absolute; width: 470px; height: 300px; border-radius: 40px; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; box-shadow: 0 24px 60px rgba(0,0,0,.25); }
+  .feature .ic { font-size: 96px; line-height: 1; }
+  .feature .tx { font-size: 40px; font-weight: 700; color: #0b3d91; text-align: center; padding: 0 20px; }
+  .url { white-space: nowrap; font-family: "DejaVu Sans Mono", monospace; font-size: 46px; font-weight: 700; color: #0b3d91; background: #fff; padding: 22px 44px; border-radius: 999px; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+  .route { position: absolute; left: 90px; width: 900px; }
+  .route svg { width: 900px; height: 160px; }
+  .check { font-size: 70px; }
+  .flash { position: absolute; inset: 0; background: #fff; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="bg bg-navy" id="bgNavy"></div>
+  <div class="bg bg-light" id="bgLight" style="opacity:0"></div>
+  <div class="bg bg-yellow" id="bgYellow" style="opacity:0"></div>
+
+  <!-- S1 hook -->
+  <img id="s1logo" class="abs logo" src="icon.svg" style="left:360px; top:420px" />
+  <div id="s1a" class="abs t t-xl white shadow" style="top:860px">Magkano</div>
+  <div id="s1b" class="abs t t-l yellow shadow" style="top:1030px">ang pamasahe?</div>
+  <div id="s1c" class="abs t t-m white" style="top:1260px; opacity:.9">Sobra ba ang singil sa'yo?</div>
+
+  <!-- S2 app reveal -->
+  <div id="s2h" class="abs t t-l navy" style="top:150px">Lahat ng pamasahe,<br/>isang app.</div>
+  <div id="phoneA" class="phone" style="left:240px; top:500px"><div class="screen"><img id="phoneAimg" src="s-home.png" /></div></div>
+  <div id="chip1" class="chip" style="left:60px; top:620px">🚙 Jeepney</div>
+  <div id="chip2" class="chip" style="left:720px; top:760px">🚐 UV Express</div>
+  <div id="chip3" class="chip" style="left:40px; top:980px">🚌 Bus</div>
+  <div id="chip4" class="chip" style="left:690px; top:1120px">🛣️ EDSA Busway</div>
+  <div id="chip5" class="chip" style="left:80px; top:1340px">🚕 Taxi</div>
+  <div id="chip6" class="chip" style="left:760px; top:1480px">📱 TNVS</div>
+
+  <!-- S3 jeep demo -->
+  <div id="s3h" class="abs t t-m navy" style="top:130px">I-type ang distansya…</div>
+  <div id="phoneB" class="phone phone-sm" style="left:20px; top:480px"><div class="screen"><img id="phoneBimg" src="s-jeep.png" /></div></div>
+  <div id="s3card" class="card" style="left:520px; top:640px; width:530px">
+    <div class="label">Traditional Jeep · 12 km</div>
+    <div class="big" id="s3num" style="font-size:118px">₱0.00</div>
+    <div class="sub" id="s3sub">Regular na pamasahe</div>
+  </div>
+  <div id="s3pill" class="abs" style="left:520px; top:1080px"><span class="pill">🎓 Student / Senior / PWD</span></div>
+  <div id="s3note" class="abs t t-s muted" style="top:1660px; width:1080px; padding:0 60px">Awtomatikong 20% diskwento. Araw-araw, pati Sabado at Linggo.</div>
+
+  <!-- S4 busway -->
+  <div id="s4h" class="abs t t-m navy" style="top:130px">EDSA Busway? Piliin lang ang istasyon.</div>
+  <div id="phoneC" class="phone phone-sm" style="left:520px; top:520px"><div class="screen"><img id="phoneCimg" src="s-busway.png" /></div></div>
+  <div id="s4route" class="route" style="top:330px">
+    <svg viewBox="0 0 900 160" style="overflow:visible">
+      <line x1="110" y1="80" x2="790" y2="80" stroke="#cbd5e1" stroke-width="12" stroke-linecap="round"/>
+      <line id="s4line" x1="110" y1="80" x2="790" y2="80" stroke="#0b3d91" stroke-width="12" stroke-linecap="round" stroke-dasharray="680" stroke-dashoffset="680"/>
+      <circle cx="110" cy="80" r="26" fill="#ffc72c" stroke="#fff" stroke-width="6"/>
+      <circle id="s4dot" cx="790" cy="80" r="26" fill="#ffc72c" stroke="#fff" stroke-width="6"/>
+      <text x="110" y="150" font-size="34" font-weight="700" fill="#0b3d91" text-anchor="middle">Monumento</text>
+      <text x="790" y="150" font-size="34" font-weight="700" fill="#0b3d91" text-anchor="middle">PITX</text>
+    </svg>
+  </div>
+  <div id="s4card" class="card" style="left:40px; top:760px; width:440px; padding:36px">
+    <div class="label">Southbound</div>
+    <div class="big" style="font-size:110px">₱85</div>
+    <div class="sub">₱67.75 may diskwento</div>
+  </div>
+  <div id="s4note" class="abs t t-s muted" style="top:1660px">Kusang nalalaman kung Northbound o Southbound.</div>
+
+  <!-- S5 taxi -->
+  <div id="s5h" class="abs t t-m navy" style="top:130px">Taxi o Grab? May breakdown.</div>
+  <div id="phoneD" class="phone phone-sm" style="left:280px; top:460px"><div class="screen"><img id="phoneDimg" src="s-taxi.png" /></div></div>
+  <div id="s5a" class="chip" style="left:40px; top:1000px; background:#0b3d91; color:#fff; border-color:transparent">Flag-down ₱65</div>
+  <div id="s5b" class="chip" style="left:700px; top:1140px; background:#0b3d91; color:#fff; border-color:transparent">+ ₱13.50 / km</div>
+  <div id="s5c" class="chip" style="left:60px; top:1280px; background:#0b3d91; color:#fff; border-color:transparent">+ ₱2 / min</div>
+  <div id="s5note" class="abs t t-m ink" style="top:1660px"><span class="check">✅</span> Para hindi ka ma-overcharge</div>
+
+  <!-- S6 features -->
+  <div id="s6h" class="abs t t-l white shadow" style="top:170px">Gawang para sa<br/>commuter.</div>
+  <div id="f1" class="feature" style="left:60px; top:560px"><div class="ic">📴</div><div class="tx">Gumagana offline</div></div>
+  <div id="f2" class="feature" style="left:550px; top:560px"><div class="ic">🌙</div><div class="tx">Dark mode</div></div>
+  <div id="f3" class="feature" style="left:60px; top:900px"><div class="ic">📍</div><div class="tx">I-pin sa mapa</div></div>
+  <div id="f4" class="feature" style="left:550px; top:900px"><div class="ic">📋</div><div class="tx">Opisyal na LTFRB rates</div></div>
+  <div id="f5" class="feature" style="left:305px; top:1240px"><div class="ic">🆓</div><div class="tx">Libre. Walang ads.</div></div>
+
+  <!-- S7 CTA -->
+  <div id="flash" class="flash" style="opacity:0"></div>
+  <img id="s7logo" class="abs logo" src="icon.svg" style="left:360px; top:380px" />
+  <div id="s7a" class="abs t t-l navy" style="top:800px">Magkano Pamasahe</div>
+  <div id="s7b" class="abs t t-m navy" style="top:930px; font-weight:400">Alamin bago sumakay.</div>
+  <div id="s7url" class="abs" style="left:50%; top:1120px; transform:translateX(-50%)"><span class="url">magkano-pamasahe.vercel.app</span></div>
+  <div id="s7c" class="abs t t-s navy" style="top:1290px">📲 Buksan sa browser, tapos "Download app"</div>
+  <div id="s7d" class="abs t t-s navy" style="top:1700px; font-size:30px; opacity:.8">Based on ltfrb.gov.ph/fare-rates · Effective Sept 28, 2026</div>
+</div>
+
+<script>
+  const $ = (id) => document.getElementById(id)
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v))
+  const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3)
+  const easeInCubic = (x) => x * x * x
+  const easeOutBack = (x) => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2) }
+  const easeInOut = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2
+  // progress of t within [a, b]
+  const p = (t, a, b, ease = easeOutCubic) => ease(clamp((t - a) / (b - a)))
+  // visible window with in/out
+  const win = (t, a, b, fin = 0.4, fout = 0.3) => (t < a || t > b) ? 0 : t < a + fin ? p(t, a, a + fin) : t > b - fout ? 1 - p(t, b - fout, b, easeInCubic) : 1
+
+  function set(id, { o, x = 0, y = 0, s = 1, r = 0 }) {
+    const el = $(id)
+    el.style.opacity = o
+    const base = el.classList.contains('center') ? 'translate(-50%,-50%) ' : ''
+    el.style.transform = `${base}translate(${x}px, ${y}px) scale(${s}) rotate(${r}deg)`
+  }
+  function pop(id, t, a, b, { dx = 0, dy = 40, exitDy = -30 } = {}) {
+    const vis = win(t, a, b, 0.5, 0.3)
+    const inP = p(t, a, a + 0.5, easeOutBack)
+    const outP = p(t, b - 0.3, b, easeInCubic)
+    set(id, { o: vis, x: dx * (1 - inP), y: dy * (1 - inP) + exitDy * outP, s: 0.6 + 0.4 * inP })
+  }
+  const peso = (v) => '₱' + v.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+  const ALL = ['s1logo','s1a','s1b','s1c','s2h','phoneA','chip1','chip2','chip3','chip4','chip5','chip6','s3h','phoneB','s3card','s3pill','s3note',
+    's4h','phoneC','s4route','s4card','s4note','s5h','phoneD','s5a','s5b','s5c','s5note','s6h','f1','f2','f3','f4','f5','s7logo','s7a','s7b','s7url','s7c','s7d']
+
+  window.seek = function (t) {
+    for (const id of ALL) set(id, { o: 0 })
+    // backgrounds
+    const S2 = 3.4, S3 = 7.6, S4 = 13.2, S5 = 18.2, S6 = 22.4, S7 = 26.6, END = 30
+    $('bgNavy').style.opacity = t < S2 ? 1 : t < S6 ? 0 : t < S7 ? 1 : 0
+    $('bgLight').style.opacity = t >= S2 && t < S6 ? 1 : 0
+    $('bgYellow').style.opacity = t >= S7 ? 1 : 0
+    $('flash').style.opacity = t >= S7 && t < S7 + 0.35 ? 1 - p(t, S7, S7 + 0.35) : 0
+
+    // ---- S1 hook (0–3.4)
+    if (t < S2) {
+      const lb = p(t, 0.05, 0.75, easeOutBack)
+      set('s1logo', { o: clamp(t / 0.2), s: lb, r: (1 - lb) * -20 })
+      // gentle float
+      $('s1logo').style.transform += ` translateY(${Math.sin(t * 3) * 10}px)`
+      pop('s1a', t, 0.5, S2, { dy: 60 })
+      pop('s1b', t, 0.85, S2, { dy: 60 })
+      pop('s1c', t, 1.9, S2, { dy: 30 })
+      // slide whole scene up at the end
+      if (t > S2 - 0.35) { const q = p(t, S2 - 0.35, S2, easeInCubic); for (const id of ['s1logo','s1a','s1b','s1c']) $(id).style.transform += ` translateY(${-300 * q}px)` }
+    }
+    // ---- S2 app reveal (3.4–7.6)
+    if (t >= S2 && t < S3) {
+      pop('s2h', t, S2, S3, { dy: -40, exitDy: -60 })
+      const up = p(t, S2 + 0.1, S2 + 0.9)
+      const out = p(t, S3 - 0.3, S3, easeInCubic)
+      set('phoneA', { o: 1, y: 900 * (1 - up) + 200 * out, s: 1 - 0.1 * out })
+      ;['chip1','chip2','chip3','chip4','chip5','chip6'].forEach((id, i) => pop(id, t, S2 + 1.0 + i * 0.22, S3, { dx: i % 2 ? 80 : -80, dy: 20 }))
+    }
+    // ---- S3 jeep demo (7.6–13.2)
+    if (t >= S3 && t < S4) {
+      pop('s3h', t, S3, S4, { dy: -30 })
+      const up = p(t, S3, S3 + 0.7)
+      const out = p(t, S4 - 0.3, S4, easeInCubic)
+      set('phoneB', { o: 1, x: -700 * (1 - up) - 900 * out })
+      pop('s3card', t, S3 + 0.5, S4, { dx: 120, dy: 0 })
+      // count up 8.3 -> 9.6
+      const c = p(t, S3 + 0.7, S3 + 2.0)
+      const disc = t >= S3 + 3.2
+      $('s3num').textContent = disc ? peso(30 - 6 * p(t, S3 + 3.2, S3 + 3.8)) : peso(30 * c)
+      $('s3sub').textContent = disc ? 'May diskwento (−20%)' : 'Regular na pamasahe'
+      $('s3num').style.color = disc ? '#0b3d91' : '#0f172a'
+      $('phoneBimg').src = disc ? 's-jeep-disc.png' : 's-jeep.png'
+      pop('s3pill', t, S3 + 3.0, S4, { dy: 30 })
+      pop('s3note', t, S3 + 3.6, S4, { dy: 20 })
+      // scale pulse on number when changing
+      if (disc) { const k = 1 + 0.12 * Math.sin(Math.PI * clamp((t - (S3 + 3.2)) / 0.6)); $('s3num').style.transform = `scale(${k})`; $('s3num').style.transformOrigin = 'left center' } else $('s3num').style.transform = ''
+    }
+    // ---- S4 busway (13.2–18.2)
+    if (t >= S4 && t < S5) {
+      pop('s4h', t, S4, S5, { dy: -30 })
+      const up = p(t, S4, S4 + 0.7)
+      const out = p(t, S5 - 0.3, S5, easeInCubic)
+      set('phoneC', { o: 1, x: 700 * (1 - up) + 900 * out })
+      set('s4route', { o: win(t, S4 + 0.3, S5, 0.4, 0.3) })
+      const line = p(t, S4 + 0.6, S4 + 2.2, easeInOut)
+      $('s4line').setAttribute('stroke-dashoffset', String(680 * (1 - line)))
+      pop('s4card', t, S4 + 2.0, S5, { dy: 40 })
+      pop('s4note', t, S4 + 2.6, S5, { dy: 20 })
+    }
+    // ---- S5 taxi (18.2–22.4)
+    if (t >= S5 && t < S6) {
+      pop('s5h', t, S5, S6, { dy: -30 })
+      const up = p(t, S5, S5 + 0.7)
+      const out = p(t, S6 - 0.3, S6, easeInCubic)
+      set('phoneD', { o: 1, y: 900 * (1 - up) + 300 * out })
+      pop('s5a', t, S5 + 0.8, S6, { dx: -80 })
+      pop('s5b', t, S5 + 1.2, S6, { dx: 80 })
+      pop('s5c', t, S5 + 1.6, S6, { dx: -80 })
+      pop('s5note', t, S5 + 2.2, S6, { dy: 20 })
+    }
+    // ---- S6 features (22.4–26.6)
+    if (t >= S6 && t < S7) {
+      pop('s6h', t, S6, S7, { dy: -30 })
+      ;['f1','f2','f3','f4','f5'].forEach((id, i) => pop(id, t, S6 + 0.5 + i * 0.28, S7, { dy: 60 }))
+    }
+    // ---- S7 CTA (26.6–30)
+    if (t >= S7) {
+      const lb = p(t, S7, S7 + 0.7, easeOutBack)
+      set('s7logo', { o: 1, s: lb, r: (1 - lb) * 15 })
+      $('s7logo').style.transform += ` translateY(${Math.sin((t - S7) * 3) * 8}px)`
+      pop('s7a', t, S7 + 0.4, END + 1, { dy: 40 })
+      pop('s7b', t, S7 + 0.7, END + 1, { dy: 30 })
+      pop('s7url', t, S7 + 1.0, END + 1, { dy: 40 })
+      const pulse = 1 + 0.03 * Math.sin((t - S7) * 6)
+      $('s7url').style.transform = `translateX(-50%) scale(${pulse})`
+      pop('s7c', t, S7 + 1.4, END + 1, { dy: 20 })
+      set('s7d', { o: win(t, S7 + 1.6, END + 1, 0.4, 0) })
+    }
+  }
+  window.seek(0)
+</script>
+</body>
+</html>
