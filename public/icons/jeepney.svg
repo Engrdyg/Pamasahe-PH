@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Jeepney">
+  <rect x="4" y="52" width="56" height="4" rx="2" fill="#94a3b8"/>
+  <rect x="14" y="8" width="36" height="5" rx="2" fill="#ffc72c"/>
+  <rect x="12" y="13" width="40" height="22" rx="6" fill="#0b3d91"/>
+  <rect x="17" y="17" width="30" height="13" rx="3" fill="#bfe3ff"/>
+  <rect x="8" y="33" width="48" height="19" rx="5" fill="#0b3d91"/>
+  <rect x="8" y="33" width="48" height="4" fill="#ffc72c"/>
+  <rect x="24" y="40" width="16" height="8" rx="2" fill="#1e293b"/>
+  <rect x="26" y="42" width="12" height="1.5" fill="#94a3b8"/><rect x="26" y="45" width="12" height="1.5" fill="#94a3b8"/>
+  <circle cx="16" cy="44" r="4" fill="#fff6c2"/><circle cx="48" cy="44" r="4" fill="#fff6c2"/>
+  <rect x="6" y="22" width="4" height="7" rx="1.5" fill="#0b3d91"/><rect x="54" y="22" width="4" height="7" rx="1.5" fill="#0b3d91"/>
+</svg>

@@ -5,15 +5,17 @@ import { InstallCard } from '../components/InstallCard'
 import { ParallaxHero } from '../components/ParallaxHero'
 import { DiscountToggle } from '../components/ui'
 
-const categories: { id: Category; emoji?: string; icon?: string }[] = [
-  { id: 'busway', icon: 'busway-mark.svg' },
-  { id: 'rail', icon: 'train-mark.svg' },
-  { id: 'jeepney', emoji: '🚙' },
-  { id: 'uv', emoji: '🚐' },
-  { id: 'bus-city', emoji: '🚌' },
-  { id: 'bus-provincial', emoji: '🚍' },
-  { id: 'taxi', emoji: '🚕' },
-  { id: 'tnvs', emoji: '📱' },
+// One icon set in the same style for every category (public/icons/*.svg),
+// so tiles look identical on every phone instead of mixing emoji fonts.
+const categories: { id: Category; icon: string }[] = [
+  { id: 'busway', icon: 'busway' },
+  { id: 'rail', icon: 'train' },
+  { id: 'jeepney', icon: 'jeepney' },
+  { id: 'uv', icon: 'uv' },
+  { id: 'bus-city', icon: 'bus-city' },
+  { id: 'bus-provincial', icon: 'bus-provincial' },
+  { id: 'taxi', icon: 'taxi' },
+  { id: 'tnvs', icon: 'tnvs' },
 ]
 
 export function Home() {
@@ -23,22 +25,16 @@ export function Home() {
       <ParallaxHero />
       <div className="flex flex-col gap-4 px-4">
       <DiscountToggle />
-      <ul className="grid grid-cols-2 gap-3">
+      <ul className="grid auto-rows-fr grid-cols-2 gap-3">
         {categories.map((c) => (
           <li key={c.id}>
             <a
               href={`#/calc/${c.id}`}
               onClick={() => setPref('lastCategory', c.id)}
-              className="flex min-h-28 flex-col justify-between rounded-2xl border border-line bg-surface p-4 shadow-sm transition-colors hover:border-brand active:bg-brand/5"
+              className="flex h-full min-h-32 flex-col justify-start gap-3 rounded-2xl border border-line bg-surface p-4 shadow-sm transition-colors hover:border-brand active:bg-brand/5"
               data-testid={`tile-${c.id}`}
             >
-              {c.icon ? (
-                <img src={`${import.meta.env.BASE_URL}${c.icon}`} alt="" width={40} height={40} className="h-10 w-10" />
-              ) : (
-                <span aria-hidden="true" className="text-3xl">
-                  {c.emoji}
-                </span>
-              )}
+              <img src={`${import.meta.env.BASE_URL}icons/${c.icon}.svg`} alt="" width={44} height={44} className="h-11 w-11" />
               <span>
                 <span className="block text-base font-semibold text-ink">{t(`category.${c.id}`)}</span>
                 <span className="block text-xs text-muted">{t(`categoryHint.${c.id}`)}</span>

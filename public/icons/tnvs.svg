@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TNVS">
+  <rect x="4" y="54" width="56" height="4" rx="2" fill="#94a3b8"/>
+  <path d="M14 30l4-12a4 4 0 0 1 4-3h20a4 4 0 0 1 4 3l4 12z" fill="#0b3d91"/>
+  <path d="M18 28l3-9h22l3 9z" fill="#bfe3ff"/>
+  <rect x="8" y="28" width="48" height="22" rx="6" fill="#0b3d91"/>
+  <rect x="8" y="33" width="48" height="4" fill="#ffc72c"/>
+  <rect x="24" y="40" width="16" height="6" rx="1.5" fill="#1e293b"/>
+  <circle cx="16" cy="43" r="4" fill="#fff6c2"/><circle cx="48" cy="43" r="4" fill="#fff6c2"/>
+  <rect x="10" y="50" width="8" height="5" rx="1.5" fill="#2d3748"/><rect x="46" y="50" width="8" height="5" rx="1.5" fill="#2d3748"/>
+  <circle cx="48" cy="12" r="9" fill="#ffc72c"/>
+  <path d="M48 7a4 4 0 0 1 4 4c0 3-4 6.5-4 6.5S44 14 44 11a4 4 0 0 1 4-4z" fill="#0b3d91"/><circle cx="48" cy="11" r="1.5" fill="#ffc72c"/>
+</svg>
