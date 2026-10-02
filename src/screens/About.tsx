@@ -9,7 +9,7 @@ export function About() {
   const { t } = useTranslation()
   const { manifest, lang, setLang, theme, setTheme } = useApp()
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-4">
+    <main className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 md:grid md:max-w-6xl md:grid-cols-2 md:items-start md:gap-6 md:px-8 md:py-6">
       <Card className="flex flex-col gap-3 border-brand/30 bg-brand/5">
         <h2 className="text-base font-bold text-ink">{t('about.report')}</h2>
         <a
@@ -80,7 +80,7 @@ export function About() {
         <p className="text-xs text-muted">{t('about.offline')}</p>
       </Card>
 
-      <p className="text-xs leading-relaxed text-muted">{t('about.disclaimer')}</p>
+      <p className="text-xs leading-relaxed text-muted md:col-span-2">{t('about.disclaimer')}</p>
     </main>
   )
 }

@@ -22,13 +22,15 @@ export function Compare() {
       : []
 
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-4">
+    <main className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 md:max-w-6xl md:px-8 md:py-6">
       <p className="text-sm text-ink-2">{t('compare.intro')}</p>
-      <DiscountToggle compact />
+      <div className="md:hidden">
+        <DiscountToggle compact />
+      </div>
       <Card>
         <NumberField label={t('input.distance')} value={km} onChange={setKm} min={1} max={100} step={1} slider unit={t('common.km')} />
       </Card>
-      <ol className="flex flex-col gap-2" data-testid="compare-list">
+      <ol className="flex flex-col gap-2 md:grid md:grid-cols-2 md:gap-3 lg:grid-cols-3" data-testid="compare-list">
         {rows.map(({ mode, fare }) => {
           const primary = discount ? fare.discounted : fare.regular
           const secondary = discount ? fare.regular : fare.discounted

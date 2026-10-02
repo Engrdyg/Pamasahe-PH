@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FareError,
@@ -46,6 +46,16 @@ function useModeSelection(category: Category, modes: Mode[]) {
   return { inCategory, mode: inCategory.find((m) => m.id === modeId), select }
 }
 
+/** Inputs on the left, result on the right from the lg breakpoint; stacked on phones. */
+function CalcLayout({ inputs, result }: { inputs: ReactNode; result: ReactNode }) {
+  return (
+    <div className="grid gap-4 lg:grid-cols-2 lg:items-start lg:gap-6">
+      <div className="flex flex-col gap-4">{inputs}</div>
+      <div className="flex flex-col gap-4 lg:sticky lg:top-6">{result}</div>
+    </div>
+  )
+}
+
 function errorText(t: (k: string) => string, e: unknown): string {
   return e instanceof FareError ? t(`fare.errors.${e.code}`) : String(e)
 }
@@ -58,7 +68,7 @@ export function Calculator({ category }: { category: Category }) {
   if (!mode) return <ErrorNote>{t('common.pending')}</ErrorNote>
 
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-4">
+    <main className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 md:max-w-6xl md:px-8 md:py-6">
       {inCategory.length > 1 && (
         <Chips
           label={t('tables.mode')}
@@ -71,7 +81,9 @@ export function Calculator({ category }: { category: Category }) {
           onChange={select}
         />
       )}
-      <DiscountToggle compact />
+      <div className="md:hidden">
+        <DiscountToggle compact />
+      </div>
       {mode.status === 'pending_data' ? (
         <ErrorNote>{t('common.pending')}</ErrorNote>
       ) : mode.method === 'MATRIX' ? (
@@ -117,22 +129,26 @@ function DistanceCalc({ mode }: { mode: DistanceMode }) {
   }
 
   return (
-    <>
-      <Card>
-        <NumberField
-          label={t('input.distance')}
-          value={km}
-          onChange={setKm}
-          min={range?.minKm ?? 1}
-          max={range?.maxKm ?? 100}
-          step={range?.stepKm ?? 1}
-          slider
-          unit={t('common.km')}
-        />
-      </Card>
-      <RoutePicker onUse={(k) => setKm(k.toFixed(1))} />
-      {body}
-    </>
+    <CalcLayout
+      inputs={
+        <>
+          <Card>
+            <NumberField
+              label={t('input.distance')}
+              value={km}
+              onChange={setKm}
+              min={range?.minKm ?? 1}
+              max={range?.maxKm ?? 100}
+              step={range?.stepKm ?? 1}
+              slider
+              unit={t('common.km')}
+            />
+          </Card>
+          <RoutePicker onUse={(k) => setKm(k.toFixed(1))} />
+        </>
+      }
+      result={body}
+    />
   )
 }
 
@@ -203,7 +219,8 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
   }
 
   return (
-    <>
+    <CalcLayout
+      inputs={
       <Card className="flex flex-col gap-4">
         {ticketKind && dirs.length > 1 && (
           <Chips label={t('input.ticket')} options={dirs.map((d) => ({ id: d, label: t(`input.${d}`) }))} value={ticket} onChange={setTicket} />
@@ -222,8 +239,9 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
           })}
         </p>
       </Card>
-      {body}
-    </>
+      }
+      result={body}
+    />
   )
 }
 
@@ -273,7 +291,9 @@ function MeteredCalc({ mode }: { mode: MeteredMode }) {
   }
 
   return (
-    <>
+    <CalcLayout
+      inputs={
+        <>
       <Card className="flex flex-col gap-4">
         {mode.variant === 'tnvs' && (
           <Chips
@@ -302,7 +322,9 @@ function MeteredCalc({ mode }: { mode: MeteredMode }) {
           setMins(String(min))
         }}
       />
-      {body}
-    </>
+        </>
+      }
+      result={body}
+    />
   )
 }

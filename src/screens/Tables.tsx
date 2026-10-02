@@ -15,7 +15,7 @@ export function Tables() {
   const mode = tabular.find((m) => m.id === modeId) ?? tabular[0]
 
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-4 px-4 py-4">
+    <main className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 md:max-w-4xl md:px-8 md:py-6">
       <Select
         label={t('tables.mode')}
         value={mode?.id ?? ''}

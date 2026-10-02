@@ -1,8 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { BottomNav, TopBar } from './components/Nav'
+import { Sidebar } from './components/Sidebar'
 import type { Category } from './engine/types'
 import { formatEffective } from './lib/format'
 import { useRoute } from './lib/router'
+import { useWide } from './lib/useMediaQuery'
 import { About } from './screens/About'
 import { Calculator } from './screens/Calculator'
 import { Compare } from './screens/Compare'
@@ -29,6 +31,7 @@ function UpdateBanner() {
 export default function App() {
   const { t } = useTranslation()
   const [section, arg] = useRoute()
+  const wide = useWide()
 
   let screen
   let title: string | undefined
@@ -52,6 +55,28 @@ export default function App() {
     active = 'about'
   } else {
     screen = <Home />
+  }
+
+  if (wide) {
+    return (
+      <div className="flex min-h-dvh bg-canvas text-ink">
+        <Sidebar active={active} />
+        <div className="min-w-0 flex-1">
+          <UpdateBanner />
+          {title && (
+            <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-8 pt-8">
+              {back != null && (
+                <a href={`#/${back}`} aria-label={t('common.back')} className="flex min-h-10 min-w-10 items-center justify-center rounded-full border border-line-strong text-xl text-brand">
+                  ‹
+                </a>
+              )}
+              <h1 className="text-2xl font-bold text-ink">{title}</h1>
+            </div>
+          )}
+          {screen}
+        </div>
+      </div>
+    )
   }
 
   return (

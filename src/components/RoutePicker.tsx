@@ -91,7 +91,7 @@ export function RoutePicker({ onUse }: { onUse: (km: number, minutes: number) =>
         </button>
       </div>
       <p className="text-xs text-ink-2">{!from ? t('map.hintFrom') : !to ? t('map.hintTo') : t('map.hintDone')}</p>
-      <Suspense fallback={<div className="route-map grid place-items-center text-sm text-muted">{t('map.loadingMap')}</div>}>
+      <Suspense fallback={<div className="map-canvas grid place-items-center text-sm text-muted">{t('map.loadingMap')}</div>}>
         <RouteMap from={from} to={to} route={route} onPick={pick} />
       </Suspense>
       <div className="flex flex-wrap gap-2">

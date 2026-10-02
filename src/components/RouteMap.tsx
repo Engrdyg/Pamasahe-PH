@@ -56,5 +56,5 @@ export default function RouteMap({ from, to, route, onPick }: RouteMapProps) {
     }
   }, [from, to, route])
 
-  return <div ref={el} className="route-map" data-testid="route-map" />
+  return <div ref={el} className="map-canvas" data-testid="route-map" />
 }

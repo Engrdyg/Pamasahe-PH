@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { Category } from '../engine/types'
 import { setPref } from '../lib/prefs'
+import { useWide } from '../lib/useMediaQuery'
 import { InstallCard } from '../components/InstallCard'
 import { ParallaxHero } from '../components/ParallaxHero'
 import { DiscountToggle } from '../components/ui'
@@ -20,12 +21,15 @@ const categories: { id: Category; icon: string }[] = [
 
 export function Home() {
   const { t } = useTranslation()
+  const wide = useWide()
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-4 pb-4">
-      <ParallaxHero />
-      <div className="flex flex-col gap-4 px-4">
-      <DiscountToggle />
-      <ul className="grid auto-rows-fr grid-cols-2 gap-3">
+    <main className="mx-auto flex w-full max-w-lg flex-col gap-4 pb-4 md:max-w-6xl md:gap-6 md:px-8 md:py-8">
+      <div className="md:overflow-hidden md:rounded-3xl md:shadow-lg">
+        <ParallaxHero />
+      </div>
+      <div className="flex flex-col gap-4 px-4 md:gap-6 md:px-0">
+      {!wide && <DiscountToggle />}
+      <ul className="grid auto-rows-fr grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
         {categories.map((c) => (
           <li key={c.id}>
             <a

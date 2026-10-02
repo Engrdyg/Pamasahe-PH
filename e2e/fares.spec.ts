@@ -62,3 +62,20 @@ test('loading screen shows on launch and disappears once the app renders', async
   await expect(page.locator('#splash')).toBeHidden({ timeout: 5000 })
   await expect(page.getByTestId('tile-jeepney')).toBeVisible()
 })
+
+test.describe('desktop layout', () => {
+  test.use({ viewport: { width: 1280, height: 800 } })
+  test('sidebar navigation replaces the tab bar and the calculator uses two columns', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.getByTestId('sidebar')).toBeVisible()
+    await expect(page.locator('nav[aria-label="Main"] a', { hasText: 'Compare' })).toBeVisible()
+    await page.getByTestId('tile-jeepney').click()
+    await page.getByLabel('Distance (km)', { exact: true }).fill('12')
+    await expect(page.getByTestId('fare-primary')).toHaveText('₱30.00')
+    const input = await page.getByLabel('Distance (km)', { exact: true }).boundingBox()
+    const card = await page.getByTestId('fare-card').boundingBox()
+    expect(card!.x).toBeGreaterThan(input!.x + input!.width) // side by side, not stacked
+    await page.getByTestId('map-open').click()
+    await expect(page.getByTestId('route-picker')).toBeVisible()
+  })
+})

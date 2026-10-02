@@ -235,6 +235,16 @@ body {
 }
 .hero-title { font-size: 1.45rem; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em; margin: 0; }
 .hero-sub { font-size: 0.78rem; color: #e2e8f0; margin: 4px 0 0; }
+@media (min-width: 768px) {
+  .map-canvas { height: 380px; }
+  .hero { height: 340px; }
+  .hero-text { top: 160px; }
+  .hero-title { font-size: 2.4rem; }
+  .hero-sub { font-size: 1.05rem; }
+  .ws-mirror { width: 140px; height: 34px; }
+  .ws-charm { top: 46px; margin-left: 80px; }
+  .ws-dash { height: 56px; }
+}
 @media (prefers-reduced-motion: reduce) {
   .drive, .ws-charm { animation: none; }
   .drive { transform: scale(0.6); opacity: 1; }
@@ -291,7 +301,7 @@ body {
 .route-map { font-size: 12px; font-weight: 500; color: var(--color-brand); text-decoration: underline; width: fit-content; }
 
 /* ---------- Route map ---------- */
-.route-map {
+.map-canvas {
   height: 280px;
   width: 100%;
   border-radius: 12px;
