@@ -73,6 +73,7 @@ body {
   --hero-window: #fff3c4;
   --hero-window-op: 0.35;
   --hero-viaduct: #8ea2bf;
+  --hero-rail: #6b7f9e;
   --hero-train-body: #eef3fa;
   --hero-train-band: #0b3d91;
   --hero-train-win: #bfe3ff;
@@ -95,6 +96,7 @@ body {
   --hero-window: #ffd96a;
   --hero-window-op: 1;
   --hero-viaduct: #1d2a46;
+  --hero-rail: #34456b;
   --hero-train-body: #2a3a5e;
   --hero-train-band: #0b1a3a;
   --hero-train-win: #ffe9a3;
@@ -125,17 +127,17 @@ body {
 .bldg-win { fill: var(--hero-window); opacity: var(--hero-window-op); }
 
 .hero-viaduct { fill: var(--hero-viaduct); }
+.hero-rail { fill: var(--hero-rail); }
 .train-body { fill: var(--hero-train-body); }
 .train-band { fill: var(--hero-train-band); }
 .train-win { fill: var(--hero-train-win); }
 .train-stripe { fill: #ffc72c; }
 .train-light { fill: #fff6c2; }
-/* The train rides the viaduct toward the viewer, then waits before the next one. */
-.train { animation-name: hero-train; animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5); }
+/* The train crosses the overpass left to right, then waits before the next one. */
+.train { transform: translateX(-700px); animation: hero-train 16s linear infinite; }
 @keyframes hero-train {
-  0%, 40% { transform: scale(0.03); opacity: 0; }
-  46% { opacity: 1; }
-  100% { transform: scale(1.5); opacity: 1; }
+  0%, 30% { transform: translateX(-700px); }
+  100% { transform: translateX(1000px); }
 }
 
 /* Objects approach the viewer by scaling from the vanishing point. */
@@ -247,8 +249,9 @@ body {
   .ws-dash { height: 56px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .drive, .ws-charm { animation: none; }
+  .drive, .ws-charm, .train { animation: none; }
   .drive { transform: scale(0.6); opacity: 1; }
+  .train { transform: translateX(120px); }
 }
 
 /* ---------- Busway route strip ---------- */

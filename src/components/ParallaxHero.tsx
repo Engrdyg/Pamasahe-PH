@@ -22,14 +22,11 @@ const RIGHT_BUILDINGS: [number, number, number, number, number][] = [
   [540, 60, 220, -6, 0],
 ]
 
-// Elevated rail viaduct on the left (MRT/LRT over EDSA). Pillars are placed
-// along the ray from the vanishing point (400,120) at a few depths.
-const PILLARS = [1, 0.72, 0.5, 0.34, 0.22, 0.13].map((k) => ({
-  x: 400 - 330 * k,
-  top: 120 - 42 * k,
-  bottom: 120 + 82 * k,
-  w: Math.max(2, 16 * k),
-}))
+// Elevated rail crossing over EDSA ahead (an overpass at one depth): the deck
+// is a horizontal slab, the pillars stand on the ground at that same depth,
+// and the train crosses it from left to right.
+const DECK = { top: 66, bottom: 80, ground: 200 }
+const PILLAR_X = [-40, 120, 275, 680, 840]
 
 function Building({ x, w, h, delay, tone }: { x: number; w: number; h: number; delay: number; tone: number }) {
   const base = 190
@@ -154,21 +151,22 @@ export function ParallaxHero() {
         {RIGHT_BUILDINGS.map(([x, w, h, delay, tone]) => (
           <Building key={`r${x}`} x={x} w={w} h={h} delay={delay} tone={tone} />
         ))}
-        {/* Elevated rail: pillars, deck, and a train coming toward the viewer */}
+        {/* Elevated rail overpass: pillars on the ground, deck, and a train crossing it */}
         <g className="hero-viaduct">
-          {PILLARS.map((pl) => (
-            <rect key={pl.x} x={pl.x - pl.w / 2} y={pl.top} width={pl.w} height={pl.bottom - pl.top} />
+          {PILLAR_X.map((x) => (
+            <rect key={x} x={x - 8} y={DECK.bottom} width="16" height={DECK.ground - DECK.bottom} />
           ))}
-          <polygon points="396,118 404,120 330,80 -110,80 -110,66 330,66" />
+          <rect x="-200" y={DECK.top} width="1200" height={DECK.bottom - DECK.top} />
+          <rect x="-200" y={DECK.top - 4} width="1200" height="4" className="hero-rail" />
         </g>
-        <g className="drive train" style={{ ['--dur' as string]: '12s' }}>
-          <rect className="train-body" x="-110" y="18" width="440" height="46" rx="10" />
-          <rect className="train-band" x="-110" y="30" width="440" height="18" />
+        <g className="train">
+          <rect className="train-body" x="-110" y={DECK.top - 48} width="440" height="46" rx="10" />
+          <rect className="train-band" x="-110" y={DECK.top - 36} width="440" height="18" />
           {Array.from({ length: 9 }, (_, i) => (
-            <rect key={i} className="train-win" x={-98 + i * 49} y="33" width="32" height="12" rx="2" />
+            <rect key={i} className="train-win" x={-98 + i * 49} y={DECK.top - 33} width="32" height="12" rx="2" />
           ))}
-          <rect className="train-stripe" x="-110" y="52" width="440" height="5" />
-          <rect className="train-light" x="318" y="40" width="8" height="8" rx="2" />
+          <rect className="train-stripe" x="-110" y={DECK.top - 14} width="440" height="5" />
+          <rect className="train-light" x="318" y={DECK.top - 26} width="8" height="8" rx="2" />
         </g>
       </svg>
 
