@@ -169,7 +169,22 @@ export function ParallaxHero() {
           ))}
         </g>
         <g className="drive train" style={{ ['--dur' as string]: '12s' }}>
-          <polygon className="train-side" points={`${RAIL.left},${RAIL.trainTop} ${RAIL.right},${RAIL.trainTop} 400,120 ${RAIL.left},${RAIL.deckTop}`} />
+          {(() => {
+            const k = 0.55 // how far back the train extends toward the vanishing point
+            const bx = (x: number) => x + (400 - x) * k
+            const by = (y: number) => y + (120 - y) * k
+            const side = `${RAIL.left},${RAIL.trainTop} ${RAIL.right},${RAIL.trainTop} ${bx(RAIL.right)},${by(RAIL.trainTop)} ${bx(RAIL.left)},${by(RAIL.deckTop)} ${RAIL.left},${RAIL.deckTop}`
+            const wTop = RAIL.trainTop + 8, wBot = RAIL.trainTop + 30
+            const win = `${RAIL.right},${wTop} ${bx(RAIL.right)},${by(wTop)} ${bx(RAIL.right)},${by(wBot)} ${RAIL.right},${wBot}`
+            const tail = `${bx(RAIL.left)},${by(RAIL.trainTop)} ${bx(RAIL.right)},${by(RAIL.trainTop)} ${bx(RAIL.right)},${by(RAIL.deckTop)} ${bx(RAIL.left)},${by(RAIL.deckTop)}`
+            return (
+              <>
+                <polygon className="train-side" points={side} />
+                <polygon className="train-body" points={tail} />
+                <polygon className="train-win" points={win} />
+              </>
+            )
+          })()}
           <rect className="train-body" x={RAIL.left} y={RAIL.trainTop} width={RAIL.right - RAIL.left} height={RAIL.deckTop - RAIL.trainTop} rx="8" />
           <rect className="train-win" x={RAIL.left + 8} y={RAIL.trainTop + 8} width={RAIL.right - RAIL.left - 16} height="22" rx="3" />
           <rect className="train-stripe" x={RAIL.left} y={RAIL.deckTop - 14} width={RAIL.right - RAIL.left} height="5" />
