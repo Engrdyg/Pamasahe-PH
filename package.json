@@ -17,6 +17,7 @@
     "fares:validate": "node scripts/validate-fares.mjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "i18next": "^25.0.0",
     "leaflet": "^1.9.4",
     "react": "^19.0.0",
