@@ -34,7 +34,7 @@ dependencies and is unit-tested against **every row of every published table**.
 | `PER_KM` | UV Express, Provincial Aircon / Deluxe / Super Deluxe / Luxury bus | rate × km, rounded to ₱0.25 |
 | `METERED` | Regular / Silver / Gold taxi, Airport taxi (stepped), TNVS (per vehicle + pick-up) | flag-down + distance + time, shown to the centavo |
 | `MATRIX` | EDSA Busway (Southbound 24 stations, Northbound 23 stations) | station-to-station lookup from the LTFRB matrix |
-| `MATRIX` (`kind: ticket`) | MRT-3, LRT-2 (LRT-1 pending) | symmetric station-to-station fares per ticket type (Single Journey, Beep); 50% discounted fares effective March 23, 2026, from the DOTr MRT-3 and LRTA matrices transcribed in `scripts/import-rail.py` |
+| `MATRIX` (`kind: ticket`) | LRT-1, LRT-2, MRT-3 | symmetric station-to-station fares per ticket type (Single Journey, Beep). MRT-3 and LRT-2: 50% discounted fares effective March 23, 2026 (DOTr MRT-3, LRTA). LRT-1: LRMC matrix effective April 2, 2025. All transcribed with consistency checks in `scripts/import-rail.py` |
 
 Rules that matter for matching the published tables:
 
