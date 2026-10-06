@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { InstallCard } from '../components/InstallCard'
 import { Card, Chips } from '../components/ui'
-import { openGcash } from '../lib/gcash'
 import type { Theme } from '../lib/theme'
 import { formatEffective } from '../lib/format'
 import { useApp } from '../state'
@@ -27,44 +26,9 @@ export function About() {
 
       <InstallCard dismissible={false} />
 
-      <Card className="flex flex-col gap-3 border-accent/50 bg-accent/10" data-testid="donate-card">
-        <h2 className="text-base font-bold text-ink">{t('donate.title')}</h2>
-        <p className="text-sm text-ink-2">{t('donate.body')}</p>
-        <div className="flex items-start gap-4">
-          <img
-            src={`${import.meta.env.BASE_URL}gcash-qr.png`}
-            alt="GCash QR"
-            width={132}
-            height={132}
-            className="h-33 w-33 shrink-0 rounded-xl bg-white p-1"
-          />
-          <div className="flex min-w-0 flex-col gap-2 text-sm">
-            <p className="font-semibold text-ink">
-              GCash · {t('donate.name')}
-              <span className="block font-normal tabular-nums text-ink-2">{t('donate.mobile')}</span>
-            </p>
-            <p className="text-xs text-muted">{t('donate.scan')}</p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={openGcash}
-                className="inline-flex min-h-10 items-center gap-2 rounded-full bg-[#0a6cff] px-4 text-sm font-semibold text-white"
-                data-testid="open-gcash"
-              >
-                {t('donate.open')}
-              </button>
-              <a
-                href={`${import.meta.env.BASE_URL}gcash-qr.png`}
-                download="magkano-pamasahe-gcash-qr.png"
-                className="inline-flex min-h-10 items-center rounded-full border border-line-strong px-4 text-sm font-medium text-ink-2"
-              >
-                {t('donate.save')}
-              </a>
-            </div>
-            <p className="text-xs text-muted">{t('donate.note')}</p>
-          </div>
-        </div>
-      </Card>
+      <a href="#/support" className="flex min-h-12 items-center justify-between rounded-2xl border border-accent/50 bg-accent/10 px-4 text-sm font-semibold text-ink">
+        {t('donate.title')} <span aria-hidden="true">›</span>
+      </a>
 
       <Card className="flex flex-col gap-2">
         <h2 className="text-base font-bold text-ink">{t('theme.title')}</h2>

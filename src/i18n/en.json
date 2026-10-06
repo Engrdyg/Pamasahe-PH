@@ -7,7 +7,8 @@
     "home": "Home",
     "compare": "Compare",
     "tables": "Fare tables",
-    "about": "About"
+    "about": "About",
+    "support": "Support"
   },
   "effective": "Effective {{date}} · LTFRB",
   "effectiveDate": "Sept 28, 2026",

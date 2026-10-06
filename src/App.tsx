@@ -9,6 +9,7 @@ import { About } from './screens/About'
 import { Calculator } from './screens/Calculator'
 import { Compare } from './screens/Compare'
 import { Home } from './screens/Home'
+import { Support } from './screens/Support'
 import { Tables } from './screens/Tables'
 import { useApp } from './state'
 
@@ -49,6 +50,10 @@ export default function App() {
     screen = <Tables />
     title = t('tables.title')
     active = 'tables'
+  } else if (section === 'support') {
+    screen = <Support />
+    title = t('donate.title')
+    active = 'support'
   } else if (section === 'about') {
     screen = <About />
     title = t('about.title')

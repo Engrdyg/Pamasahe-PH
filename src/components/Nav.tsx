@@ -6,6 +6,7 @@ const items = [
   { id: '', key: 'nav.home', icon: '⌂' },
   { id: 'compare', key: 'nav.compare', icon: '⇄' },
   { id: 'tables', key: 'nav.tables', icon: '☰' },
+  { id: 'support', key: 'nav.support', icon: '♥' },
   { id: 'about', key: 'nav.about', icon: 'ⓘ' },
 ] as const
 
