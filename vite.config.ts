@@ -39,7 +39,7 @@ export default defineConfig({
     faresDir(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon.svg', 'logo-mark.svg', 'icons/*.svg', 'apple-touch-icon.png'],
+      includeAssets: ['icon.svg', 'logo-mark.svg', 'icons/*.svg', 'apple-touch-icon.png', 'gcash-qr.png'],
       manifest: {
         name: 'Magkano Pamasahe — LTFRB Fare Checker',
         short_name: 'Magkano Pamasahe',

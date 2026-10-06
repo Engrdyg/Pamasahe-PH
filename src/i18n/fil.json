@@ -167,5 +167,15 @@
     "error": "Hindi makuha ang ruta. Suriin ang koneksyon at subukan muli.",
     "noGeo": "Hindi makuha ang lokasyon. Pindutin na lang ang mapa.",
     "estimate": "Road distance mula sa OpenStreetMap / OSRM. Maaaring iba ang ruta ng jeep at bus, kaya estimate lang ito."
+  },
+  "donate": {
+    "title": "Suportahan ang app",
+    "body": "Libre at walang ads ang Magkano Pamasahe. Kung nakatulong ito sa'yo, malaking bagay ang kahit maliit na GCash donation para patuloy itong ma-update.",
+    "open": "Buksan ang GCash",
+    "scan": "I-scan ang QR na ito sa GCash, o i-save at gamitin ang \"Scan from gallery\".",
+    "name": "JA**E J* D.",
+    "mobile": "+63 967 348 ••••",
+    "note": "Maaaring may transfer fee.",
+    "save": "I-save ang QR"
   }
 }

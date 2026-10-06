@@ -167,5 +167,15 @@
     "error": "Could not get a route. Check your connection and try again.",
     "noGeo": "Location is not available. Tap the map instead.",
     "estimate": "Road distance from OpenStreetMap / OSRM. Jeepney and bus routes may differ, so treat this as an estimate."
+  },
+  "donate": {
+    "title": "Support this app",
+    "body": "Magkano Pamasahe is free and has no ads. If it helped you, a small GCash donation keeps it running and updated.",
+    "open": "Open GCash",
+    "scan": "Scan this QR in GCash, or save it and use \"Scan from gallery\".",
+    "name": "JA**E J* D.",
+    "mobile": "+63 967 348 ••••",
+    "note": "Transfer fees may apply.",
+    "save": "Save QR"
   }
 }
