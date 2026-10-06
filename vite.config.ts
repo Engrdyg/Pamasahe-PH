@@ -55,9 +55,21 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,json,woff2}'],
-        navigateFallback: 'index.html',
+        // The HTML shell is fetched from the network first (falling back to
+        // cache offline) so a stale shell never points at assets that a newer
+        // deploy has replaced; everything else stays precached.
+        globPatterns: ['**/*.{js,css,svg,png,ico,json,woff2}'],
+        globIgnores: ['**/index.html'],
+        navigateFallback: null,
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
+          {
+            urlPattern: ({ request }) => request.mode === 'navigate',
+            handler: 'NetworkFirst',
+            options: { cacheName: 'pages', networkTimeoutSeconds: 4 },
+          },
           {
             urlPattern: ({ url }) => url.pathname.includes('/fares/'),
             handler: 'StaleWhileRevalidate',
