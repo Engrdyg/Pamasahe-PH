@@ -108,3 +108,28 @@ test.describe('trip planner (search)', () => {
     await expect(page.getByTestId('fare-primary')).toHaveText('₱286.30')
   })
 })
+
+test.describe('ride tracker (GPS)', () => {
+  test.use({ serviceWorkers: 'block', permissions: ['geolocation'], geolocation: { latitude: 14.6566, longitude: 121.0303, accuracy: 10 } })
+  test('start, move along EDSA, end: distance and fare follow the ride', async ({ page, context }) => {
+    await page.route('https://tile.openstreetmap.org/**', (r) => r.fulfill({ status: 204, body: '' }))
+    await page.goto('/#/calc/jeepney')
+    await page.getByTestId('ride-open').click()
+    await page.getByTestId('ride-start').click()
+    await expect(page.getByTestId('ride-tracker')).toContainText(/Tracking/)
+    // Drive south along EDSA at ~120 km/h in test time: 40 m every 1.2 s, 5 steps = 200 m.
+    // (Faster jumps are rejected by the tracker as GPS teleports.)
+    for (let i = 1; i <= 5; i++) {
+      await page.waitForTimeout(1200)
+      await context.setGeolocation({ latitude: 14.6566 - i * 0.00036, longitude: 121.0303, accuracy: 10 })
+    }
+    await expect(page.getByTestId('ride-km')).toContainText('0.2')
+    await expect(page.getByLabel('Distance (km)', { exact: true })).toHaveValue('0.2')
+    await expect(page.getByTestId('fare-primary')).toHaveText('₱14.00') // first 4 km
+    await page.getByTestId('ride-stop').click()
+    await expect(page.getByTestId('ride-tracker')).toContainText(/Ride ended/)
+    await page.reload()
+    // a finished ride is not resumed; an in-progress one would be
+    await expect(page.getByTestId('ride-open')).toBeVisible()
+  })
+})

@@ -106,7 +106,7 @@ export function RoutePicker({ onUse }: { onUse: (km: number, minutes: number) =>
   }
 
   return (
-    <Card className="flex flex-col gap-3" data-testid="route-picker">
+    <Card className="flex w-full flex-col gap-3" data-testid="route-picker">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-ink">{t('map.title')}</h2>
         <button type="button" onClick={() => setOpen(false)} className="min-h-9 px-2 text-sm text-muted underline">

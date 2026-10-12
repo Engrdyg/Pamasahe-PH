@@ -76,6 +76,17 @@ servers are rate-limited; for heavy use point `PHOTON_BASE` in
 `src/lib/geocode.ts` and `OSRM_BASE` in `src/lib/routing.ts` at your own
 instances.
 
+## Ride tracker (GPS)
+
+Next to the trip planner, "Track my ride (GPS)" records the trip like a
+fitness app: start when you board, the phone's GPS accumulates distance
+(fixes worse than 60 m, jitter smaller than the position error and jumps
+faster than 150 km/h are ignored), time runs from the clock, and both are
+applied to the fare live; end when you get off. A ride in progress is kept
+in localStorage so a reload resumes it, and the screen is kept awake with
+the Wake Lock API where available. GPS pauses when the browser is in the
+background, so the user is told to keep the app open.
+
 ## Project layout
 
 ```

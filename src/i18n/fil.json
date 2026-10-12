@@ -186,5 +186,21 @@
     "mobile": "+63 967 348 ••••",
     "note": "Maaaring may transfer fee.",
     "save": "I-save ang QR"
+  },
+  "ride": {
+    "open": "I-track ang biyahe ko (GPS)",
+    "title": "Ride tracker",
+    "start": "Simulan ang biyahe",
+    "stop": "Tapusin ang biyahe",
+    "discard": "Burahin",
+    "newRide": "Bagong biyahe",
+    "distance": "Distansya",
+    "elapsed": "Oras",
+    "waiting": "Hinihintay ang GPS… lumapit sa bintana o lumabas.",
+    "points": "Nagta-track · {{n}} GPS fix · ±{{acc}} m",
+    "done": "Tapos na ang biyahe. Nailagay na ang distansya at oras sa pamasahe.",
+    "noGeo": "Hindi makuha ang lokasyon o hindi pinayagan. Payagan ang location para sa site na ito at subukan ulit.",
+    "keepOn": "Panatilihing bukas ang screen at ang app habang bumibiyahe; humihinto ang GPS kapag nasa background ang app. Estimate ang distansyang mula sa GPS.",
+    "weak": "Mahina ang GPS signal. Lumapit sa bintana o lumabas; tuloy ang tracking."
   }
 }

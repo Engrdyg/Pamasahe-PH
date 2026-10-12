@@ -20,6 +20,7 @@ import {
   type TnvsMode,
 } from '../engine'
 import { FareCard } from '../components/FareCard'
+import { RideTracker } from '../components/RideTracker'
 import { RoutePicker } from '../components/RoutePicker'
 import { RouteStrip } from '../components/RouteStrip'
 import { Card, Chips, DiscountToggle, ErrorNote, NumberField, Select } from '../components/ui'
@@ -144,7 +145,10 @@ function DistanceCalc({ mode }: { mode: DistanceMode }) {
               unit={t('common.km')}
             />
           </Card>
-          <RoutePicker onUse={(k) => setKm(k.toFixed(1))} />
+          <div className="flex flex-wrap gap-2">
+            <RoutePicker onUse={(k) => setKm(k.toFixed(1))} />
+            <RideTracker onUse={(k) => setKm(k.toFixed(1))} />
+          </div>
         </>
       }
       result={body}
@@ -316,12 +320,20 @@ function MeteredCalc({ mode }: { mode: MeteredMode }) {
           <NumberField label={t('input.pickup')} value={pickup} onChange={setPickup} min={0} step={0.1} unit={t('common.km')} />
         )}
       </Card>
-      <RoutePicker
-        onUse={(k, min) => {
-          setDist(stepped ? String(Math.round(k * 1000)) : k.toFixed(1))
-          setMins(String(min))
-        }}
-      />
+      <div className="flex flex-wrap gap-2">
+        <RoutePicker
+          onUse={(k, min) => {
+            setDist(stepped ? String(Math.round(k * 1000)) : k.toFixed(1))
+            setMins(String(min))
+          }}
+        />
+        <RideTracker
+          onUse={(k, min) => {
+            setDist(stepped ? String(Math.round(k * 1000)) : k.toFixed(1))
+            setMins(String(min))
+          }}
+        />
+      </div>
         </>
       }
       result={body}
