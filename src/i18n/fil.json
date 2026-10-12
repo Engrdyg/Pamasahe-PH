@@ -201,6 +201,8 @@
     "done": "Tapos na ang biyahe. Nailagay na ang distansya at oras sa pamasahe.",
     "noGeo": "Hindi makuha ang lokasyon o hindi pinayagan. Payagan ang location para sa site na ito at subukan ulit.",
     "keepOn": "Panatilihing bukas ang screen at ang app habang bumibiyahe; humihinto ang GPS kapag nasa background ang app. Estimate ang distansyang mula sa GPS.",
-    "weak": "Mahina ang GPS signal. Lumapit sa bintana o lumabas; tuloy ang tracking."
+    "weak": "Mahina ang GPS signal. Lumapit sa bintana o lumabas; tuloy ang tracking.",
+    "nearest": "Pinakamalapit na istasyon: {{name}} · {{m}} m",
+    "stationHint": "Simulan ang biyahe sa sakayan mong istasyon. Kusang pipiliin ang pinakamalapit na stop, at susunod ang pamasahe habang dumadaan ang bus sa mga istasyon."
   }
 }

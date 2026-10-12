@@ -87,6 +87,12 @@ in localStorage so a reload resumes it, and the screen is kept awake with
 the Wake Lock API where available. GPS pauses when the browser is in the
 background, so the user is told to keep the app open.
 
+On the EDSA Busway, which is station-priced, the tracker picks stations
+instead: the stop nearest the first GPS fix becomes the boarding station,
+the nearest stop follows the bus as the alighting station (the fare updates
+as stations pass), and ending the ride locks it. Station coordinates come
+from `sources/EDSA_Busway_stations.kmz`.
+
 ## Project layout
 
 ```

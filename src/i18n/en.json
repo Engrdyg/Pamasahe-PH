@@ -201,6 +201,8 @@
     "done": "Ride ended. Distance and time are applied to the fare above.",
     "noGeo": "Location is not available or was denied. Allow location for this site and try again.",
     "keepOn": "Keep the screen on and this app open while riding; GPS pauses when the app is in the background. Distance is from GPS and is an estimate.",
-    "weak": "Weak GPS signal. Move near a window or outdoors; tracking continues."
+    "weak": "Weak GPS signal. Move near a window or outdoors; tracking continues.",
+    "nearest": "Nearest station: {{name}} · {{m}} m",
+    "stationHint": "Start the ride at your boarding station. The nearest stop is picked for you, and the fare follows as the bus passes stations."
   }
 }

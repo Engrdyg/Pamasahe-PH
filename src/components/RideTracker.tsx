@@ -13,7 +13,20 @@ type WakeLockSentinel = { release: () => Promise<void> }
  * The ride survives a reload (localStorage) and keeps the screen awake while
  * tracking where the browser supports it.
  */
-export function RideTracker({ onUse }: { onUse: (km: number, minutes: number) => void }) {
+export type FixPhase = 'start' | 'update' | 'end'
+
+export function RideTracker({
+  onUse,
+  onFix,
+  note,
+}: {
+  /** Distance (km) and elapsed minutes, called live while tracking. */
+  onUse?: (km: number, minutes: number) => void
+  /** Every usable GPS fix (accuracy ≤ 100 m), with 'start' for the first fix of a ride and 'end' when the ride is stopped. */
+  onFix?: (p: { lat: number; lng: number }, phase: FixPhase) => void
+  /** Extra line shown under the live numbers (e.g. nearest station). */
+  note?: React.ReactNode
+}) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(() => loadRide() != null)
   const [ride, setRide] = useState<RideState | null>(() => loadRide())
@@ -25,6 +38,10 @@ export function RideTracker({ onUse }: { onUse: (km: number, minutes: number) =>
   const wakeLock = useRef<WakeLockSentinel | null>(null)
   const onUseRef = useRef(onUse)
   onUseRef.current = onUse
+  const onFixRef = useRef(onFix)
+  onFixRef.current = onFix
+  const lastRaw = useRef<{ lat: number; lng: number } | null>(null)
+  const seenFix = useRef(false)
 
   const tracking = Boolean(ride && !ride.endedAt)
 
@@ -47,6 +64,12 @@ export function RideTracker({ onUse }: { onUse: (km: number, minutes: number) =>
         lastFixAt.current = Date.now()
         setError(null)
         setLastAcc(Math.round(pos.coords.accuracy))
+        if (pos.coords.accuracy <= 100) {
+          const p = { lat: pos.coords.latitude, lng: pos.coords.longitude }
+          lastRaw.current = p
+          onFixRef.current?.(p, seenFix.current ? 'update' : 'start')
+          seenFix.current = true
+        }
         setRide((r) => {
           if (!r || r.endedAt) return r
           const next = addFix(r, { lat: pos.coords.latitude, lng: pos.coords.longitude, t: pos.timestamp || Date.now(), acc: pos.coords.accuracy })
@@ -93,17 +116,20 @@ export function RideTracker({ onUse }: { onUse: (km: number, minutes: number) =>
   const minutes = ride ? rideMinutes(ride, now) : 0
   useEffect(() => {
     if (!ride || km <= 0) return
-    onUseRef.current(km, Math.round(minutes))
+    onUseRef.current?.(km, Math.round(minutes))
   }, [ride, km, minutes])
 
   const start = useCallback(() => {
     setError(null)
+    seenFix.current = false
+    lastRaw.current = null
     const r = startRide()
     saveRide(r)
     setRide(r)
     setNow(Date.now())
   }, [])
   const stop = useCallback(() => {
+    if (lastRaw.current) onFixRef.current?.(lastRaw.current, 'end')
     setRide((r) => {
       if (!r) return r
       const done = { ...r, endedAt: Date.now() }
@@ -173,6 +199,7 @@ export function RideTracker({ onUse }: { onUse: (km: number, minutes: number) =>
             : t('ride.points', { n: ride!.points.length, acc: lastAcc ?? '–' })}
         </p>
       )}
+      {note && <div className="text-sm text-ink-2">{note}</div>}
       {ride?.endedAt && <p className="text-sm text-ink-2">{t('ride.done')}</p>}
       {error && <ErrorNote>{error}</ErrorNote>}
 

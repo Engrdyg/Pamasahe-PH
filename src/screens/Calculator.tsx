@@ -20,12 +20,13 @@ import {
   type TnvsMode,
 } from '../engine'
 import { FareCard } from '../components/FareCard'
-import { RideTracker } from '../components/RideTracker'
+import { RideTracker, type FixPhase } from '../components/RideTracker'
 import { RoutePicker } from '../components/RoutePicker'
 import { RouteStrip } from '../components/RouteStrip'
 import { Card, Chips, DiscountToggle, ErrorNote, NumberField, Select } from '../components/ui'
 import { fmtKm, formatEffective, localized } from '../lib/format'
 import { getPref, setPref } from '../lib/prefs'
+import { nearestStation, stationPoints } from '../lib/stations'
 import { useApp } from '../state'
 
 const num = (s: string) => (s.trim() === '' ? Number.NaN : Number(s))
@@ -183,6 +184,25 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
   const dir = ticketKind ? (to ? ticket : undefined) : dests.get(to)
   const sourceLabel = `${mode.source} ${formatEffective(mode.effective, lang)}`
 
+  // GPS ride: the nearest station at the first fix is the boarding station;
+  // afterwards the nearest station follows the bus as the alighting station.
+  const points = useMemo(() => stationPoints(mode), [mode])
+  const [nearest, setNearest] = useState<{ name: string; meters: number } | null>(null)
+  const onFix = (p: { lat: number; lng: number }, phase: FixPhase) => {
+    const n = nearestStation(points, p)
+    if (!n) return
+    setNearest({ name: n.station.name, meters: Math.round(n.meters) })
+    if (phase === 'start') {
+      setFrom(n.station.name)
+      setTo('')
+      return
+    }
+    setFrom((f) => {
+      if (n.station.name !== f) setTo(n.station.name)
+      return f
+    })
+  }
+
   const changeFrom = (s: string) => {
     setFrom(s)
     setTo('')
@@ -225,6 +245,7 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
   return (
     <CalcLayout
       inputs={
+      <>
       <Card className="flex flex-col gap-4">
         {ticketKind && dirs.length > 1 && (
           <Chips label={t('input.ticket')} options={dirs.map((d) => ({ id: d, label: t(`input.${d}`) }))} value={ticket} onChange={setTicket} />
@@ -243,6 +264,23 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
           })}
         </p>
       </Card>
+      {points.length > 0 && (
+        <>
+          <RideTracker
+            onFix={onFix}
+            note={
+              nearest ? (
+                <p data-testid="nearest-station">
+                  {t('ride.nearest', { name: nearest.name, m: nearest.meters })}
+                </p>
+              ) : (
+                <p className="text-xs text-muted">{t('ride.stationHint')}</p>
+              )
+            }
+          />
+        </>
+      )}
+      </>
       }
       result={body}
     />

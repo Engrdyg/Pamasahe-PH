@@ -133,3 +133,29 @@ test.describe('ride tracker (GPS)', () => {
     await expect(page.getByTestId('ride-open')).toBeVisible()
   })
 })
+
+test.describe('busway ride tracker (GPS picks stations)', () => {
+  // Start next to Monumento station
+  test.use({ serviceWorkers: 'block', permissions: ['geolocation'], geolocation: { latitude: 14.6572, longitude: 120.9863, accuracy: 10 } })
+  test('boarding station from the first fix, alighting station follows the bus', async ({ page, context }) => {
+    await page.route('https://tile.openstreetmap.org/**', (r) => r.fulfill({ status: 204, body: '' }))
+    await page.goto('/#/calc/busway')
+    await page.getByTestId('ride-open').click()
+    await page.getByTestId('ride-start').click()
+    await expect(page.getByLabel('From')).toHaveValue('Monumento')
+    await expect(page.getByTestId('nearest-station')).toContainText('Monumento')
+    // Bus reaches Balintawak
+    await page.waitForTimeout(800)
+    await context.setGeolocation({ latitude: 14.657456, longitude: 121.004832, accuracy: 10 })
+    await expect(page.getByLabel('To')).toHaveValue('Balintawak')
+    await expect(page.getByTestId('fare-primary')).toHaveText('₱18.00')
+    // ... then Ayala
+    await page.waitForTimeout(800)
+    await context.setGeolocation({ latitude: 14.550729, longitude: 121.028319, accuracy: 10 })
+    await expect(page.getByLabel('To')).toHaveValue('Ayala')
+    await expect(page.getByTestId('fare-primary')).toHaveText('₱58.25')
+    await expect(page.getByText('Direction: Southbound')).toBeVisible()
+    await page.getByTestId('ride-stop').click()
+    await expect(page.getByLabel('To')).toHaveValue('Ayala')
+  })
+})
