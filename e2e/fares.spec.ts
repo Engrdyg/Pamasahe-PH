@@ -79,3 +79,32 @@ test.describe('desktop layout', () => {
     await expect(page.getByTestId('route-picker')).toBeVisible()
   })
 })
+
+test.describe('trip planner (search)', () => {
+  test.use({ serviceWorkers: 'block' })
+  test('typing departure and arrival fills distance and time and shows the fare', async ({ page }) => {
+    await page.route('https://photon.komoot.io/**', (r) => {
+      const q = new URL(r.request().url()).searchParams.get('q') ?? ''
+      const place = (name: string, lng: number, lat: number) => ({
+        geometry: { coordinates: [lng, lat] },
+        properties: { name, city: 'Quezon City', state: 'Metro Manila' },
+      })
+      r.fulfill({ json: { features: q.startsWith('SM North') ? [place('SM North EDSA', 121.03, 14.656)] : [place('Monumento', 120.984, 14.654)] } })
+    })
+    await page.route('https://router.project-osrm.org/**', (r) =>
+      r.fulfill({ json: { code: 'Ok', routes: [{ distance: 11800, duration: 1860, geometry: { coordinates: [[121.03, 14.656], [120.984, 14.654]] } }] } }),
+    )
+    await page.route('https://tile.openstreetmap.org/**', (r) => r.fulfill({ status: 204, body: '' }))
+    await page.goto('/#/calc/taxi')
+    await page.getByTestId('map-open').click()
+    await page.getByTestId('place-from').fill('SM North EDSA')
+    await page.getByRole('option', { name: /SM North EDSA/ }).click()
+    await page.getByTestId('place-to').fill('Monumento')
+    await page.getByRole('option', { name: /Monumento/ }).click()
+    await expect(page.getByTestId('route-result')).toContainText('11.8 km')
+    await expect(page.getByLabel('Distance (km)', { exact: true })).toHaveValue('11.8')
+    await expect(page.getByLabel('Travel time (min)', { exact: true })).toHaveValue('31')
+    // Regular taxi: 65 + 11.8 × 13.50 + 31 × 2 = 286.30
+    await expect(page.getByTestId('fare-primary')).toHaveText('₱286.30')
+  })
+})
