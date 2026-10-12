@@ -159,3 +159,22 @@ test.describe('busway ride tracker (GPS picks stations)', () => {
     await expect(page.getByLabel('To')).toHaveValue('Ayala')
   })
 })
+
+test.describe('train ride tracker (GPS picks stations)', () => {
+  // Start at MRT-3 North Avenue
+  test.use({ serviceWorkers: 'block', permissions: ['geolocation'], geolocation: { latitude: 14.6522, longitude: 121.0323, accuracy: 10 } })
+  test('MRT-3: North Avenue → Ayala by GPS = ₱12.00', async ({ page, context }) => {
+    await page.route('https://tile.openstreetmap.org/**', (r) => r.fulfill({ status: 204, body: '' }))
+    await page.goto('/#/calc/rail')
+    await page.getByRole('radio', { name: 'MRT-3' }).click()
+    await page.getByTestId('ride-open').click()
+    await page.getByTestId('ride-start').click()
+    await expect(page.getByLabel('From')).toHaveValue('North Avenue')
+    await page.waitForTimeout(800)
+    await context.setGeolocation({ latitude: 14.5493, longitude: 121.0279, accuracy: 10 })
+    await expect(page.getByLabel('To')).toHaveValue('Ayala')
+    await expect(page.getByTestId('fare-primary')).toHaveText('₱12.00')
+    await page.getByTestId('ride-stop').click()
+    await expect(page.getByLabel('To')).toHaveValue('Ayala')
+  })
+})

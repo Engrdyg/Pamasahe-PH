@@ -1402,6 +1402,158 @@
      null,
      null
     ]
+   ],
+   "stationInfo": [
+    {
+     "mapName": "Dr. Santos",
+     "lat": 14.4805,
+     "lng": 120.9892,
+     "note": ""
+    },
+    {
+     "mapName": "Ninoy Aquino Avenue",
+     "lat": 14.491,
+     "lng": 120.9918,
+     "note": ""
+    },
+    {
+     "mapName": "PITX",
+     "lat": 14.51,
+     "lng": 120.9912,
+     "note": ""
+    },
+    {
+     "mapName": "MIA Road",
+     "lat": 14.5185,
+     "lng": 120.9929,
+     "note": ""
+    },
+    {
+     "mapName": "Redemptorist-Aseana",
+     "lat": 14.53,
+     "lng": 120.9947,
+     "note": ""
+    },
+    {
+     "mapName": "Baclaran",
+     "lat": 14.5342,
+     "lng": 120.9981,
+     "note": ""
+    },
+    {
+     "mapName": "EDSA",
+     "lat": 14.5387,
+     "lng": 120.9996,
+     "note": ""
+    },
+    {
+     "mapName": "Libertad",
+     "lat": 14.5476,
+     "lng": 120.9985,
+     "note": ""
+    },
+    {
+     "mapName": "Gil Puyat",
+     "lat": 14.5542,
+     "lng": 120.9972,
+     "note": ""
+    },
+    {
+     "mapName": "Vito Cruz",
+     "lat": 14.5635,
+     "lng": 120.9946,
+     "note": ""
+    },
+    {
+     "mapName": "Quirino",
+     "lat": 14.5703,
+     "lng": 120.9917,
+     "note": ""
+    },
+    {
+     "mapName": "Pedro Gil",
+     "lat": 14.5766,
+     "lng": 120.988,
+     "note": ""
+    },
+    {
+     "mapName": "UN Avenue",
+     "lat": 14.5826,
+     "lng": 120.9847,
+     "note": ""
+    },
+    {
+     "mapName": "Central",
+     "lat": 14.5922,
+     "lng": 120.9817,
+     "note": ""
+    },
+    {
+     "mapName": "Carriedo",
+     "lat": 14.5991,
+     "lng": 120.9814,
+     "note": ""
+    },
+    {
+     "mapName": "D. Jose",
+     "lat": 14.6054,
+     "lng": 120.982,
+     "note": ""
+    },
+    {
+     "mapName": "Bambang",
+     "lat": 14.6111,
+     "lng": 120.9823,
+     "note": ""
+    },
+    {
+     "mapName": "Tayuman",
+     "lat": 14.6167,
+     "lng": 120.9827,
+     "note": ""
+    },
+    {
+     "mapName": "Blumentritt",
+     "lat": 14.6226,
+     "lng": 120.983,
+     "note": ""
+    },
+    {
+     "mapName": "Abad Santos",
+     "lat": 14.6306,
+     "lng": 120.9815,
+     "note": ""
+    },
+    {
+     "mapName": "R. Papa",
+     "lat": 14.6362,
+     "lng": 120.9823,
+     "note": ""
+    },
+    {
+     "mapName": "5th Avenue",
+     "lat": 14.6441,
+     "lng": 120.9834,
+     "note": ""
+    },
+    {
+     "mapName": "Monumento",
+     "lat": 14.6541,
+     "lng": 120.9838,
+     "note": ""
+    },
+    {
+     "mapName": "Balintawak",
+     "lat": 14.6573,
+     "lng": 121.0039,
+     "note": ""
+    },
+    {
+     "mapName": "Fernando Poe Jr.",
+     "lat": 14.6576,
+     "lng": 121.0213,
+     "note": ""
+    }
    ]
   },
   "stored-value": {
@@ -2785,7 +2937,160 @@
      null,
      null
     ]
+   ],
+   "stationInfo": [
+    {
+     "mapName": "Dr. Santos",
+     "lat": 14.4805,
+     "lng": 120.9892,
+     "note": ""
+    },
+    {
+     "mapName": "Ninoy Aquino Avenue",
+     "lat": 14.491,
+     "lng": 120.9918,
+     "note": ""
+    },
+    {
+     "mapName": "PITX",
+     "lat": 14.51,
+     "lng": 120.9912,
+     "note": ""
+    },
+    {
+     "mapName": "MIA Road",
+     "lat": 14.5185,
+     "lng": 120.9929,
+     "note": ""
+    },
+    {
+     "mapName": "Redemptorist-Aseana",
+     "lat": 14.53,
+     "lng": 120.9947,
+     "note": ""
+    },
+    {
+     "mapName": "Baclaran",
+     "lat": 14.5342,
+     "lng": 120.9981,
+     "note": ""
+    },
+    {
+     "mapName": "EDSA",
+     "lat": 14.5387,
+     "lng": 120.9996,
+     "note": ""
+    },
+    {
+     "mapName": "Libertad",
+     "lat": 14.5476,
+     "lng": 120.9985,
+     "note": ""
+    },
+    {
+     "mapName": "Gil Puyat",
+     "lat": 14.5542,
+     "lng": 120.9972,
+     "note": ""
+    },
+    {
+     "mapName": "Vito Cruz",
+     "lat": 14.5635,
+     "lng": 120.9946,
+     "note": ""
+    },
+    {
+     "mapName": "Quirino",
+     "lat": 14.5703,
+     "lng": 120.9917,
+     "note": ""
+    },
+    {
+     "mapName": "Pedro Gil",
+     "lat": 14.5766,
+     "lng": 120.988,
+     "note": ""
+    },
+    {
+     "mapName": "UN Avenue",
+     "lat": 14.5826,
+     "lng": 120.9847,
+     "note": ""
+    },
+    {
+     "mapName": "Central",
+     "lat": 14.5922,
+     "lng": 120.9817,
+     "note": ""
+    },
+    {
+     "mapName": "Carriedo",
+     "lat": 14.5991,
+     "lng": 120.9814,
+     "note": ""
+    },
+    {
+     "mapName": "D. Jose",
+     "lat": 14.6054,
+     "lng": 120.982,
+     "note": ""
+    },
+    {
+     "mapName": "Bambang",
+     "lat": 14.6111,
+     "lng": 120.9823,
+     "note": ""
+    },
+    {
+     "mapName": "Tayuman",
+     "lat": 14.6167,
+     "lng": 120.9827,
+     "note": ""
+    },
+    {
+     "mapName": "Blumentritt",
+     "lat": 14.6226,
+     "lng": 120.983,
+     "note": ""
+    },
+    {
+     "mapName": "Abad Santos",
+     "lat": 14.6306,
+     "lng": 120.9815,
+     "note": ""
+    },
+    {
+     "mapName": "R. Papa",
+     "lat": 14.6362,
+     "lng": 120.9823,
+     "note": ""
+    },
+    {
+     "mapName": "5th Avenue",
+     "lat": 14.6441,
+     "lng": 120.9834,
+     "note": ""
+    },
+    {
+     "mapName": "Monumento",
+     "lat": 14.6541,
+     "lng": 120.9838,
+     "note": ""
+    },
+    {
+     "mapName": "Balintawak",
+     "lat": 14.6573,
+     "lng": 121.0039,
+     "note": ""
+    },
+    {
+     "mapName": "Fernando Poe Jr.",
+     "lat": 14.6576,
+     "lng": 121.0213,
+     "note": ""
+    }
    ]
   }
- }
+ },
+ "coordsSource": "approximate"
 }

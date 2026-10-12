@@ -22,6 +22,28 @@ describe('station lookup', () => {
   })
   it('returns null without station data', () => {
     expect(nearestStation([], { lat: 0, lng: 0 })).toBeNull()
-    expect(stationPoints(modesById['mrt-3'] as MatrixMode)).toEqual([])
+  })
+})
+
+describe('rail station coordinates', () => {
+  for (const id of ['mrt-3', 'lrt-2', 'lrt-1']) {
+    it(`${id}: every station has a coordinate inside Metro Manila and is its own nearest`, () => {
+      const mode = modesById[id] as MatrixMode
+      const pts = stationPoints(mode)
+      const stations = mode.directions['single-journey'].stations
+      expect(pts.filter((p) => p.direction === 'single-journey')).toHaveLength(stations.length)
+      for (const p of pts) {
+        expect(p.lat).toBeGreaterThan(14.4)
+        expect(p.lat).toBeLessThan(14.8)
+        expect(p.lng).toBeGreaterThan(120.9)
+        expect(p.lng).toBeLessThan(121.2)
+        expect(nearestStation(pts, p)?.station.name).toBe(p.name)
+      }
+    })
+  }
+  it('resolves well-known spots to the right station', () => {
+    expect(nearestStation(stationPoints(modesById['mrt-3'] as MatrixMode), { lat: 14.5495, lng: 121.0285 })?.station.name).toBe('Ayala')
+    expect(nearestStation(stationPoints(modesById['lrt-2'] as MatrixMode), { lat: 14.6225, lng: 121.0528 })?.station.name).toBe('Araneta Center-Cubao')
+    expect(nearestStation(stationPoints(modesById['lrt-1'] as MatrixMode), { lat: 14.5385, lng: 120.9995 })?.station.name).toBe('EDSA')
   })
 })

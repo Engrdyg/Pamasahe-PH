@@ -629,7 +629,87 @@
       null
      ]
     ]
-   }
+   },
+   "stationInfo": [
+    {
+     "mapName": "Recto",
+     "lat": 14.6037,
+     "lng": 120.9834,
+     "note": ""
+    },
+    {
+     "mapName": "Legarda",
+     "lat": 14.6008,
+     "lng": 120.9926,
+     "note": ""
+    },
+    {
+     "mapName": "Pureza",
+     "lat": 14.6018,
+     "lng": 121.0051,
+     "note": ""
+    },
+    {
+     "mapName": "V. Mapa",
+     "lat": 14.6038,
+     "lng": 121.0172,
+     "note": ""
+    },
+    {
+     "mapName": "J. Ruiz",
+     "lat": 14.6054,
+     "lng": 121.0263,
+     "note": ""
+    },
+    {
+     "mapName": "Gilmore",
+     "lat": 14.6134,
+     "lng": 121.0337,
+     "note": ""
+    },
+    {
+     "mapName": "Betty Go-Belmonte",
+     "lat": 14.618,
+     "lng": 121.0428,
+     "note": ""
+    },
+    {
+     "mapName": "Araneta Center-Cubao",
+     "lat": 14.6226,
+     "lng": 121.0526,
+     "note": ""
+    },
+    {
+     "mapName": "Anonas",
+     "lat": 14.628,
+     "lng": 121.0646,
+     "note": ""
+    },
+    {
+     "mapName": "Katipunan",
+     "lat": 14.6311,
+     "lng": 121.0732,
+     "note": ""
+    },
+    {
+     "mapName": "Santolan",
+     "lat": 14.622,
+     "lng": 121.0858,
+     "note": ""
+    },
+    {
+     "mapName": "Marikina-Pasig",
+     "lat": 14.6203,
+     "lng": 121.1,
+     "note": ""
+    },
+    {
+     "mapName": "Antipolo",
+     "lat": 14.6245,
+     "lng": 121.1211,
+     "note": ""
+    }
+   ]
   },
   "stored-value": {
    "stations": [
@@ -1040,7 +1120,88 @@
      null,
      null
     ]
+   ],
+   "stationInfo": [
+    {
+     "mapName": "Recto",
+     "lat": 14.6037,
+     "lng": 120.9834,
+     "note": ""
+    },
+    {
+     "mapName": "Legarda",
+     "lat": 14.6008,
+     "lng": 120.9926,
+     "note": ""
+    },
+    {
+     "mapName": "Pureza",
+     "lat": 14.6018,
+     "lng": 121.0051,
+     "note": ""
+    },
+    {
+     "mapName": "V. Mapa",
+     "lat": 14.6038,
+     "lng": 121.0172,
+     "note": ""
+    },
+    {
+     "mapName": "J. Ruiz",
+     "lat": 14.6054,
+     "lng": 121.0263,
+     "note": ""
+    },
+    {
+     "mapName": "Gilmore",
+     "lat": 14.6134,
+     "lng": 121.0337,
+     "note": ""
+    },
+    {
+     "mapName": "Betty Go-Belmonte",
+     "lat": 14.618,
+     "lng": 121.0428,
+     "note": ""
+    },
+    {
+     "mapName": "Araneta Center-Cubao",
+     "lat": 14.6226,
+     "lng": 121.0526,
+     "note": ""
+    },
+    {
+     "mapName": "Anonas",
+     "lat": 14.628,
+     "lng": 121.0646,
+     "note": ""
+    },
+    {
+     "mapName": "Katipunan",
+     "lat": 14.6311,
+     "lng": 121.0732,
+     "note": ""
+    },
+    {
+     "mapName": "Santolan",
+     "lat": 14.622,
+     "lng": 121.0858,
+     "note": ""
+    },
+    {
+     "mapName": "Marikina-Pasig",
+     "lat": 14.6203,
+     "lng": 121.1,
+     "note": ""
+    },
+    {
+     "mapName": "Antipolo",
+     "lat": 14.6245,
+     "lng": 121.1211,
+     "note": ""
+    }
    ]
   }
- }
+ },
+ "coordsSource": "approximate"
 }

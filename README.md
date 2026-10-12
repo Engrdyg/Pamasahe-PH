@@ -91,7 +91,10 @@ On the EDSA Busway, which is station-priced, the tracker picks stations
 instead: the stop nearest the first GPS fix becomes the boarding station,
 the nearest stop follows the bus as the alighting station (the fare updates
 as stations pass), and ending the ride locks it. Station coordinates come
-from `sources/EDSA_Busway_stations.kmz`.
+from `sources/EDSA_Busway_stations.kmz`. The same works on LRT-1, LRT-2 and
+MRT-3 with approximate station coordinates kept in `scripts/import-rail.py`
+(`coordsSource: "approximate"`; spacing and ordering are checked on import).
+Replace them with surveyed coordinates when available.
 
 ## Project layout
 

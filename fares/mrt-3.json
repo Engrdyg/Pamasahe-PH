@@ -430,6 +430,86 @@
      null,
      null
     ]
+   ],
+   "stationInfo": [
+    {
+     "mapName": "North Avenue",
+     "lat": 14.6522,
+     "lng": 121.0323,
+     "note": ""
+    },
+    {
+     "mapName": "Quezon Avenue",
+     "lat": 14.6424,
+     "lng": 121.0385,
+     "note": ""
+    },
+    {
+     "mapName": "GMA Kamuning",
+     "lat": 14.6351,
+     "lng": 121.0432,
+     "note": ""
+    },
+    {
+     "mapName": "Araneta Center-Cubao",
+     "lat": 14.6193,
+     "lng": 121.051,
+     "note": ""
+    },
+    {
+     "mapName": "Santolan-Annapolis",
+     "lat": 14.6077,
+     "lng": 121.0565,
+     "note": ""
+    },
+    {
+     "mapName": "Ortigas",
+     "lat": 14.5876,
+     "lng": 121.0567,
+     "note": ""
+    },
+    {
+     "mapName": "Shaw Boulevard",
+     "lat": 14.5811,
+     "lng": 121.0536,
+     "note": ""
+    },
+    {
+     "mapName": "Boni",
+     "lat": 14.5737,
+     "lng": 121.0481,
+     "note": ""
+    },
+    {
+     "mapName": "Guadalupe",
+     "lat": 14.5665,
+     "lng": 121.0455,
+     "note": ""
+    },
+    {
+     "mapName": "Buendia",
+     "lat": 14.5544,
+     "lng": 121.0344,
+     "note": ""
+    },
+    {
+     "mapName": "Ayala",
+     "lat": 14.5493,
+     "lng": 121.0279,
+     "note": ""
+    },
+    {
+     "mapName": "Magallanes",
+     "lat": 14.542,
+     "lng": 121.0196,
+     "note": ""
+    },
+    {
+     "mapName": "Taft Avenue",
+     "lat": 14.5376,
+     "lng": 121.0012,
+     "note": ""
+    }
    ]
   },
   "stored-value": {
@@ -841,7 +921,88 @@
      null,
      null
     ]
+   ],
+   "stationInfo": [
+    {
+     "mapName": "North Avenue",
+     "lat": 14.6522,
+     "lng": 121.0323,
+     "note": ""
+    },
+    {
+     "mapName": "Quezon Avenue",
+     "lat": 14.6424,
+     "lng": 121.0385,
+     "note": ""
+    },
+    {
+     "mapName": "GMA Kamuning",
+     "lat": 14.6351,
+     "lng": 121.0432,
+     "note": ""
+    },
+    {
+     "mapName": "Araneta Center-Cubao",
+     "lat": 14.6193,
+     "lng": 121.051,
+     "note": ""
+    },
+    {
+     "mapName": "Santolan-Annapolis",
+     "lat": 14.6077,
+     "lng": 121.0565,
+     "note": ""
+    },
+    {
+     "mapName": "Ortigas",
+     "lat": 14.5876,
+     "lng": 121.0567,
+     "note": ""
+    },
+    {
+     "mapName": "Shaw Boulevard",
+     "lat": 14.5811,
+     "lng": 121.0536,
+     "note": ""
+    },
+    {
+     "mapName": "Boni",
+     "lat": 14.5737,
+     "lng": 121.0481,
+     "note": ""
+    },
+    {
+     "mapName": "Guadalupe",
+     "lat": 14.5665,
+     "lng": 121.0455,
+     "note": ""
+    },
+    {
+     "mapName": "Buendia",
+     "lat": 14.5544,
+     "lng": 121.0344,
+     "note": ""
+    },
+    {
+     "mapName": "Ayala",
+     "lat": 14.5493,
+     "lng": 121.0279,
+     "note": ""
+    },
+    {
+     "mapName": "Magallanes",
+     "lat": 14.542,
+     "lng": 121.0196,
+     "note": ""
+    },
+    {
+     "mapName": "Taft Avenue",
+     "lat": 14.5376,
+     "lng": 121.0012,
+     "note": ""
+    }
    ]
   }
- }
+ },
+ "coordsSource": "approximate"
 }

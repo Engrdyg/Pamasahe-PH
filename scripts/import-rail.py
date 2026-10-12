@@ -127,6 +127,51 @@ LRT1_SJT_SPOT = {(0, 1): 20, (0, 24): 55, (0, 3): 25, (0, 9): 35, (0, 13): 40, (
                  (22, 23): 20, (9, 17): 25, (2, 3): 20, (5, 6): 20}
 
 
+# Approximate station coordinates (lat, lng), in line order. Used only to pick
+# the nearest station from a GPS fix; stations are 0.5 km or more apart, so a
+# few hundred metres of error is harmless. Replace with surveyed data when
+# available (coordsSource is set to "approximate" in the output).
+MRT3_COORDS = [
+    (14.6522, 121.0323), (14.6424, 121.0385), (14.6351, 121.0432), (14.6193, 121.0510), (14.6077, 121.0565),
+    (14.5876, 121.0567), (14.5811, 121.0536), (14.5737, 121.0481), (14.5665, 121.0455), (14.5544, 121.0344),
+    (14.5493, 121.0279), (14.5420, 121.0196), (14.5376, 121.0012),
+]
+LRT2_COORDS = [
+    (14.6037, 120.9834), (14.6008, 120.9926), (14.6018, 121.0051), (14.6038, 121.0172), (14.6054, 121.0263),
+    (14.6134, 121.0337), (14.6180, 121.0428), (14.6226, 121.0526), (14.6280, 121.0646), (14.6311, 121.0732),
+    (14.6220, 121.0858), (14.6203, 121.1000), (14.6245, 121.1211),
+]
+LRT1_COORDS = [
+    (14.4805, 120.9892), (14.4910, 120.9918), (14.5100, 120.9912), (14.5185, 120.9929), (14.5300, 120.9947),
+    (14.5342, 120.9981), (14.5387, 120.9996), (14.5476, 120.9985), (14.5542, 120.9972), (14.5635, 120.9946),
+    (14.5703, 120.9917), (14.5766, 120.9880), (14.5826, 120.9847), (14.5922, 120.9817), (14.5991, 120.9814),
+    (14.6054, 120.9820), (14.6111, 120.9823), (14.6167, 120.9827), (14.6226, 120.9830), (14.6306, 120.9815),
+    (14.6362, 120.9823), (14.6441, 120.9834), (14.6541, 120.9838), (14.6573, 121.0039), (14.6576, 121.0213),
+]
+
+
+def haversine_m(a, b):
+    import math
+    la1, lo1, la2, lo2 = map(math.radians, (a[0], a[1], b[0], b[1]))
+    h = math.sin((la2 - la1) / 2) ** 2 + math.cos(la1) * math.cos(la2) * math.sin((lo2 - lo1) / 2) ** 2
+    return 2 * 6371008.8 * math.asin(math.sqrt(h))
+
+
+def check_coords(name, stations, coords):
+    assert len(coords) == len(stations), f"{name}: {len(coords)} coords for {len(stations)} stations"
+    for i in range(1, len(coords)):
+        d = haversine_m(coords[i - 1], coords[i])
+        assert 400 <= d <= 4000, f"{name}: {stations[i-1]} -> {stations[i]} is {d:.0f} m apart"
+    # every station must be nearest to its own coordinate (no two stations too close)
+    for i, c in enumerate(coords):
+        nearest = min(range(len(coords)), key=lambda j: haversine_m(c, coords[j]) if j != i else 1e9)
+        assert haversine_m(c, coords[nearest]) >= 400, f"{name}: {stations[i]} too close to {stations[nearest]}"
+
+
+def station_info(stations, coords):
+    return [{"mapName": st, "lat": la, "lng": lo, "note": ""} for st, (la, lo) in zip(stations, coords)]
+
+
 def check_square(name: str, m: list[list[float]], n: int) -> None:
     assert len(m) == n, f"{name}: {len(m)} rows, expected {n}"
     for i, row in enumerate(m):
@@ -161,6 +206,9 @@ def main() -> None:
             if i != j:
                 assert LRT2_SJT[i][j] == half_up(LRT2_SJT_OLD[i][j]), f"LRT-2 SJT ({i},{j}) {LRT2_SJT[i][j]} != half of {LRT2_SJT_OLD[i][j]}"
 
+    check_coords("MRT-3", MRT3_STATIONS, MRT3_COORDS)
+    check_coords("LRT-2", LRT2_STATIONS, LRT2_COORDS)
+    check_coords("LRT-1", LRT1_STATIONS, LRT1_COORDS)
     check_square("LRT-1 SV", LRT1_SV, 25)
     LRT1_SJT = [[(0 if i == j else -(-LRT1_SV[i][j] // 5) * 5) for j in range(25)] for i in range(25)]
     for (i, j), v in LRT1_SJT_SPOT.items():
@@ -174,7 +222,7 @@ def main() -> None:
     fares = Path("fares")
     fixtures = Path("fixtures")
 
-    def mode(id, en, fil, source, source_url, effective, stations, products, notes_en, notes_fil, extra=None):
+    def mode(id, en, fil, source, source_url, effective, stations, products, notes_en, notes_fil, extra=None, coords=None):
         d = {
             "id": id, "name": {"en": en, "fil": fil}, "category": "rail", "method": "MATRIX", "kind": "ticket",
             "effective": effective, "source": source, "sourceUrl": source_url, "sourceDoc": f"{source} fare matrix (2026)",
@@ -186,6 +234,10 @@ def main() -> None:
         d["minFare"]["discounted"] = round(d["minFare"]["regular"] * 0.8, 2)
         for key, p in products.items():
             d["directions"][key] = {"stations": stations, **p}
+            if coords:
+                d["directions"][key]["stationInfo"] = station_info(stations, coords)
+        if coords:
+            d["coordsSource"] = "approximate"
         if extra:
             d.update(extra)
         (fares / f"{id}.json").write_text(json.dumps(d, indent=1, ensure_ascii=False) + "\n")
@@ -197,6 +249,7 @@ def main() -> None:
         {"single-journey": matrix(MRT3, n, 20), "stored-value": matrix(MRT3, n, 20)},
         "50% discounted fare for all riders since March 23, 2026 (same price for single journey, Beep and cashless). Student / senior / PWD 20% is computed from it; the station may round differently.",
         "50% diskwento para sa lahat simula March 23, 2026 (pareho ang presyo ng single journey, Beep at cashless). Kinuwenta ang 20% ng estudyante / senior / PWD mula rito; maaaring iba ang pag-round sa istasyon.",
+        coords=MRT3_COORDS,
     )
     sjt = matrix(LRT2_SJT, n, 20)
     sjt["previous"] = {"regular": [[(LRT2_SJT_OLD[i][j] if i < j else None) for j in range(n)] for i in range(n)]}
@@ -205,12 +258,14 @@ def main() -> None:
         {"single-journey": sjt, "stored-value": matrix(LRT2_SV, n, 20)},
         "50% discounted fares since March 23, 2026. Based on a ₱13.29 boarding fee + ₱1.21/km distance fee as validated by LRTA. Student / senior / PWD 20% is computed; the station may round differently.",
         "50% diskwento simula March 23, 2026. Batay sa ₱13.29 boarding fee + ₱1.21/km na distance fee ayon sa LRTA. Kinuwenta ang 20% ng estudyante / senior / PWD; maaaring iba ang pag-round sa istasyon.",
+        coords=LRT2_COORDS,
     )
     mode(
         "lrt-1", "LRT-1", "LRT-1", "LRMC", "https://lrmc.ph", "2025-04-02", LRT1_STATIONS,
         {"single-journey": matrix(LRT1_SJT, 25, 20), "stored-value": matrix(LRT1_SV, 25, 20)},
         "LRMC fare matrix effective April 2, 2025 (Dr. Santos to Fernando Poe Jr.). LRT-1 is not covered by the DOTr 50% discount. Student / senior / PWD 20% is computed; the station may round differently.",
         "Fare matrix ng LRMC epektibo April 2, 2025 (Dr. Santos hanggang Fernando Poe Jr.). Hindi sakop ng 50% diskwento ng DOTr ang LRT-1. Kinuwenta ang 20% ng estudyante / senior / PWD; maaaring iba ang pag-round sa istasyon.",
+        coords=LRT1_COORDS,
     )
 
     manifest = json.loads((fares / "manifest.json").read_text())
