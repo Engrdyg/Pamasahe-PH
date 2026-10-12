@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FareError,
@@ -292,6 +292,20 @@ function MeteredCalc({ mode }: { mode: MeteredMode }) {
   const { lang } = useApp()
   const stepped = mode.variant === 'stepped'
   const [dist, setDist] = useState(stepped ? '500' : '5')
+  // The distance field is in metres for the airport taxi and in kilometres
+  // for the others; convert the entered value when the unit changes so
+  // switching types keeps the same trip (1300 m <-> 1.3 km).
+  const unit = useRef<'m' | 'km'>(stepped ? 'm' : 'km')
+  useEffect(() => {
+    const want = stepped ? 'm' : 'km'
+    if (unit.current === want) return
+    unit.current = want
+    setDist((d) => {
+      const n = Number(d)
+      if (d.trim() === '' || !Number.isFinite(n)) return d
+      return want === 'm' ? String(Math.round(n * 1000)) : String(Math.round(n) / 1000)
+    })
+  }, [stepped])
   const [mins, setMins] = useState('10')
   const [pickup, setPickup] = useState('')
   const [vehicle, setVehicle] = useState(mode.variant === 'tnvs' ? mode.vehicles[0].id : '')

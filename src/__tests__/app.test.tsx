@@ -147,6 +147,20 @@ describe('Taxi and TNVS', () => {
     await user.type(min, '0')
     expect(screen.getByTestId('fare-primary')).toHaveTextContent('₱115.00')
   })
+  it('keeps the same trip when switching between airport (metres) and regular taxi (km)', async () => {
+    const user = userEvent.setup()
+    renderApp('#/calc/taxi')
+    await user.click(screen.getByRole('radio', { name: /Airport/ }))
+    const m = screen.getByLabelText('Distance (m)')
+    await user.clear(m)
+    await user.type(m, '1300')
+    await user.click(screen.getByRole('radio', { name: 'Regular Taxi' }))
+    expect(screen.getByLabelText('Distance (km)')).toHaveValue(1.3)
+    // 65 + 1.3 × 13.50 + 10 min × 2 = 102.55
+    expect(screen.getByTestId('fare-primary')).toHaveTextContent('₱102.55')
+    await user.click(screen.getByRole('radio', { name: /Airport/ }))
+    expect(screen.getByLabelText('Distance (m)')).toHaveValue(1300)
+  })
   it('tnvs adds a floored pick-up charge and a surge note', async () => {
     const user = userEvent.setup()
     renderApp('#/calc/tnvs')
