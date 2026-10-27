@@ -261,3 +261,44 @@ test.describe('route planner place sheet', () => {
     await expect(page.getByTestId('place-sheet')).toContainText('SM North EDSA')
   })
 })
+
+test.describe('route planner pins', () => {
+  test.use({ serviceWorkers: 'block' })
+  test('move the map under a fixed pin, confirm, then drag pin A', async ({ page }) => {
+    await page.route('https://tile.openstreetmap.org/**', (r) => r.fulfill({ status: 204, body: '' }))
+    await page.route('https://photon.komoot.io/reverse**', (r) => {
+      const u = new URL(r.request().url())
+      const name = `Spot ${Number(u.searchParams.get('lat')).toFixed(4)},${Number(u.searchParams.get('lon')).toFixed(4)}`
+      r.fulfill({ json: { features: [{ geometry: { coordinates: [0, 0] }, properties: { name, osm_key: 'amenity' } }] } })
+    })
+    await page.goto('/#/plan')
+    await page.getByTestId('plan-from').click()
+    await page.getByTestId('sheet-pin').click()
+    await expect(page.getByTestId('pin-banner')).toBeVisible()
+    await expect(page.getByTestId('center-pin')).toBeVisible()
+    const map = await page.getByTestId('plan-map').boundingBox()
+    const cx = map!.x + map!.width / 2
+    const cy = map!.y + map!.height / 2
+    await expect(page.getByTestId('pin-name')).toContainText('Spot')
+    const before = await page.getByTestId('pin-name').textContent()
+    await page.mouse.move(cx, cy)
+    await page.mouse.down()
+    await page.mouse.move(cx - 120, cy - 60, { steps: 8 })
+    await page.mouse.up()
+    await expect(page.getByTestId('pin-name')).not.toHaveText(before!)
+    const spot = await page.getByTestId('pin-name').textContent()
+    await page.getByTestId('pin-confirm').click()
+    await expect(page.getByTestId('pin-banner')).toBeHidden()
+    await expect(page.getByTestId('plan-from')).toHaveText(spot!)
+
+    // Drag pin A somewhere else: the field follows with the new landmark
+    const pinA = page.locator('.plan-pin-a').first()
+    const box = await pinA.boundingBox()
+    await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2)
+    await page.mouse.down()
+    await page.mouse.move(box!.x + 90, box!.y + 70, { steps: 8 })
+    await page.mouse.up()
+    await expect(page.getByTestId('plan-from')).not.toHaveText(spot!)
+    await expect(page.getByTestId('plan-from')).toContainText('Spot')
+  })
+})

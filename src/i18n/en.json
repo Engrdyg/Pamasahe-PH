@@ -296,7 +296,7 @@
       "rail": "Train",
       "busway": "Busway"
     },
-    "pinBanner": "Tap the map to pin “{{field}}”",
+    "pinBanner": "Move the map to put the pin on “{{field}}”",
     "cancel": "Cancel",
     "tabSuggestions": "Suggestions",
     "tabSaved": "Saved",
@@ -308,6 +308,10 @@
     "noSaved": "No saved places yet. Tap ☆ next to a place to save it.",
     "noRecent": "No recent places yet.",
     "save": "Save place",
-    "unsave": "Remove from saved"
+    "unsave": "Remove from saved",
+    "pinConfirm": "Set as {{field}}",
+    "pinFrom": "pick-up point",
+    "pinTo": "drop-off point",
+    "dragHint": "Drag A or B to move them."
   }
 }

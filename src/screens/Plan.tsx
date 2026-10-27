@@ -92,6 +92,10 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
       .finally(() => seq === latest.current && setBusy(false))
   }, [from, to, planner.status, excludeKey])
 
+  const fromRef = useRef(from)
+  fromRef.current = from
+  const toRef = useRef(to)
+  toRef.current = to
   const setField = (f: Field, p: LatLng, text: string) => {
     if (f === 'from') {
       setFrom(p)
@@ -101,22 +105,39 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
       setToText(text)
     }
   }
-  const pick = (p: LatLng) => {
-    if (pinFor) {
-      setField(pinFor, p, t('map.pinned'))
-      setPinFor(null)
-      return
-    }
-    if (!from || (from && to)) {
-      setFrom(p)
-      setFromText(t('map.pinned'))
-      setTo(null)
-      setToText('')
-    } else {
-      setTo(p)
-      setToText(t('map.pinned'))
-    }
+  // Name a dropped or dragged pin after the nearest landmark, if it is still there.
+  const nameField = (f: Field, p: LatLng) => {
+    void landmarkNear(p).then((name) => {
+      if (!name) return
+      const set = f === 'from' ? setFromText : setToText
+      const cur = f === 'from' ? fromRef.current : toRef.current
+      if (cur && cur.lat === p.lat && cur.lng === p.lng) set(name)
+    })
   }
+  const onMove = (f: Field, p: LatLng) => {
+    setField(f, p, t('map.pinned'))
+    nameField(f, p)
+  }
+  // Pin mode: the map moves under a fixed pin; confirm to use the spot.
+  const [pinAt, setPinAt] = useState<LatLng | null>(null)
+  const [pinName, setPinName] = useState<string | null | undefined>(undefined)
+  useEffect(() => {
+    if (!pinFor || !pinAt) return
+    let alive = true
+    setPinName(undefined)
+    const timer = window.setTimeout(() => void landmarkNear(pinAt).then((n) => alive && setPinName(n)), 250)
+    return () => {
+      alive = false
+      window.clearTimeout(timer)
+    }
+  }, [pinFor, pinAt])
+  const confirmPin = () => {
+    if (!pinFor || !pinAt) return
+    setField(pinFor, pinAt, pinName ?? t('map.pinned'))
+    setPinFor(null)
+    setPinAt(null)
+  }
+
   const useMyLocation = (f: Field) => {
     if (!navigator.geolocation) return setError(t('map.noGeo'))
     navigator.geolocation.getCurrentPosition(
@@ -290,15 +311,45 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
 
       <div className="relative isolate z-0 md:sticky md:top-6 md:col-start-2 md:row-span-2 md:row-start-1 md:overflow-hidden md:rounded-2xl">
         {pinFor && (
-          <div role="status" className="absolute inset-x-3 top-3 z-[500] flex items-center justify-between gap-2 rounded-xl bg-ink px-4 py-2 text-sm text-surface shadow-lg" data-testid="pin-banner">
-            <span>{t('plan.pinBanner', { field: pinFor === 'from' ? t('map.from') : t('map.to') })}</span>
-            <button type="button" onClick={() => setPinFor(null)} className="min-h-9 px-2 font-semibold underline">
-              {t('plan.cancel')}
-            </button>
-          </div>
+          <>
+            <div role="status" className="absolute left-14 right-3 top-3 z-[500] rounded-xl bg-ink px-4 py-2 text-center text-sm text-surface shadow-lg" data-testid="pin-banner">
+              {t('plan.pinBanner', { field: pinFor === 'from' ? t('map.from') : t('map.to') })}
+            </div>
+            {/* Fixed pin in the middle of the map; its tip marks the spot. */}
+            <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 z-[500] -translate-x-1/2 -translate-y-full" data-testid="center-pin">
+              <span className={`plan-pin ${pinFor === 'from' ? 'plan-pin-a' : 'plan-pin-b'} plan-pin-lift`}>
+                <b>{pinFor === 'from' ? 'A' : 'B'}</b>
+              </span>
+            </div>
+            <span aria-hidden="true" className="pointer-events-none absolute left-1/2 top-1/2 z-[499] h-2 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-black/30" />
+            <div className="absolute inset-x-3 bottom-3 z-[500] flex flex-col gap-2 rounded-2xl bg-surface p-3 shadow-xl" data-testid="pin-card">
+              <p className="flex items-center gap-2 text-sm text-ink">
+                <span aria-hidden="true">📍</span>
+                <span className="truncate" data-testid="pin-name">
+                  {pinName === undefined ? '…' : (pinName ?? t('map.pinned'))}
+                </span>
+              </p>
+              <div className="flex gap-2">
+                <button type="button" onClick={confirmPin} className="min-h-11 flex-1 rounded-full bg-brand px-4 text-sm font-semibold text-white" data-testid="pin-confirm">
+                  {t('plan.pinConfirm', { field: pinFor === 'from' ? t('plan.pinFrom') : t('plan.pinTo') })}
+                </button>
+                <button type="button" onClick={() => setPinFor(null)} className="min-h-11 rounded-full border border-line-strong px-4 text-sm text-ink-2">
+                  {t('plan.cancel')}
+                </button>
+              </div>
+            </div>
+          </>
         )}
         <Suspense fallback={<div className="grid place-items-center bg-canvas-2 text-sm text-muted" style={{ height: mapHeight }}>{t('map.loadingMap')}</div>}>
-          <PlanMap from={from} to={to} itinerary={it} marks={marks} onPick={pick} height={mapHeight} />
+          <PlanMap
+            from={from}
+            to={to}
+            itinerary={it}
+            marks={marks}
+            onMove={onMove}
+            pinMode={pinFor ? { start: (pinFor === 'from' ? from : to) ?? from ?? to, onCenter: setPinAt } : null}
+            height={mapHeight}
+          />
         </Suspense>
       </div>
 
@@ -412,6 +463,7 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
             </Card>
           )}
           <p className="text-[11px] leading-snug text-muted">
+            {(from || to) && `${t('plan.dragHint')} `}
             {t('plan.note', { n: planner.routes || '…' })} {t('plan.landmarkNote')}
           </p>
       </div>

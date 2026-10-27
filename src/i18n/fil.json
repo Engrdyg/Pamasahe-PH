@@ -296,7 +296,7 @@
       "rail": "Tren",
       "busway": "Busway"
     },
-    "pinBanner": "Pindutin ang mapa para i-pin ang “{{field}}”",
+    "pinBanner": "Igalaw ang mapa para ilagay ang pin sa “{{field}}”",
     "cancel": "Kanselahin",
     "tabSuggestions": "Mungkahi",
     "tabSaved": "Naka-save",
@@ -308,6 +308,10 @@
     "noSaved": "Wala pang naka-save. Pindutin ang ☆ sa tabi ng lugar para i-save.",
     "noRecent": "Wala pang kamakailang lugar.",
     "save": "I-save ang lugar",
-    "unsave": "Alisin sa naka-save"
+    "unsave": "Alisin sa naka-save",
+    "pinConfirm": "Itakda bilang {{field}}",
+    "pinFrom": "sakayan",
+    "pinTo": "babaan",
+    "dragHint": "Hilahin ang A o B para ilipat."
   }
 }

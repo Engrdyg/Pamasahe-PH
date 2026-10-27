@@ -203,6 +203,25 @@ body {
 .route-map { font-size: 12px; font-weight: 500; color: var(--color-brand); text-decoration: underline; width: fit-content; }
 
 /* ---------- Route map ---------- */
+.plan-pin {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 3px solid #fff;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.35);
+  font: 800 14px/1 system-ui, sans-serif;
+  color: #fff;
+  cursor: grab;
+}
+.plan-pin > b { transform: rotate(45deg); font-weight: 800; }
+.plan-pin-a { background: #0b3d91; }
+.plan-pin-b { background: #f59e0b; color: #0b1220; }
+.plan-pin-lift { margin-bottom: 4px; animation: pin-bob 1.4s ease-in-out infinite; }
+@keyframes pin-bob { 50% { translate: 0 -4px; } }
+@media (prefers-reduced-motion: reduce) { .plan-pin-lift { animation: none; } }
 .leaflet-tooltip.plan-mark {
   font: 600 12px/1.25 system-ui, sans-serif;
   color: #0f172a;
