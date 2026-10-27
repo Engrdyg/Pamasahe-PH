@@ -318,6 +318,8 @@
     "legendBoard": "Get on",
     "legendTransfer": "Transfer",
     "legendAlight": "Get off",
-    "legendStop": "Stop / station"
+    "legendStop": "Stop / station",
+    "fromShort": "From",
+    "toShort": "To"
   }
 }

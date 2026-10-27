@@ -318,6 +318,8 @@
     "legendBoard": "Sakay",
     "legendTransfer": "Lipat",
     "legendAlight": "Baba",
-    "legendStop": "Hintuan / istasyon"
+    "legendStop": "Hintuan / istasyon",
+    "fromShort": "Sakayan",
+    "toShort": "Babaan"
   }
 }

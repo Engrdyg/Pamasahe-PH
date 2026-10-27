@@ -276,59 +276,53 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
       <button
         type="button"
         onClick={() => setSheet(f)}
-        className={`flex min-h-12 w-full items-center rounded-xl bg-canvas-2 px-4 text-left text-base ${text ? 'text-ink' : 'text-muted'}`}
+        aria-label={f === 'from' ? t('map.from') : t('map.to')}
+        className={`flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-xl bg-canvas-2 px-3 text-left text-sm ${text ? 'text-ink' : 'text-muted'}`}
         data-testid={`plan-${f}`}
       >
-        <span className="truncate">{text || (f === 'from' ? t('map.from') : t('map.to'))}</span>
+        <span aria-hidden="true" className={`h-2.5 w-2.5 shrink-0 rounded-full ${f === 'from' ? 'bg-brand' : 'bg-amber-500'}`} />
+        <span className="truncate">{text || (f === 'from' ? t('plan.fromShort') : t('plan.toShort'))}</span>
       </button>
     )
   }
 
+
   return (
     <main className="flex w-full flex-col md:mx-auto md:grid md:max-w-6xl md:grid-cols-[400px_1fr] md:items-start md:gap-6 md:px-8 md:py-6" data-testid="plan">
       <section
-        className="sticky z-[700] border-b border-line bg-surface px-4 pb-2 pt-3 md:static md:col-start-1 md:rounded-2xl md:border md:shadow-sm"
+        className="sticky z-[700] border-b border-line bg-surface px-3 pb-1 pt-2 md:static md:col-start-1 md:rounded-2xl md:border md:shadow-sm"
         style={{ top: headerH }}
         data-testid="plan-header"
       >
-        <div className="flex items-center gap-3">
-          <div aria-hidden="true" className="flex flex-col items-center self-stretch py-5">
-            <span className="h-3.5 w-3.5 rounded-full border-[3px] border-ink-2" />
-            <span className="w-[3px] flex-1 bg-ink-2" />
-            <span className="h-3.5 w-3.5 rounded-full bg-ink-2" />
-          </div>
-          <div className="flex min-w-0 flex-1 flex-col gap-2">
-            {field('from')}
-            {field('to')}
-          </div>
-          <button type="button" onClick={swap} aria-label={t('plan.swap')} title={t('plan.swap')} className="flex min-h-12 min-w-12 items-center justify-center text-2xl text-ink-2" data-testid="plan-swap">
-            ⇅
+        <div className="flex items-center gap-1">
+          {field('from')}
+          <button type="button" onClick={swap} aria-label={t('plan.swap')} title={t('plan.swap')} className="flex min-h-11 min-w-9 shrink-0 items-center justify-center text-xl text-ink-2" data-testid="plan-swap">
+            ⇄
           </button>
+          {field('to')}
         </div>
-        <div className="flex items-center justify-between gap-2 pt-2">
+        <div className="flex items-center justify-between gap-2">
           <button
             type="button"
             onClick={() => setShowModes((v) => !v)}
             aria-expanded={showModes}
-            className="inline-flex min-h-11 items-center gap-2 text-base text-ink"
+            className="inline-flex min-h-9 items-center gap-1.5 text-sm text-ink"
             data-testid="plan-modes"
           >
-            <span aria-hidden="true" className="text-green-600">
-              🚍
-            </span>
+            <span aria-hidden="true">🚍</span>
             {exclude.length ? t('plan.someModes', { n: KINDS.length - exclude.length }) : t('plan.allModes')}
             <span aria-hidden="true" className="text-muted">
               {showModes ? '▴' : '▾'}
             </span>
           </button>
           {(from || to) && (
-            <button type="button" onClick={clearAll} className="min-h-11 px-2 text-sm text-muted underline">
+            <button type="button" onClick={clearAll} className="min-h-9 px-2 text-xs text-muted underline">
               {t('plan.clear')}
             </button>
           )}
         </div>
         {showModes && (
-          <div className="flex flex-wrap gap-2 pb-2" data-testid="plan-mode-chips">
+          <div className="flex flex-wrap gap-2 pb-1.5" data-testid="plan-mode-chips">
             {KINDS.map((k) => {
               const on = !exclude.includes(k)
               return (
