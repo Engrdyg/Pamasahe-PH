@@ -1,0 +1,176 @@
+{
+ "home": {
+  "search": {
+   "x": 16,
+   "y": 210.328125,
+   "width": 358,
+   "height": 176
+  }
+ },
+ "plan-empty": {
+  "from": {
+   "x": 12,
+   "y": 69,
+   "width": 161,
+   "height": 44
+  },
+  "to": {
+   "x": 217,
+   "y": 69,
+   "width": 161,
+   "height": 44
+  }
+ },
+ "sheet-from": {
+  "input": {
+   "x": 59.96875,
+   "y": 64,
+   "width": 298.03125,
+   "height": 48
+  }
+ },
+ "sheet-quiapo": {
+  "pick": {
+   "x": 16,
+   "y": 173,
+   "width": 306,
+   "height": 56
+  }
+ },
+ "sheet-araneta": {
+  "pick": {
+   "x": 16,
+   "y": 173,
+   "width": 306,
+   "height": 56
+  }
+ },
+ "plan-results": {
+  "option1": {
+   "x": 16,
+   "y": 648,
+   "width": 358,
+   "height": 118
+  },
+  "option0": {
+   "x": 16,
+   "y": 518,
+   "width": 358,
+   "height": 118
+  }
+ },
+ "plan-jeep-map": {},
+ "plan-jeep-steps": {
+  "add": {
+   "x": 33,
+   "y": 554,
+   "width": 238.40625,
+   "height": 44
+  }
+ },
+ "plan-multi": {
+  "legend": {
+   "x": 16,
+   "y": 454,
+   "width": 63.6875,
+   "height": 16
+  }
+ },
+ "plan-multi-legend": {},
+ "plan-pin": {
+  "confirm": {
+   "x": 24,
+   "y": 719,
+   "width": 223.59375,
+   "height": 44
+  }
+ },
+ "home-tiles": {
+  "jeep": {
+   "x": 16,
+   "y": 426.109375,
+   "width": 173,
+   "height": 146
+  }
+ },
+ "jeep-empty": {
+  "km": {
+   "x": 33,
+   "y": 175,
+   "width": 291.140625,
+   "height": 48
+  }
+ },
+ "jeep-1": {},
+ "jeep-12": {
+  "km": {
+   "x": 33,
+   "y": 242,
+   "width": 291.140625,
+   "height": 48
+  },
+  "primary": {
+   "x": 33,
+   "y": 520,
+   "width": 165.515625,
+   "height": 53.625
+  }
+ },
+ "jeep-12-disc": {
+  "switch": {
+   "x": 16,
+   "y": 137,
+   "width": 266.125,
+   "height": 44
+  },
+  "primary": {
+   "x": 33,
+   "y": 520,
+   "width": 183.078125,
+   "height": 53.625
+  }
+ },
+ "busway": {
+  "primary": {
+   "x": 33,
+   "y": 480,
+   "width": 165.515625,
+   "height": 53.625
+  }
+ },
+ "rail": {
+  "primary": {
+   "x": 33,
+   "y": 600,
+   "width": 165.515625,
+   "height": 53.625
+  }
+ },
+ "trip": {
+  "total": {
+   "x": 33,
+   "y": 118,
+   "width": 324,
+   "height": 64.359375
+  }
+ },
+ "report": {
+  "over": {
+   "x": 46,
+   "y": 250.625,
+   "width": 298,
+   "height": 24
+  }
+ },
+ "ride-ready": {
+  "start": {
+   "x": 33,
+   "y": 580,
+   "width": 324,
+   "height": 48
+  }
+ },
+ "ride-4": {},
+ "ride-14": {},
+ "ride-24": {}
+}
