@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Magkano Pamasahe — LTFRB land transport fare checker (PWA)",
+  "description": "Bayad Po — LTFRB fare checker and NCR route planner (PWA)",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",

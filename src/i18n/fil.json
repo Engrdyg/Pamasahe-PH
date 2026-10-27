@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Magkano Pamasahe",
+    "name": "Bayad Po",
     "tagline": "Tagasuri ng pamasahe ayon sa LTFRB"
   },
   "nav": {
@@ -129,7 +129,7 @@
   },
   "install": {
     "title": "I-download ang app",
-    "body": "I-install ang Magkano Pamasahe sa iyong phone. Bubukas ito na parang normal na app at gumagana offline.",
+    "body": "I-install ang Bayad Po sa iyong phone. Bubukas ito na parang normal na app at gumagana offline.",
     "button": "I-download ang app",
     "installed": "Naka-install na ang app",
     "ios": "Sa iPhone: pindutin ang Share, tapos \"Add to Home Screen\".",
@@ -181,7 +181,7 @@
   },
   "donate": {
     "title": "Suportahan ang app",
-    "body": "Libre at walang ads ang Magkano Pamasahe. Kung nakatulong ito sa'yo, malaking bagay ang kahit maliit na GCash donation para patuloy itong ma-update.",
+    "body": "Libre at walang ads ang Bayad Po. Kung nakatulong ito sa'yo, malaking bagay ang kahit maliit na GCash donation para patuloy itong ma-update.",
     "open": "Buksan ang GCash",
     "scan": "I-scan ang QR na ito sa GCash, o i-save at gamitin ang \"Scan from gallery\".",
     "name": "JA**E J* D.",

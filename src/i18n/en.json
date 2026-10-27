@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Magkano Pamasahe",
+    "name": "Bayad Po",
     "tagline": "LTFRB land transport fare checker"
   },
   "nav": {
@@ -129,7 +129,7 @@
   },
   "install": {
     "title": "Download the app",
-    "body": "Install Magkano Pamasahe on your phone. It opens like a normal app and works offline.",
+    "body": "Install Bayad Po on your phone. It opens like a normal app and works offline.",
     "button": "Download app",
     "installed": "App installed",
     "ios": "On iPhone: tap Share, then \"Add to Home Screen\".",
@@ -181,7 +181,7 @@
   },
   "donate": {
     "title": "Support this app",
-    "body": "Magkano Pamasahe is free and has no ads. If it helped you, a small GCash donation keeps it running and updated.",
+    "body": "Bayad Po is free and has no ads. If it helped you, a small GCash donation keeps it running and updated.",
     "open": "Open GCash",
     "scan": "Scan this QR in GCash, or save it and use \"Scan from gallery\".",
     "name": "JA**E J* D.",

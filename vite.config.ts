@@ -41,9 +41,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg', 'logo-mark.svg', 'icons/*.svg', 'apple-touch-icon.png', 'gcash-qr.png'],
       manifest: {
-        name: 'Magkano Pamasahe — LTFRB Fare Checker',
-        short_name: 'Magkano Pamasahe',
-        description: 'Check the official LTFRB fare for jeepney, UV Express, bus, EDSA Busway, taxi and TNVS.',
+        name: 'Bayad Po — Fare Checker & Route Planner',
+        short_name: 'Bayad Po',
+        description: 'Check the official LTFRB fare for jeepney, UV Express, bus, EDSA Busway, train, taxi and TNVS, and plan routes in Metro Manila.',
         theme_color: '#0b3d91',
         background_color: '#f8fafc',
         display: 'standalone',

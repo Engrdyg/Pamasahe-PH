@@ -15,7 +15,7 @@ export interface PrivacySection {
 export const privacy: Record<Lang, { intro: string; sections: PrivacySection[] }> = {
   en: {
     intro:
-      'Magkano Pamasahe is a free fare checker. It has no accounts, no ads and no server of its own that stores personal data. This page explains what the app keeps on your device, what it sends to other services when you use certain features, and your choices.',
+      'Bayad Po is a free fare checker. It has no accounts, no ads and no server of its own that stores personal data. This page explains what the app keeps on your device, what it sends to other services when you use certain features, and your choices.',
     sections: [
       {
         title: 'What stays on your device',
@@ -75,7 +75,7 @@ export const privacy: Record<Lang, { intro: string; sections: PrivacySection[] }
   },
   fil: {
     intro:
-      'Libreng tagasuri ng pamasahe ang Magkano Pamasahe. Walang account, walang ads, at walang sariling server na nag-iimbak ng personal na datos. Ipinapaliwanag dito kung ano ang naiiwan sa device mo, ano ang ipinapadala sa ibang serbisyo kapag ginamit mo ang ilang feature, at ang mga pagpipilian mo.',
+      'Libreng tagasuri ng pamasahe ang Bayad Po. Walang account, walang ads, at walang sariling server na nag-iimbak ng personal na datos. Ipinapaliwanag dito kung ano ang naiiwan sa device mo, ano ang ipinapadala sa ibang serbisyo kapag ginamit mo ang ilang feature, at ang mga pagpipilian mo.',
     sections: [
       {
         title: 'Ano ang naiiwan sa device mo',

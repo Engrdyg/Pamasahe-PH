@@ -1,4 +1,6 @@
-# Magkano Pamasahe — LTFRB Land Transport Fare Checker
+# Bayad Po — LTFRB Fare Checker and NCR Route Planner
+
+(Formerly "Magkano Pamasahe".)
 
 Live at https://magkano-pamasahe.vercel.app
 
