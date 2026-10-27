@@ -49,6 +49,15 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
   const [added, setAdded] = useState(false)
   const latest = useRef(0)
   const wide = useWide()
+  // Keep the from/to fields pinned under the app's top bar while the results scroll.
+  const [headerH, setHeaderH] = useState(0)
+  useEffect(() => {
+    const bar = document.querySelector('header')
+    if (!bar || typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => setHeaderH(bar.getBoundingClientRect().height))
+    ro.observe(bar)
+    return () => ro.disconnect()
+  }, [])
   const [sheet, setSheet] = useState<Field | null>(null)
   const [pinFor, setPinFor] = useState<Field | null>(null)
   const [exclude, setExclude] = useState<LineKind[]>([])
@@ -134,6 +143,7 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
   const confirmPin = () => {
     if (!pinFor || !pinAt) return
     setField(pinFor, pinAt, pinName ?? t('map.pinned'))
+    if (pinName === undefined) nameField(pinFor, pinAt) // name it once the landmark arrives
     setPinFor(null)
     setPinAt(null)
   }
@@ -253,7 +263,11 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
 
   return (
     <main className="flex w-full flex-col md:mx-auto md:grid md:max-w-6xl md:grid-cols-[400px_1fr] md:items-start md:gap-6 md:px-8 md:py-6" data-testid="plan">
-      <section className="border-b border-line bg-surface px-4 pb-2 pt-3 md:col-start-1 md:rounded-2xl md:border md:shadow-sm">
+      <section
+        className="sticky z-[700] border-b border-line bg-surface px-4 pb-2 pt-3 md:static md:col-start-1 md:rounded-2xl md:border md:shadow-sm"
+        style={{ top: headerH }}
+        data-testid="plan-header"
+      >
         <div className="flex items-center gap-3">
           <div aria-hidden="true" className="flex flex-col items-center self-stretch py-5">
             <span className="h-3.5 w-3.5 rounded-full border-[3px] border-ink-2" />

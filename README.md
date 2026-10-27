@@ -2,7 +2,7 @@
 
 (Formerly "Magkano Pamasahe".)
 
-Live at https://magkano-pamasahe.vercel.app
+Live at https://bayad-po.vercel.app (formerly magkano-pamasahe.vercel.app)
 
 Mobile-first PWA that shows the official LTFRB fare for a trip on any land-based
 public transport mode in the Philippines: jeepney, UV Express, city and
@@ -156,7 +156,7 @@ distance, and shows metered totals to the centavo.
 
 ## Privacy
 
-The in-app privacy policy (`#/privacy`, text in `src/content/privacy.ts`) describes what is stored on the device and which third-party services some features call (OSRM, Photon, OpenStreetMap tiles, Vercel hosting and Web Analytics). Update it whenever a feature changes what data leaves the device. Public URL for app stores: https://magkano-pamasahe.vercel.app/#/privacy
+The in-app privacy policy (`#/privacy`, text in `src/content/privacy.ts`) describes what is stored on the device and which third-party services some features call (OSRM, Photon, OpenStreetMap tiles, Vercel hosting and Web Analytics). Update it whenever a feature changes what data leaves the device. Public URL for app stores: https://bayad-po.vercel.app/#/privacy
 
 ## Disclaimer
 

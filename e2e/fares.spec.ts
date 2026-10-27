@@ -217,6 +217,12 @@ test.describe('route planner (NCR)', () => {
     await expect(page.locator('.leaflet-tooltip.plan-mark').first()).toContainText('Quiapo Church')
     await page.getByTestId('plan-add').click()
     await expect(page.getByTestId('trip-bar')).toBeVisible()
+    // The from/to fields stay under the top bar while the results scroll
+    await page.mouse.wheel(0, 1500)
+    await page.waitForTimeout(300)
+    const header = await page.getByTestId('plan-header').boundingBox()
+    expect(header!.y).toBeGreaterThan(40)
+    expect(header!.y).toBeLessThan(90)
   })
 })
 
@@ -286,6 +292,7 @@ test.describe('route planner pins', () => {
     await page.mouse.move(cx - 120, cy - 60, { steps: 8 })
     await page.mouse.up()
     await expect(page.getByTestId('pin-name')).not.toHaveText(before!)
+    await expect(page.getByTestId('pin-name')).toContainText('Spot') // landmark for the new spot has arrived
     const spot = await page.getByTestId('pin-name').textContent()
     await page.getByTestId('pin-confirm').click()
     await expect(page.getByTestId('pin-banner')).toBeHidden()

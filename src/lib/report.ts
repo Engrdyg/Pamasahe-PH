@@ -46,7 +46,7 @@ export function buildReport(r: ReportInput): string {
     `${L.official}: ${formatPesos(r.official)} (${r.officialLabel})`,
     `${L.over}: ${formatPesos(o.amount)} (+${o.pct.toFixed(1)}%)`,
     r.notes?.trim() ? `${L.notes}: ${r.notes.trim()}` : null,
-    `${L.src}: ${r.source} · magkano-pamasahe.vercel.app`,
+    `${L.src}: ${r.source} · bayad-po.vercel.app`,
   ]
   return lines.filter(Boolean).join('\n')
 }

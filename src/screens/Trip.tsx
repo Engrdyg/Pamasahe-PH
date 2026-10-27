@@ -18,7 +18,7 @@ export function Trip() {
     const lines = [
       t('trip.shareText', { n: trip.length, total: formatPesos(totals.regular), disc: formatPesos(totals.discounted) }),
       ...trip.map((l, i) => `${i + 1}. ${l.modeName}, ${l.tripLabel}: ${formatPesos(l.regular)} (${formatPesos(l.discounted)})`),
-      'magkano-pamasahe.vercel.app',
+      'bayad-po.vercel.app',
     ]
     if ((await shareText(lines.join('\n'))) === 'copied') {
       setCopied(true)
