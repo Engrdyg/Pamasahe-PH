@@ -240,5 +240,11 @@
     "tip": "Kunan ng litrato ang plate o body number kung kaya, at itago ang resibo.",
     "close": "Isara",
     "railNote": "Para sa tren, i-report sa operator ng linya sa istasyon o sa opisyal nitong page."
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "effective": "Epektibo {{date}}",
+    "contact": "May tanong? Magbukas ng issue sa GitHub",
+    "link": "Privacy policy"
   }
 }

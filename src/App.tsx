@@ -10,6 +10,7 @@ import { About } from './screens/About'
 import { Calculator } from './screens/Calculator'
 import { Compare } from './screens/Compare'
 import { Home } from './screens/Home'
+import { Privacy } from './screens/Privacy'
 import { Support } from './screens/Support'
 import { Trip } from './screens/Trip'
 import { Tables } from './screens/Tables'
@@ -54,6 +55,10 @@ export default function App() {
     screen = <Tables />
     title = t('tables.title')
     active = 'tables'
+  } else if (section === 'privacy') {
+    screen = <Privacy />
+    title = t('privacy.title')
+    back = 'about'
   } else if (section === 'trip') {
     screen = <Trip />
     title = t('trip.title')

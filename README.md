@@ -130,6 +130,10 @@ flag-down coverage and time-charge basis, and taxi/TNVS rounding. The app
 currently rounds km up, applies no UV minimum, charges taxi time on top of
 distance, and shows metered totals to the centavo.
 
+## Privacy
+
+The in-app privacy policy (`#/privacy`, text in `src/content/privacy.ts`) describes what is stored on the device and which third-party services some features call (OSRM, Photon, OpenStreetMap tiles, Vercel hosting and Web Analytics). Update it whenever a feature changes what data leaves the device. Public URL for app stores: https://magkano-pamasahe.vercel.app/#/privacy
+
 ## Disclaimer
 
 Fares are based on LTFRB fare guides effective September 28, 2026 and are for

@@ -313,3 +313,18 @@ describe('Multi-leg trip', () => {
     expect(screen.getByTestId('trip-total')).toHaveTextContent('₱12.00')
   })
 })
+
+describe('Privacy policy', () => {
+  it('is linked from About and shows the sections in the chosen language', async () => {
+    const user = userEvent.setup()
+    renderApp('#/about')
+    expect(screen.getByTestId('privacy-link')).toHaveAttribute('href', '#/privacy')
+    window.location.hash = '#/privacy'
+    await screen.findByTestId('privacy')
+    expect(screen.getByRole('heading', { name: 'Location' })).toBeInTheDocument()
+    expect(screen.getByText(/router\.project-osrm\.org/)).toBeInTheDocument()
+    expect(screen.getByText(/Republic Act No\. 10173/)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Language' }))
+    expect(screen.getByRole('heading', { name: 'Lokasyon' })).toBeInTheDocument()
+  })
+})

@@ -71,6 +71,9 @@ export function Sidebar({ active }: { active: string }) {
             onChange={setLang}
           />
         </div>
+        <a href="#/privacy" className="text-xs text-muted underline">
+          {t('privacy.link')}
+        </a>
         <a href="tel:1342" className="text-xs text-muted">
           {t('about.hotline')}: <span className="font-semibold text-ink">1342</span>
         </a>

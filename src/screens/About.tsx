@@ -85,6 +85,9 @@ export function About() {
       </Card>
 
       <p className="text-xs leading-relaxed text-muted md:col-span-2">{t('about.disclaimer')}</p>
+      <a href="#/privacy" className="text-sm text-brand underline md:col-span-2" data-testid="privacy-link">
+        {t('privacy.link')}
+      </a>
     </main>
   )
 }

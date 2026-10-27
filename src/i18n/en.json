@@ -240,5 +240,11 @@
     "tip": "Take a photo of the plate or body number if you can, and keep your receipt.",
     "close": "Close",
     "railNote": "For trains, report to the line's operator at the station or on its official page."
+  },
+  "privacy": {
+    "title": "Privacy policy",
+    "effective": "Effective {{date}}",
+    "contact": "Questions? Open an issue on GitHub",
+    "link": "Privacy policy"
   }
 }
