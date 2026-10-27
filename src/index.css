@@ -256,6 +256,10 @@ body {
   background: var(--color-canvas-2);
   border: 1px solid var(--color-line);
 }
-.dark .leaflet-tile { filter: invert(1) hue-rotate(180deg) brightness(0.85) contrast(0.9); }
-.dark .leaflet-container { background: #0b1220; }
+/* Light, softly shaded basemap in both themes: muted OSM colours so the
+   coloured rides stand out. Slightly dimmer in dark mode to avoid glare. */
+.leaflet-tile { filter: saturate(0.3) brightness(1.04) contrast(0.88); }
+.leaflet-container { background: #eef1f4; }
+.dark .leaflet-tile { filter: saturate(0.3) brightness(0.92) contrast(0.88); }
+.dark .leaflet-container { background: #d9dde2; }
 .leaflet-tooltip { font-weight: 700; padding: 1px 6px; }
