@@ -214,6 +214,7 @@ test.describe('route planner (NCR)', () => {
     await expect(page.getByTestId('plan-walk').first()).toContainText('Recto station')
     await page.getByTestId('plan-option').nth(1).click()
     await expect(page.getByTestId('plan-board').first()).toContainText('Quiapo Church (Plaza Miranda)')
+    await expect(page.locator('.leaflet-tooltip.plan-mark').first()).toContainText('Quiapo Church')
     await page.getByTestId('plan-add').click()
     await expect(page.getByTestId('trip-bar')).toBeVisible()
   })

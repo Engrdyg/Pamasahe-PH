@@ -277,6 +277,9 @@
     "board": "Sumakay malapit sa {{place}}",
     "alight": "Bumaba malapit sa {{place}}",
     "thePin": "naka-pin sa mapa",
-    "landmarkNote": "Galing sa OpenStreetMap ang mga landmark at pangalan ng kalye at maaaring tantiya lang."
+    "landmarkNote": "Galing sa OpenStreetMap ang mga landmark at pangalan ng kalye at maaaring tantiya lang.",
+    "markBoard": "Sakay: {{place}}",
+    "markTransfer": "Lipat: {{place}}",
+    "markAlight": "Baba: {{place}}"
   }
 }

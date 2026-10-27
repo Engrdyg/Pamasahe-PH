@@ -2,21 +2,25 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef } from 'react'
 import { KIND_COLOR } from '../lib/planColors'
-import type { SlimItinerary } from '../lib/planner'
+import type { LineKind, SlimItinerary } from '../lib/planner'
 import { DEFAULT_CENTER, type LatLng } from '../lib/routing'
 
 export interface PlanMapProps {
   from: LatLng | null
   to: LatLng | null
   itinerary: SlimItinerary | null
+  /** Where to get on, transfer and get off, with landmark names. */
+  marks?: { lat: number; lng: number; text: string; kind: LineKind }[]
   onPick: (p: LatLng) => void
 }
 
 /** Leaflet map for the route planner: pins, ride legs coloured by mode, dashed walks. */
-export default function PlanMap({ from, to, itinerary, onPick }: PlanMapProps) {
+export default function PlanMap({ from, to, itinerary, marks = [], onPick }: PlanMapProps) {
   const el = useRef<HTMLDivElement>(null)
   const map = useRef<L.Map | null>(null)
   const layer = useRef<L.LayerGroup | null>(null)
+  const lastView = useRef('')
+  const marksKey = marks.map((m) => `${m.lat},${m.lng},${m.text}`).join('|')
   const onPickRef = useRef(onPick)
   onPickRef.current = onPick
 
@@ -55,6 +59,14 @@ export default function PlanMap({ from, to, itinerary, onPick }: PlanMapProps) {
         }
       }
     }
+    // Labels on the east half of the trip open to the left so they stay on the map.
+    const midLng = from && to ? (from.lng + to.lng) / 2 : null
+    for (const mk of marks) {
+      const left = midLng != null && mk.lng > midLng
+      L.circleMarker([mk.lat, mk.lng], { radius: 7, color: '#fff', weight: 3, fillColor: KIND_COLOR[mk.kind], fillOpacity: 1 })
+        .bindTooltip(mk.text, { permanent: true, direction: left ? 'left' : 'right', offset: [left ? -10 : 10, 0], className: 'plan-mark' })
+        .addTo(g)
+    }
     const pin = (p: LatLng, color: string, label: string) => {
       L.circleMarker([p.lat, p.lng], { radius: 9, color: '#fff', weight: 2, fillColor: color, fillOpacity: 1 })
         .bindTooltip(label, { permanent: true, direction: 'top', offset: [0, -10] })
@@ -63,9 +75,13 @@ export default function PlanMap({ from, to, itinerary, onPick }: PlanMapProps) {
     }
     if (from) pin(from, '#0b3d91', 'A')
     if (to) pin(to, '#ffc72c', 'B')
-    if (bounds.length > 1) m.fitBounds(L.latLngBounds(bounds), { padding: [28, 28], maxZoom: 16 })
-    else if (from) m.panTo([from.lat, from.lng])
-  }, [from, to, itinerary])
+    const view = `${from?.lat},${from?.lng},${to?.lat},${to?.lng},${itinerary?.minutes}`
+    if (view !== lastView.current) {
+      lastView.current = view
+      if (bounds.length > 1) m.fitBounds(L.latLngBounds(bounds), { padding: [28, 28], maxZoom: 16 })
+      else if (from) m.panTo([from.lat, from.lng])
+    }
+  }, [from, to, itinerary, marksKey])
 
   return <div ref={el} className="map-canvas" data-testid="plan-map" />
 }

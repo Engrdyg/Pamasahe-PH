@@ -277,6 +277,9 @@
     "board": "Get on near {{place}}",
     "alight": "Get off near {{place}}",
     "thePin": "the pin on the map",
-    "landmarkNote": "Landmarks and street names are from OpenStreetMap and may be approximate."
+    "landmarkNote": "Landmarks and street names are from OpenStreetMap and may be approximate.",
+    "markBoard": "Get on: {{place}}",
+    "markTransfer": "Transfer: {{place}}",
+    "markAlight": "Get off: {{place}}"
   }
 }

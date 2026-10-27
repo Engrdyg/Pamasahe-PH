@@ -145,6 +145,16 @@ body {
 .route-map { font-size: 12px; font-weight: 500; color: var(--color-brand); text-decoration: underline; width: fit-content; }
 
 /* ---------- Route map ---------- */
+.leaflet-tooltip.plan-mark {
+  font: 600 12px/1.25 system-ui, sans-serif;
+  color: #0f172a;
+  padding: 3px 7px;
+  border-radius: 8px;
+  width: max-content;
+  max-width: 200px;
+  white-space: normal;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+}
 .map-canvas {
   height: 280px;
   width: 100%;

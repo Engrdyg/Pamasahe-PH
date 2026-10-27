@@ -11,6 +11,7 @@ import { usePlanner } from '../lib/usePlanner'
 import { useApp } from '../state'
 
 const PlanMap = lazy(() => import('../components/PlanMap'))
+type MapMark = { lat: number; lng: number; text: string; kind: LineKind }
 
 const ICON: Record<LineKind, string> = { jeep: '🚙', uv: '🚐', rail: '🚆', busway: '🚌' }
 
@@ -116,6 +117,18 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
     const v = places[pkey(p)]
     return v === undefined ? '…' : (v ?? t('plan.thePin'))
   }
+  // Labels for the map: where to get on, transfer and get off.
+  const marks: MapMark[] = []
+  if (it) {
+    const rides = it.legs.filter((l): l is RideStep => l.type === 'ride')
+    rides.forEach((l, k) => {
+      const start = l.path[0]
+      const end = l.path[l.path.length - 1]
+      const on = l.fromStation ? `${l.fromStation} station` : place(start)
+      marks.push({ ...start, kind: l.line.kind, text: k === 0 ? t('plan.markBoard', { place: on }) : t('plan.markTransfer', { place: on }) })
+      if (k === rides.length - 1) marks.push({ ...end, kind: l.line.kind, text: t('plan.markAlight', { place: l.toStation ? `${l.toStation} station` : place(end) }) })
+    })
+  }
   const walkText = (i: number, meters: number, minutes: number) => {
     const m = Math.round(meters / 10) * 10
     const min = mins(minutes)
@@ -197,7 +210,7 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
           </Card>
 
           <Suspense fallback={<div className="map-canvas grid place-items-center text-sm text-muted">{t('map.loadingMap')}</div>}>
-            <PlanMap from={from} to={to} itinerary={it} onPick={pick} />
+            <PlanMap from={from} to={to} itinerary={it} marks={marks} onPick={pick} />
           </Suspense>
         </div>
 
