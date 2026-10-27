@@ -17,4 +17,15 @@ node preview.mjs /tmp 1 9.6 29.5                             # spot-check frames
 node render.mjs <path-to-ffmpeg> ../magkano-pamasahe-tiktok-v2.mp4
 ```
 
-No audio; add a trending sound in TikTok.
+Music: see below.
+
+## Music
+
+`beat.mp3` is an original 15 s loop generated with the ElevenLabs sound-effects
+API ("budots dance beat, 128 BPM, jeepney sound system", loop on). `music.m4a`
+is that loop played twice with a fade-out, normalised to −14 LUFS:
+
+```bash
+ffmpeg -stream_loop 1 -i beat.mp3 -t 30 -af "afade=t=in:d=0.05,afade=t=out:st=28.8:d=1.2,loudnorm=I=-14:TP=-1.5:LRA=11" -c:a aac -b:a 192k music.m4a
+ffmpeg -i silent.mp4 -i music.m4a -map 0:v -map 1:a -c copy -shortest -movflags +faststart ../magkano-pamasahe-tiktok-v2.mp4
+```
