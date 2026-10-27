@@ -10,6 +10,7 @@ import { About } from './screens/About'
 import { Calculator } from './screens/Calculator'
 import { Compare } from './screens/Compare'
 import { Home } from './screens/Home'
+import { Plan } from './screens/Plan'
 import { Privacy } from './screens/Privacy'
 import { Support } from './screens/Support'
 import { Trip } from './screens/Trip'
@@ -34,7 +35,8 @@ function UpdateBanner() {
 
 export default function App() {
   const { t } = useTranslation()
-  const [section, arg] = useRoute()
+  const route = useRoute()
+  const [section, arg] = route
   const wide = useWide()
   const { trip } = useApp()
   const tripPad = trip.length > 0 && section !== 'trip'
@@ -55,6 +57,12 @@ export default function App() {
     screen = <Tables />
     title = t('tables.title')
     active = 'tables'
+  } else if (section === 'plan') {
+    const [, fromArg, toArg] = route
+    screen = <Plan key={`${fromArg}/${toArg}`} fromArg={fromArg} toArg={toArg} />
+    title = t('plan.title')
+    back = ''
+    active = 'plan'
   } else if (section === 'privacy') {
     screen = <Privacy />
     title = t('privacy.title')

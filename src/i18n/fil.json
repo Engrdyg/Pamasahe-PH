@@ -8,7 +8,8 @@
     "compare": "Ikumpara",
     "tables": "Talaan",
     "about": "Tungkol",
-    "support": "Suporta"
+    "support": "Suporta",
+    "plan": "Ruta"
   },
   "effective": "Simula {{date}} · LTFRB",
   "effectiveDate": "Set. 28, 2026",
@@ -246,5 +247,29 @@
     "effective": "Epektibo {{date}}",
     "contact": "May tanong? Magbukas ng issue sa GitHub",
     "link": "Privacy policy"
+  },
+  "plan": {
+    "title": "Ruta at pamasahe",
+    "homeTitle": "Saan ka pupunta?",
+    "homeSub": "Ruta ng jeep, UV, tren at Busway sa Metro Manila, may pamasahe bawat sakay",
+    "swap": "Pagpalitin",
+    "hintDone": "Pindutin ang isang opsyon para makita sa mapa.",
+    "loadingData": "Nilo-load ang mga ruta sa NCR…",
+    "dataError": "Hindi ma-load ang route data. Tingnan ang koneksyon at subukan ulit.",
+    "searching": "Naghahanap ng ruta…",
+    "error": "Nagkaproblema sa paghahanap. Subukan ulit.",
+    "none": "Walang nahanap na ruta na malapit lang lakarin. Subukan ang kalapit na landmark o main road.",
+    "walkOnly": "Lakad",
+    "minutes": "{{n}} min",
+    "direct": "Diretso",
+    "transfers_one": "{{n}} lipat",
+    "transfers_other": "{{n}} lipat",
+    "walk": "{{m}} m lakad",
+    "steps": "Mga hakbang",
+    "walkStep": "Maglakad nang {{m}} m (mga {{min}} min)",
+    "altFare": "{{mode}}: {{fare}}",
+    "addAll": "Idagdag lahat sa biyahe",
+    "sourceShort": "LTFRB fares · NCR route data",
+    "note": "Batay sa {{n}} ruta ng jeep at UV Express sa NCR (LTFRB memorandum circulars) at LRT-1, LRT-2, MRT-3 at EDSA Busway. Ipinapalagay na pabalik-balik ang ruta sa parehong kalsada; tantiya lang ang oras, hindi kasama ang traffic at paghihintay sa terminal. Opisyal na LTFRB/DOTr na pamasahe ang bawat sakay."
   }
 }

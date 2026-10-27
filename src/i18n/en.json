@@ -8,7 +8,8 @@
     "compare": "Compare",
     "tables": "Fare tables",
     "about": "About",
-    "support": "Support"
+    "support": "Support",
+    "plan": "Routes"
   },
   "effective": "Effective {{date}} · LTFRB",
   "effectiveDate": "Sept 28, 2026",
@@ -246,5 +247,29 @@
     "effective": "Effective {{date}}",
     "contact": "Questions? Open an issue on GitHub",
     "link": "Privacy policy"
+  },
+  "plan": {
+    "title": "Route planner",
+    "homeTitle": "Where are you going?",
+    "homeSub": "Jeep, UV, train and Busway routes in Metro Manila, with the fare of every ride",
+    "swap": "Swap",
+    "hintDone": "Tap an option to see it on the map.",
+    "loadingData": "Loading NCR routes…",
+    "dataError": "Couldn't load the route data. Check your connection and try again.",
+    "searching": "Finding routes…",
+    "error": "Something went wrong while planning. Try again.",
+    "none": "No route found within a short walk. Try a nearby landmark or a main road.",
+    "walkOnly": "Walk",
+    "minutes": "{{n}} min",
+    "direct": "Direct",
+    "transfers_one": "{{n}} transfer",
+    "transfers_other": "{{n}} transfers",
+    "walk": "{{m}} m walk",
+    "steps": "Steps",
+    "walkStep": "Walk {{m}} m (about {{min}} min)",
+    "altFare": "{{mode}}: {{fare}}",
+    "addAll": "Add all rides to trip",
+    "sourceShort": "LTFRB fares · NCR route data",
+    "note": "Based on {{n}} NCR jeepney and UV Express routes (LTFRB memorandum circulars) plus LRT-1, LRT-2, MRT-3 and the EDSA Busway. Routes are assumed to run both ways along the same roads; times are estimates without traffic or waiting at terminals. Fares are official LTFRB/DOTr fares for each ride."
   }
 }

@@ -76,6 +76,28 @@ servers are rate-limited; for heavy use point `PHOTON_BASE` in
 `src/lib/geocode.ts` and `OSRM_BASE` in `src/lib/routing.ts` at your own
 instances.
 
+## Route planner (NCR)
+
+`#/plan` finds jeepney, UV Express, LRT/MRT and EDSA Busway combinations
+between two places, like Sakay.ph, with the official fare of every ride and
+up to two transfers. `#/plan/<lat,lng>/<lat,lng>` opens it with both ends set.
+
+- Route data: `public/routes/ncr.json`, built from an NCR PUJ/UV route shapefile
+  (WGS 84 / UTM 51N, one polyline per route with its LTFRB memorandum circular)
+  by `python3 scripts/import-routes.py` (needs `pip install pyshp`; reads
+  `sources/ncr-routes/All Routes.shp`). Duplicates and closed routes are dropped,
+  multi-part lines are chained, polylines are simplified to 8 m.
+- Search (`src/lib/planner.ts`, run in a Web Worker): every line is resampled
+  every 100 m (rail and Busway use their stations); a RAPTOR-style search does
+  one round per ride, sweeping boarding costs along each line and seeding the
+  next round with walks of up to 300 m to other lines. Walks to the first and
+  from the last stop are up to 700 m. Jeepney and UV routes are assumed to run
+  both ways along the same roads; the Busway is one-way per direction. Times
+  use rough average speeds and waits, without traffic.
+- Fares come from the fare engine (distance along the route for PUJ/UV,
+  station matrices for rail and the Busway).
+- The route file is not precached; it is cached on first use of the planner.
+
 ## Ride tracker (GPS)
 
 Next to the trip planner, "Track my ride (GPS)" records the trip like a

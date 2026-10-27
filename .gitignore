@@ -7,3 +7,6 @@ playwright-report
 .DS_Store
 *.local
 __pycache__
+
+# Raw route shapefile (provided by the owner; the app ships public/routes/ncr.json)
+sources/ncr-routes/

@@ -5,6 +5,7 @@ import { Chips, DiscountToggle, EffectiveBadge } from './ui'
 
 const items = [
   { id: '', key: 'nav.home', icon: '⌂' },
+  { id: 'plan', key: 'nav.plan', icon: '⌖' },
   { id: 'compare', key: 'nav.compare', icon: '⇄' },
   { id: 'tables', key: 'nav.tables', icon: '☰' },
   { id: 'support', key: 'nav.support', icon: '♥' },

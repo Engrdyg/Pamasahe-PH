@@ -59,7 +59,8 @@ export default defineConfig({
         // cache offline) so a stale shell never points at assets that a newer
         // deploy has replaced; everything else stays precached.
         globPatterns: ['**/*.{js,css,svg,png,ico,json,woff2}'],
-        globIgnores: ['**/index.html'],
+        // Route data for the planner is large and only needed there: cached on first use.
+        globIgnores: ['**/index.html', 'routes/**'],
         navigateFallback: null,
         cleanupOutdatedCaches: true,
         skipWaiting: true,
@@ -74,6 +75,11 @@ export default defineConfig({
             urlPattern: ({ url }) => url.pathname.includes('/fares/'),
             handler: 'StaleWhileRevalidate',
             options: { cacheName: 'fares' },
+          },
+          {
+            urlPattern: ({ url }) => url.pathname.includes('/routes/'),
+            handler: 'StaleWhileRevalidate',
+            options: { cacheName: 'routes' },
           },
           {
             urlPattern: ({ url }) => url.hostname === 'tile.openstreetmap.org',
