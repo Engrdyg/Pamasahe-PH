@@ -312,6 +312,12 @@
     "pinConfirm": "Set as {{field}}",
     "pinFrom": "pick-up point",
     "pinTo": "drop-off point",
-    "dragHint": "Drag A or B to move them."
+    "dragHint": "Drag A or B to move them.",
+    "legend": "Legend",
+    "legendWalk": "Walk",
+    "legendBoard": "Get on",
+    "legendTransfer": "Transfer",
+    "legendAlight": "Get off",
+    "legendStop": "Stop / station"
   }
 }

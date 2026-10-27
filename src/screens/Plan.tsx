@@ -5,7 +5,8 @@ import { Card, ErrorNote } from '../components/ui'
 import { formatPesos, type MatrixMode } from '../engine'
 import { landmarkNear } from '../lib/geocode'
 import type { SavedPlace } from '../lib/places'
-import { KIND_COLOR } from '../lib/planColors'
+import type { MapMark } from '../components/PlanMap'
+import { KIND_COLOR, rideColors } from '../lib/planColors'
 import type { LineKind, SlimItinerary, SlimLeg } from '../lib/planner'
 import type { LatLng } from '../lib/routing'
 import { usePlanner } from '../lib/usePlanner'
@@ -13,7 +14,6 @@ import { useWide } from '../lib/useMediaQuery'
 import { useApp } from '../state'
 
 const PlanMap = lazy(() => import('../components/PlanMap'))
-type MapMark = { lat: number; lng: number; text: string; kind: LineKind }
 
 const ICON: Record<LineKind, string> = { jeep: '🚙', uv: '🚐', rail: '🚆', busway: '🚌' }
 const KINDS: LineKind[] = ['jeep', 'uv', 'rail', 'busway']
@@ -193,18 +193,21 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
     const v = places[pkey(p)]
     return v === undefined ? '…' : (v ?? t('plan.thePin'))
   }
-  // Labels for the map: where to get on, transfer and get off.
+  // Map markers: get on (first ride), transfer (between rides), get off (last ride).
+  const rides = it ? it.legs.filter((l): l is RideStep => l.type === 'ride') : []
+  const colors = rideColors(rides.map((l) => l.line))
   const marks: MapMark[] = []
-  if (it) {
-    const rides = it.legs.filter((l): l is RideStep => l.type === 'ride')
-    rides.forEach((l, k) => {
-      const start = l.path[0]
-      const end = l.path[l.path.length - 1]
-      const on = l.fromStation ? `${l.fromStation} station` : place(start)
-      marks.push({ ...start, kind: l.line.kind, text: k === 0 ? t('plan.markBoard', { place: on }) : t('plan.markTransfer', { place: on }) })
-      if (k === rides.length - 1) marks.push({ ...end, kind: l.line.kind, text: t('plan.markAlight', { place: l.toStation ? `${l.toStation} station` : place(end) }) })
-    })
-  }
+  rides.forEach((l, k) => {
+    const start = l.path[0]
+    const end = l.path[l.path.length - 1]
+    const on = l.fromStation ? `${l.fromStation} station` : place(start)
+    // On phones only the first and last stops get a text label; transfers are explained by the legend and the steps.
+    marks.push({ ...start, type: k === 0 ? 'board' : 'transfer', color: colors[k], text: k === 0 ? t('plan.markBoard', { place: on }) : wide ? t('plan.markTransfer', { place: on }) : undefined })
+    if (k === rides.length - 1) marks.push({ ...end, type: 'alight', color: colors[k], text: t('plan.markAlight', { place: l.toStation ? `${l.toStation} station` : place(end) }) })
+    else marks.push({ ...end, type: 'transfer', color: colors[k] }) // get off here to change
+  })
+  const [legendOpen, setLegendOpen] = useState(wide)
+  const short = (l: RideStep['line']) => (l.kind === 'rail' ? l.name : l.kind === 'busway' ? 'EDSA Busway' : l.name)
   const walkText = (i: number, meters: number, minutes: number) => {
     const m = Math.round(meters / 10) * 10
     const min = mins(minutes)
@@ -345,12 +348,58 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
             from={from}
             to={to}
             itinerary={it}
+            colors={colors}
             marks={marks}
             onMove={onMove}
             pinMode={pinFor ? { start: (pinFor === 'from' ? from : to) ?? from ?? to, onCenter: setPinAt } : null}
             height={mapHeight}
           />
         </Suspense>
+        {it && rides.length > 0 && !pinFor && (
+          <div className="absolute bottom-6 left-2 z-[500] max-w-[70%] rounded-xl bg-surface/95 p-2 text-xs text-ink shadow-lg" data-testid="map-legend">
+            <button type="button" onClick={() => setLegendOpen((v) => !v)} aria-expanded={legendOpen} className="flex w-full items-center justify-between gap-2 font-semibold">
+              {t('plan.legend')} <span aria-hidden="true">{legendOpen ? '▾' : '▸'}</span>
+            </button>
+            {legendOpen && (
+              <ul className="mt-1 flex flex-col gap-1">
+                {rides.map((l, k) => (
+                  <li key={k} className="flex items-center gap-2">
+                    <span aria-hidden="true" className="h-1.5 w-5 shrink-0 rounded-full" style={{ background: colors[k] }} />
+                    <span className="truncate">
+                      {k + 1}. {ICON[l.line.kind]} {short(l.line)}
+                    </span>
+                  </li>
+                ))}
+                <li className="flex items-center gap-2">
+                  <span aria-hidden="true" className="h-0 w-5 shrink-0 border-t-[3px] border-dotted border-slate-600" />
+                  {t('plan.legendWalk')}
+                </li>
+                <li className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-line pt-1">
+                  <span className="inline-flex items-center gap-1">
+                    <span className="mk mk-board mk-sm" style={{ ['--c' as string]: colors[0] }}><b>▲</b></span>
+                    {t('plan.legendBoard')}
+                  </span>
+                  {rides.length > 1 && (
+                    <span className="inline-flex items-center gap-1">
+                      <span className="mk mk-transfer mk-sm" style={{ ['--c' as string]: colors[1] }}><b>⇄</b></span>
+                      {t('plan.legendTransfer')}
+                    </span>
+                  )}
+                  <span className="inline-flex items-center gap-1">
+                    <span className="mk mk-alight mk-sm" style={{ ['--c' as string]: colors[colors.length - 1] }}><b>■</b></span>
+                    {t('plan.legendAlight')}
+                  </span>
+                  {rides.some((l) => l.fromStation && l.path.length > 2) && (
+                    <span className="inline-flex items-center gap-1">
+                      <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full border-2 bg-white" style={{ borderColor: colors[rides.findIndex((l) => l.fromStation)] }} />
+                      {t('plan.legendStop')}
+                    </span>
+                  )}
+                </li>
+              </ul>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-3 px-4 py-4 md:col-start-1 md:px-0 md:py-0">
@@ -375,7 +424,8 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
           )}
 
           {results?.map((r, i) => {
-            const rides = r.legs.filter((l): l is Exclude<SlimLeg, { type: 'walk' }> => l.type === 'ride')
+            const optRides = r.legs.filter((l): l is Exclude<SlimLeg, { type: 'walk' }> => l.type === 'ride')
+            const optColors = rideColors(optRides.map((l) => l.line))
             const on = i === selected
             return (
               <button
@@ -394,17 +444,17 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
                   <span className="text-sm font-medium tabular-nums text-ink-2">≈ {t('plan.minutes', { n: mins(r.minutes) })}</span>
                 </div>
                 <div className="flex flex-wrap items-center gap-1 text-xs">
-                  {rides.map((l, k) => (
+                  {optRides.map((l, k) => (
                     <span key={k} className="inline-flex items-center gap-1">
                       {k > 0 && <span className="text-muted">›</span>}
-                      <span className="rounded-full px-2 py-0.5 font-semibold text-white" style={{ background: KIND_COLOR[l.line.kind] }}>
+                      <span className="rounded-full px-2 py-0.5 font-semibold text-white" style={{ background: optColors[k] }}>
                         {ICON[l.line.kind]} {l.line.kind === 'rail' ? l.line.name : l.line.kind === 'busway' ? 'Busway' : l.line.name}
                       </span>
                     </span>
                   ))}
                 </div>
                 <span className="text-xs text-muted">
-                  {r.rides <= 1 ? t('plan.direct') : t('plan.transfers', { n: r.rides - 1 })} · {t('plan.walk', { m: Math.round(r.walkMeters / 10) * 10 })}
+                  {r.rides <= 1 ? t('plan.direct') : t('plan.transfers', { count: r.rides - 1, n: r.rides - 1 })} · {t('plan.walk', { m: Math.round(r.walkMeters / 10) * 10 })}
                 </span>
               </button>
             )
@@ -421,7 +471,7 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
                       <span data-testid="plan-walk">{walkText(i, l.meters, l.minutes)}</span>
                     </li>
                   ) : (
-                    <li key={i} className="flex gap-3">
+                    <li key={i} className="flex gap-3 border-l-4 pl-2" style={{ borderColor: colors[rides.indexOf(l)] }}>
                       <span aria-hidden="true" className="text-lg">
                         {ICON[l.line.kind]}
                       </span>

@@ -1,18 +1,31 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef } from 'react'
-import { KIND_COLOR } from '../lib/planColors'
-import type { LineKind, SlimItinerary } from '../lib/planner'
+import type { SlimItinerary } from '../lib/planner'
 import { DEFAULT_CENTER, type LatLng } from '../lib/routing'
 
 type Field = 'from' | 'to'
+export type MarkType = 'board' | 'transfer' | 'alight'
+export interface MapMark {
+  lat: number
+  lng: number
+  type: MarkType
+  color: string
+  text?: string
+}
+
+const SYMBOL: Record<MarkType, string> = { board: '▲', transfer: '⇄', alight: '■' }
+const markIcon = (type: MarkType, color: string) =>
+  L.divIcon({ className: '', html: `<span class="mk mk-${type}" style="--c:${color}"><b>${SYMBOL[type]}</b></span>`, iconSize: [24, 24], iconAnchor: [12, 12] })
 
 export interface PlanMapProps {
   from: LatLng | null
   to: LatLng | null
   itinerary: SlimItinerary | null
-  /** Where to get on, transfer and get off, with landmark names. */
-  marks?: { lat: number; lng: number; text: string; kind: LineKind }[]
+  /** One colour per ride, in order (see rideColors). */
+  colors?: string[]
+  /** Where to get on, transfer and get off; `text` labels it on the map. */
+  marks?: MapMark[]
   /** A or B was dragged to a new spot. */
   onMove: (field: Field, p: LatLng) => void
   /**
@@ -29,13 +42,14 @@ const pinIcon = (label: string, cls: string) =>
   L.divIcon({ className: '', html: `<span class="plan-pin ${cls}"><b>${label}</b></span>`, iconSize: [34, 44], iconAnchor: [17, 42] })
 
 /** Leaflet map for the route planner: draggable A/B pins, ride legs coloured by mode, dashed walks. */
-export default function PlanMap({ from, to, itinerary, marks = [], onMove, pinMode = null, height = '380px' }: PlanMapProps) {
+export default function PlanMap({ from, to, itinerary, colors = [], marks = [], onMove, pinMode = null, height = '380px' }: PlanMapProps) {
   const el = useRef<HTMLDivElement>(null)
   const map = useRef<L.Map | null>(null)
   const layer = useRef<L.LayerGroup | null>(null)
   const lastView = useRef('')
   const dragged = useRef(false)
-  const marksKey = marks.map((m) => `${m.lat},${m.lng},${m.text}`).join('|')
+  const lastBounds = useRef<L.LatLngBounds | null>(null)
+  const marksKey = marks.map((m) => `${m.lat},${m.lng},${m.type},${m.color},${m.text}`).join('|') + colors.join(',')
   const onMoveRef = useRef(onMove)
   onMoveRef.current = onMove
   const pinning = pinMode != null
@@ -79,14 +93,17 @@ export default function PlanMap({ from, to, itinerary, marks = [], onMove, pinMo
     g.clearLayers()
     const bounds: L.LatLngExpression[] = []
     if (itinerary) {
+      let ride = 0
       for (const leg of itinerary.legs) {
         if (leg.type === 'walk') {
-          L.polyline([[leg.from.lat, leg.from.lng], [leg.to.lat, leg.to.lng]], { color: '#64748b', weight: 4, dashArray: '2 8', lineCap: 'round' }).addTo(g)
+          L.polyline([[leg.from.lat, leg.from.lng], [leg.to.lat, leg.to.lng]], { color: '#475569', weight: 4, dashArray: '2 8', lineCap: 'round' }).addTo(g)
         } else {
+          const color = colors[ride++] ?? '#0b3d91'
           const pts = leg.path.map((p) => [p.lat, p.lng] as [number, number])
-          L.polyline(pts, { color: '#fff', weight: 9, opacity: 0.9 }).addTo(g)
-          L.polyline(pts, { color: KIND_COLOR[leg.line.kind], weight: 5 }).addTo(g)
-          for (const p of [pts[0], pts[pts.length - 1]]) L.circleMarker(p, { radius: 5, color: KIND_COLOR[leg.line.kind], weight: 3, fillColor: '#fff', fillOpacity: 1 }).addTo(g)
+          L.polyline(pts, { color: '#fff', weight: 10, opacity: 0.95 }).addTo(g)
+          L.polyline(pts, { color, weight: 6 }).addTo(g)
+          // Stations / stops passed on the way (rail and Busway)
+          if (leg.fromStation) for (const p of pts.slice(1, -1)) L.circleMarker(p, { radius: 4, color, weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(g)
           bounds.push(...pts)
         }
       }
@@ -95,9 +112,8 @@ export default function PlanMap({ from, to, itinerary, marks = [], onMove, pinMo
     const midLng = from && to ? (from.lng + to.lng) / 2 : null
     for (const mk of marks) {
       const left = midLng != null && mk.lng > midLng
-      L.circleMarker([mk.lat, mk.lng], { radius: 7, color: '#fff', weight: 3, fillColor: KIND_COLOR[mk.kind], fillOpacity: 1 })
-        .bindTooltip(mk.text, { permanent: true, direction: left ? 'left' : 'right', offset: [left ? -10 : 10, 0], className: 'plan-mark' })
-        .addTo(g)
+      const marker = L.marker([mk.lat, mk.lng], { icon: markIcon(mk.type, mk.color), keyboard: false, interactive: false, zIndexOffset: 500 }).addTo(g)
+      if (mk.text) marker.bindTooltip(mk.text, { permanent: true, direction: left ? 'left' : 'right', offset: [left ? -12 : 12, 0], className: 'plan-mark' })
     }
     const pin = (p: LatLng, field: Field) => {
       const marker = L.marker([p.lat, p.lng], {
@@ -123,14 +139,21 @@ export default function PlanMap({ from, to, itinerary, marks = [], onMove, pinMo
       // After a drag the user has the map where they want it: don't jump.
       if (dragged.current) {
         if (itinerary) dragged.current = false
-      } else if (bounds.length > 1) m.fitBounds(L.latLngBounds(bounds), { padding: [36, 36], maxZoom: 16 })
+      } else if (bounds.length > 1) {
+        lastBounds.current = L.latLngBounds(bounds)
+        m.fitBounds(lastBounds.current, { padding: [36, 36], maxZoom: 16 })
+      }
       else if (from) m.panTo([from.lat, from.lng])
     }
   }, [from, to, itinerary, marksKey, pinning])
 
   // Leaflet needs to re-measure when the container is resized.
+  // Refit afterwards: the map shrinks when results appear, right after it was fitted.
   useEffect(() => {
-    map.current?.invalidateSize()
+    const m = map.current
+    if (!m) return
+    m.invalidateSize()
+    if (lastBounds.current && !pinning) m.fitBounds(lastBounds.current, { padding: [36, 36], maxZoom: 16 })
   }, [height])
 
   return <div ref={el} style={{ height }} className="w-full" data-testid="plan-map" />

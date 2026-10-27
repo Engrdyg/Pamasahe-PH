@@ -203,6 +203,22 @@ body {
 .route-map { font-size: 12px; font-weight: 500; color: var(--color-brand); text-decoration: underline; width: fit-content; }
 
 /* ---------- Route map ---------- */
+.mk {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 3px solid #fff;
+  background: var(--c);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.4);
+  font: 800 10px/1 system-ui, sans-serif;
+}
+.mk-board { border-radius: 50%; }
+.mk-transfer { border-radius: 4px; transform: rotate(45deg); background: #fff; color: var(--c); border-color: var(--c); }
+.mk-transfer > b { transform: rotate(-45deg); }
+.mk-alight { border-radius: 4px; }
+.mk-sm { width: 16px; height: 16px; border-width: 2px; font-size: 8px; box-shadow: none; }
 .plan-pin {
   display: grid;
   place-items: center;

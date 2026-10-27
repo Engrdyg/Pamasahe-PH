@@ -312,6 +312,12 @@
     "pinConfirm": "Itakda bilang {{field}}",
     "pinFrom": "sakayan",
     "pinTo": "babaan",
-    "dragHint": "Hilahin ang A o B para ilipat."
+    "dragHint": "Hilahin ang A o B para ilipat.",
+    "legend": "Legend",
+    "legendWalk": "Lakad",
+    "legendBoard": "Sakay",
+    "legendTransfer": "Lipat",
+    "legendAlight": "Baba",
+    "legendStop": "Hintuan / istasyon"
   }
 }
