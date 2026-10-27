@@ -82,7 +82,7 @@ instances.
 between two places, like Sakay.ph, with the official fare of every ride and
 up to two transfers. `#/plan/<lat,lng>/<lat,lng>` opens it with both ends set.
 
-- Route data: `public/routes/ncr.json`, built from an NCR PUJ/UV route shapefile
+- Route data (source: **LTFRB**, NCR PUJ / UV Express route shapefile): `public/routes/ncr.json`, built from that shapefile
   (WGS 84 / UTM 51N, one polyline per route with its LTFRB memorandum circular)
   by `python3 scripts/import-routes.py` (needs `pip install pyshp`; reads
   `sources/ncr-routes/All Routes.shp`). Duplicates and closed routes are dropped,

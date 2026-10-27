@@ -113,7 +113,8 @@
     "rule4": "Taxi and TNVS totals are shown to the centavo; the meter may round differently.",
     "offline": "Works offline after the first visit.",
     "language": "Language",
-    "officialSource": "Official LTFRB fare rates"
+    "officialSource": "Official LTFRB fare rates",
+    "routesCredit": "Route planner: NCR jeepney and UV Express routes from the LTFRB route shapefile (routes per LTFRB memorandum circulars). Rail and Busway stations from DOTr / LTFRB fare matrices."
   },
   "update": {
     "banner": "Fares updated — effective {{date}}",
@@ -269,7 +270,7 @@
     "walkStep": "Walk {{m}} m (about {{min}} min)",
     "altFare": "{{mode}}: {{fare}}",
     "addAll": "Add all rides to trip",
-    "sourceShort": "LTFRB fares · NCR route data",
-    "note": "Based on {{n}} NCR jeepney and UV Express routes (LTFRB memorandum circulars) plus LRT-1, LRT-2, MRT-3 and the EDSA Busway. Routes are assumed to run both ways along the same roads; times are estimates without traffic or waiting at terminals. Fares are official LTFRB/DOTr fares for each ride."
+    "sourceShort": "LTFRB fares · LTFRB NCR routes",
+    "note": "Routes: LTFRB NCR jeepney and UV Express route data ({{n}} routes, per LTFRB memorandum circulars), plus LRT-1, LRT-2, MRT-3 and the EDSA Busway. Routes are assumed to run both ways along the same roads; times are estimates without traffic or waiting at terminals. Fares are official LTFRB/DOTr fares for each ride. Not affiliated with LTFRB."
   }
 }

@@ -1,4 +1,4 @@
-"""Convert the NCR jeepney / UV Express route shapefile into public/routes/ncr.json
+"""Convert the LTFRB NCR jeepney / UV Express route shapefile into public/routes/ncr.json
 for the route planner.
 
 Input:  sources/ncr-routes/All Routes.shp (+ .dbf/.shx/.prj), WGS 84 / UTM 51N,
@@ -149,7 +149,7 @@ def main():
             out['remarks'] = remarks
         routes.append(out)
     data = {
-        'source': 'NCR PUJ / UV Express route shapefile (LTFRB memorandum circular references), provided by the app owner',
+        'source': 'LTFRB — NCR PUJ / UV Express route shapefile (routes per LTFRB memorandum circulars)',
         'routes': routes,
     }
     OUT.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')))

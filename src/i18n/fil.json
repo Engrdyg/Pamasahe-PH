@@ -113,7 +113,8 @@
     "rule4": "Hanggang sentimo ang ipinapakitang kabuuan sa taxi at TNVS; maaaring iba ang pag-round ng metro.",
     "offline": "Gumagana offline pagkatapos ng unang pagbisita.",
     "language": "Wika",
-    "officialSource": "Opisyal na fare rates ng LTFRB"
+    "officialSource": "Opisyal na fare rates ng LTFRB",
+    "routesCredit": "Route planner: mga ruta ng jeep at UV Express sa NCR mula sa route shapefile ng LTFRB (ayon sa LTFRB memorandum circulars). Mga istasyon ng tren at Busway mula sa fare matrix ng DOTr / LTFRB."
   },
   "update": {
     "banner": "Na-update ang pamasahe — epektibo {{date}}",
@@ -269,7 +270,7 @@
     "walkStep": "Maglakad nang {{m}} m (mga {{min}} min)",
     "altFare": "{{mode}}: {{fare}}",
     "addAll": "Idagdag lahat sa biyahe",
-    "sourceShort": "LTFRB fares · NCR route data",
-    "note": "Batay sa {{n}} ruta ng jeep at UV Express sa NCR (LTFRB memorandum circulars) at LRT-1, LRT-2, MRT-3 at EDSA Busway. Ipinapalagay na pabalik-balik ang ruta sa parehong kalsada; tantiya lang ang oras, hindi kasama ang traffic at paghihintay sa terminal. Opisyal na LTFRB/DOTr na pamasahe ang bawat sakay."
+    "sourceShort": "LTFRB fares · LTFRB NCR routes",
+    "note": "Mga ruta: LTFRB NCR route data ng jeep at UV Express ({{n}} ruta, ayon sa LTFRB memorandum circulars), at LRT-1, LRT-2, MRT-3 at EDSA Busway. Ipinapalagay na pabalik-balik ang ruta sa parehong kalsada; tantiya lang ang oras, hindi kasama ang traffic at paghihintay sa terminal. Opisyal na LTFRB/DOTr na pamasahe ang bawat sakay. Hindi kaanib ng LTFRB."
   }
 }

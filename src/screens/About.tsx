@@ -81,6 +81,9 @@ export function About() {
           {t('about.dataVersion')}: <span className="font-mono">{manifest.version}</span> ·{' '}
           {formatEffective(manifest.effective, lang)}
         </p>
+        <p className="text-sm text-ink-2" data-testid="routes-credit">
+          {t('about.routesCredit')}
+        </p>
         <p className="text-xs text-muted">{t('about.offline')}</p>
       </Card>
 
