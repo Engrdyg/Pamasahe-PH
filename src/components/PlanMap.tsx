@@ -12,10 +12,12 @@ export interface PlanMapProps {
   /** Where to get on, transfer and get off, with landmark names. */
   marks?: { lat: number; lng: number; text: string; kind: LineKind }[]
   onPick: (p: LatLng) => void
+  /** CSS height of the map (it fills the screen until there are results). */
+  height?: string
 }
 
 /** Leaflet map for the route planner: pins, ride legs coloured by mode, dashed walks. */
-export default function PlanMap({ from, to, itinerary, marks = [], onPick }: PlanMapProps) {
+export default function PlanMap({ from, to, itinerary, marks = [], onPick, height = '380px' }: PlanMapProps) {
   const el = useRef<HTMLDivElement>(null)
   const map = useRef<L.Map | null>(null)
   const layer = useRef<L.LayerGroup | null>(null)
@@ -83,5 +85,10 @@ export default function PlanMap({ from, to, itinerary, marks = [], onPick }: Pla
     }
   }, [from, to, itinerary, marksKey])
 
-  return <div ref={el} className="map-canvas" data-testid="plan-map" />
+  // Leaflet needs to re-measure when the container is resized.
+  useEffect(() => {
+    map.current?.invalidateSize()
+  }, [height])
+
+  return <div ref={el} style={{ height }} className="w-full" data-testid="plan-map" />
 }

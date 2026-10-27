@@ -15,7 +15,7 @@ self.onmessage = async (e: MessageEvent) => {
       net = buildNetwork(file, modes)
       self.postMessage({ type: 'ready', routes: file.routes.length })
     } else if (msg.type === 'plan' && net) {
-      self.postMessage({ type: 'result', id: msg.id, itineraries: plan(net, modes, msg.a, msg.b).map(slim) })
+      self.postMessage({ type: 'result', id: msg.id, itineraries: plan(net, modes, msg.a, msg.b, 5, msg.exclude ?? []).map(slim) })
     }
   } catch (err) {
     self.postMessage({ type: 'error', id: msg.id, message: String(err) })

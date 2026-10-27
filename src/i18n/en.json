@@ -285,6 +285,29 @@
     "landmarkNote": "Landmarks and street names are from OpenStreetMap and may be approximate.",
     "markBoard": "Get on: {{place}}",
     "markTransfer": "Transfer: {{place}}",
-    "markAlight": "Get off: {{place}}"
+    "markAlight": "Get off: {{place}}",
+    "station": "Station",
+    "allModes": "All modes",
+    "someModes": "{{n}} of 4 modes",
+    "clear": "Clear",
+    "kind": {
+      "jeep": "Jeep",
+      "uv": "UV Express",
+      "rail": "Train",
+      "busway": "Busway"
+    },
+    "pinBanner": "Tap the map to pin “{{field}}”",
+    "cancel": "Cancel",
+    "tabSuggestions": "Suggestions",
+    "tabSaved": "Saved",
+    "tabRecent": "Recent",
+    "searchPlace": "Search for a place",
+    "here": "Current location",
+    "hereHint": "Use my location",
+    "pin": "Pin on map",
+    "noSaved": "No saved places yet. Tap ☆ next to a place to save it.",
+    "noRecent": "No recent places yet.",
+    "save": "Save place",
+    "unsave": "Remove from saved"
   }
 }

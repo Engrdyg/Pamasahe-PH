@@ -219,3 +219,45 @@ test.describe('route planner (NCR)', () => {
     await expect(page.getByTestId('trip-bar')).toBeVisible()
   })
 })
+
+test.describe('route planner place sheet', () => {
+  test.use({ serviceWorkers: 'block' })
+  test('search, station suggestion, recent places and the mode filter', async ({ page }) => {
+    await page.route('https://tile.openstreetmap.org/**', (r) => r.fulfill({ status: 204, body: '' }))
+    await page.route('https://photon.komoot.io/reverse**', (r) => r.fulfill({ json: { features: [] } }))
+    await page.route('https://photon.komoot.io/api/**', (r) =>
+      r.fulfill({ json: { features: [{ geometry: { coordinates: [121.0303, 14.6566] }, properties: { name: 'SM North EDSA', city: 'Quezon City' } }] } }),
+    )
+    await page.goto('/#/plan')
+    await page.getByTestId('plan-from').click()
+    await expect(page.getByTestId('place-sheet')).toBeVisible()
+    await expect(page.getByTestId('sheet-here')).toBeVisible()
+    await expect(page.getByTestId('sheet-pin')).toBeVisible()
+    await page.getByTestId('sheet-input').fill('SM North')
+    // Busway station first (offline), then the Photon result
+    await expect(page.getByTestId('sheet-place').first()).toContainText('SM North EDSA (EDSA Busway)')
+    await page.getByTestId('sheet-place').filter({ hasText: 'Quezon City' }).click()
+    await expect(page.getByTestId('plan-from')).toHaveText('SM North EDSA')
+
+    await page.getByTestId('plan-to').click()
+    await page.getByTestId('sheet-input').fill('Ayala')
+    // Offline station suggestion
+    await page.getByTestId('sheet-place').filter({ hasText: 'Ayala (MRT-3)' }).click()
+    await expect(page.getByTestId('plan-option').first()).toBeVisible({ timeout: 15000 })
+    await expect(page.getByTestId('plan-option').first()).toContainText(/MRT-3|Busway/)
+
+    // Without trains and the Busway, only road routes remain
+    await page.getByTestId('plan-modes').click()
+    await page.getByTestId('plan-mode-chips').getByRole('button', { name: /Train/ }).click()
+    await page.getByTestId('plan-mode-chips').getByRole('button', { name: /Busway/ }).click()
+    await expect(page.getByTestId('plan-modes')).toContainText('2 of 4 modes')
+    await expect(page.getByTestId('plan-option').first()).toBeVisible({ timeout: 15000 })
+    await expect(page.getByTestId('plan-option').filter({ hasText: /MRT-3|Busway/ })).toHaveCount(0)
+
+    // Recent places remember the picks
+    await page.getByTestId('plan-from').click()
+    await page.getByTestId('sheet-tab-recent').click()
+    await expect(page.getByTestId('sheet-place').first()).toContainText('Ayala (MRT-3)')
+    await expect(page.getByTestId('place-sheet')).toContainText('SM North EDSA')
+  })
+})

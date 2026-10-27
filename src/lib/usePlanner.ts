@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Mode } from '../engine'
-import type { SlimItinerary } from './planner'
+import type { LineKind, SlimItinerary } from './planner'
 import type { LatLng } from './routing'
 
 export const ROUTES_URL = `${import.meta.env.BASE_URL}routes/ncr.json`
 
 type Status = 'loading' | 'ready' | 'error'
-type Planner = (a: LatLng, b: LatLng) => Promise<SlimItinerary[]>
+type Planner = (a: LatLng, b: LatLng, exclude?: LineKind[]) => Promise<SlimItinerary[]>
 
 /**
  * Loads the NCR route network in a Web Worker (or on the main thread where
@@ -41,18 +41,18 @@ export function usePlanner(modesById: Record<string, Mode>): { status: Status; r
       }
       worker.onerror = () => !cancelled && setStatus('error')
       worker.postMessage({ type: 'init', url: new URL(ROUTES_URL, window.location.href).href, modes: modesById })
-      impl.current = (a, b) =>
+      impl.current = (a, b, exclude = []) =>
         new Promise((resolve, reject) => {
           const id = ++seq
           pending.set(id, { resolve, reject })
-          worker!.postMessage({ type: 'plan', id, a, b })
+          worker!.postMessage({ type: 'plan', id, a, b, exclude })
         })
     } else {
       void Promise.all([import('./planner'), fetch(ROUTES_URL).then((r) => r.json())])
         .then(([m, file]) => {
           if (cancelled) return
           const net = m.buildNetwork(file, modesById)
-          impl.current = async (a, b) => m.plan(net, modesById, a, b).map(m.slim)
+          impl.current = async (a, b, exclude = []) => m.plan(net, modesById, a, b, 5, exclude).map(m.slim)
           setRoutes(file.routes.length)
           setStatus('ready')
         })
@@ -64,6 +64,6 @@ export function usePlanner(modesById: Record<string, Mode>): { status: Status; r
     }
   }, [modesById])
 
-  const plan = useCallback<Planner>((a, b) => (impl.current ? impl.current(a, b) : Promise.reject(new Error('not ready'))), [])
+  const plan = useCallback<Planner>((a, b, exclude) => (impl.current ? impl.current(a, b, exclude) : Promise.reject(new Error('not ready'))), [])
   return { status, routes, plan }
 }

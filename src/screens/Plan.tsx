@@ -1,19 +1,23 @@
-import { Suspense, lazy, useEffect, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { PlaceSearch } from '../components/PlaceSearch'
+import { PlaceSheet, type SheetPick } from '../components/PlaceSheet'
 import { Card, ErrorNote } from '../components/ui'
-import { formatPesos } from '../engine'
-import { landmarkNear, type Place } from '../lib/geocode'
+import { formatPesos, type MatrixMode } from '../engine'
+import { landmarkNear } from '../lib/geocode'
+import type { SavedPlace } from '../lib/places'
 import { KIND_COLOR } from '../lib/planColors'
 import type { LineKind, SlimItinerary, SlimLeg } from '../lib/planner'
 import type { LatLng } from '../lib/routing'
 import { usePlanner } from '../lib/usePlanner'
+import { useWide } from '../lib/useMediaQuery'
 import { useApp } from '../state'
 
 const PlanMap = lazy(() => import('../components/PlanMap'))
 type MapMark = { lat: number; lng: number; text: string; kind: LineKind }
 
 const ICON: Record<LineKind, string> = { jeep: '🚙', uv: '🚐', rail: '🚆', busway: '🚌' }
+const KINDS: LineKind[] = ['jeep', 'uv', 'rail', 'busway']
+type Field = 'from' | 'to'
 
 function parsePoint(s?: string): LatLng | null {
   const m = s?.match(/^(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)$/)
@@ -44,6 +48,32 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
   const [error, setError] = useState<string | null>(null)
   const [added, setAdded] = useState(false)
   const latest = useRef(0)
+  const wide = useWide()
+  const [sheet, setSheet] = useState<Field | null>(null)
+  const [pinFor, setPinFor] = useState<Field | null>(null)
+  const [exclude, setExclude] = useState<LineKind[]>([])
+  const [showModes, setShowModes] = useState(false)
+  const excludeKey = exclude.join(',')
+
+  // Rail and Busway stations as offline search suggestions
+  const stations = useMemo<SavedPlace[]>(() => {
+    const out: SavedPlace[] = []
+    for (const id of ['lrt-1', 'lrt-2', 'mrt-3', 'edsa-busway']) {
+      const m = modesById[id] as MatrixMode | undefined
+      if (m?.method !== 'MATRIX') continue
+      const short = id === 'edsa-busway' ? 'EDSA Busway' : m.name.en
+      const seen = new Set<string>()
+      for (const d of Object.values(m.directions)) {
+        d.stations.forEach((st, i) => {
+          const info = d.stationInfo?.[i]
+          if (!info || seen.has(st)) return
+          seen.add(st)
+          out.push({ label: `${st} (${short})`, detail: t('plan.station'), lat: info.lat, lng: info.lng })
+        })
+      }
+    }
+    return out
+  }, [modesById, t])
 
   useEffect(() => {
     setResults(null)
@@ -52,7 +82,7 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
     setBusy(true)
     setError(null)
     planner
-      .plan(from, to)
+      .plan(from, to, exclude)
       .then((r) => {
         if (seq !== latest.current) return
         setResults(r)
@@ -60,9 +90,23 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
       })
       .catch(() => seq === latest.current && setError(t('plan.error')))
       .finally(() => seq === latest.current && setBusy(false))
-  }, [from, to, planner.status])
+  }, [from, to, planner.status, excludeKey])
 
+  const setField = (f: Field, p: LatLng, text: string) => {
+    if (f === 'from') {
+      setFrom(p)
+      setFromText(text)
+    } else {
+      setTo(p)
+      setToText(text)
+    }
+  }
   const pick = (p: LatLng) => {
+    if (pinFor) {
+      setField(pinFor, p, t('map.pinned'))
+      setPinFor(null)
+      return
+    }
     if (!from || (from && to)) {
       setFrom(p)
       setFromText(t('map.pinned'))
@@ -73,17 +117,28 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
       setToText(t('map.pinned'))
     }
   }
-  const useMyLocation = () => {
+  const useMyLocation = (f: Field) => {
     if (!navigator.geolocation) return setError(t('map.noGeo'))
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setFrom({ lat: pos.coords.latitude, lng: pos.coords.longitude })
-        setFromText(t('map.myLocationLabel'))
-      },
+      (pos) => setField(f, { lat: pos.coords.latitude, lng: pos.coords.longitude }, t('map.myLocationLabel')),
       () => setError(t('map.noGeo')),
       { enableHighAccuracy: true, timeout: 10000 },
     )
   }
+  const onSheet = (f: Field, r: SheetPick) => {
+    setSheet(null)
+    if (r.kind === 'place') setField(f, { lat: r.place.lat, lng: r.place.lng }, r.place.label)
+    else if (r.kind === 'here') useMyLocation(f)
+    else setPinFor(f)
+  }
+  const clearAll = () => {
+    setFrom(null)
+    setTo(null)
+    setFromText('')
+    setToText('')
+    setPinFor(null)
+  }
+  const toggleKind = (k: LineKind) => setExclude((x) => (x.includes(k) ? x.filter((y) => y !== k) : [...x, k]))
   const swap = () => {
     setFrom(to)
     setTo(from)
@@ -157,64 +212,97 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
     setTimeout(() => setAdded(false), 1800)
   }
 
+  const mapHeight = wide ? 'calc(100vh - 120px)' : results?.length ? '42dvh' : 'calc(100dvh - 270px)'
+  const field = (f: Field) => {
+    const text = f === 'from' ? fromText : toText
+    return (
+      <button
+        type="button"
+        onClick={() => setSheet(f)}
+        className={`flex min-h-12 w-full items-center rounded-xl bg-canvas-2 px-4 text-left text-base ${text ? 'text-ink' : 'text-muted'}`}
+        data-testid={`plan-${f}`}
+      >
+        <span className="truncate">{text || (f === 'from' ? t('map.from') : t('map.to'))}</span>
+      </button>
+    )
+  }
+
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 md:max-w-6xl md:px-8 md:py-6" data-testid="plan">
-      <div className="flex flex-col gap-4 md:grid md:grid-cols-2 md:items-start md:gap-6">
-        <div className="flex flex-col gap-4">
-          <Card className="flex flex-col gap-3">
-            <PlaceSearch
-              label={t('map.from')}
-              value={fromText}
-              onChange={(v) => {
-                setFromText(v)
-                if (from) setFrom(null)
-              }}
-              onSelect={(p: Place) => setFrom({ lat: p.lat, lng: p.lng })}
-              near={from ?? to}
-              testId="plan-from"
-              trailing={
-                <button
-                  type="button"
-                  onClick={useMyLocation}
-                  aria-label={t('map.myLocation')}
-                  title={t('map.myLocation')}
-                  className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line-strong text-lg"
-                >
-                  <span aria-hidden="true">◎</span>
-                </button>
-              }
-            />
-            <PlaceSearch
-              label={t('map.to')}
-              value={toText}
-              onChange={(v) => {
-                setToText(v)
-                if (to) setTo(null)
-              }}
-              onSelect={(p: Place) => setTo({ lat: p.lat, lng: p.lng })}
-              near={from ?? to}
-              testId="plan-to"
-              trailing={
-                <button
-                  type="button"
-                  onClick={swap}
-                  aria-label={t('plan.swap')}
-                  title={t('plan.swap')}
-                  className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-line-strong text-lg"
-                >
-                  <span aria-hidden="true">⇅</span>
-                </button>
-              }
-            />
-            <p className="text-xs text-ink-2">{!from ? t('map.hintFrom') : !to ? t('map.hintTo') : t('plan.hintDone')}</p>
-          </Card>
-
-          <Suspense fallback={<div className="map-canvas grid place-items-center text-sm text-muted">{t('map.loadingMap')}</div>}>
-            <PlanMap from={from} to={to} itinerary={it} marks={marks} onPick={pick} />
-          </Suspense>
+    <main className="flex w-full flex-col md:mx-auto md:grid md:max-w-6xl md:grid-cols-[400px_1fr] md:items-start md:gap-6 md:px-8 md:py-6" data-testid="plan">
+      <section className="border-b border-line bg-surface px-4 pb-2 pt-3 md:col-start-1 md:rounded-2xl md:border md:shadow-sm">
+        <div className="flex items-center gap-3">
+          <div aria-hidden="true" className="flex flex-col items-center self-stretch py-5">
+            <span className="h-3.5 w-3.5 rounded-full border-[3px] border-ink-2" />
+            <span className="w-[3px] flex-1 bg-ink-2" />
+            <span className="h-3.5 w-3.5 rounded-full bg-ink-2" />
+          </div>
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
+            {field('from')}
+            {field('to')}
+          </div>
+          <button type="button" onClick={swap} aria-label={t('plan.swap')} title={t('plan.swap')} className="flex min-h-12 min-w-12 items-center justify-center text-2xl text-ink-2" data-testid="plan-swap">
+            ⇅
+          </button>
         </div>
+        <div className="flex items-center justify-between gap-2 pt-2">
+          <button
+            type="button"
+            onClick={() => setShowModes((v) => !v)}
+            aria-expanded={showModes}
+            className="inline-flex min-h-11 items-center gap-2 text-base text-ink"
+            data-testid="plan-modes"
+          >
+            <span aria-hidden="true" className="text-green-600">
+              🚍
+            </span>
+            {exclude.length ? t('plan.someModes', { n: KINDS.length - exclude.length }) : t('plan.allModes')}
+            <span aria-hidden="true" className="text-muted">
+              {showModes ? '▴' : '▾'}
+            </span>
+          </button>
+          {(from || to) && (
+            <button type="button" onClick={clearAll} className="min-h-11 px-2 text-sm text-muted underline">
+              {t('plan.clear')}
+            </button>
+          )}
+        </div>
+        {showModes && (
+          <div className="flex flex-wrap gap-2 pb-2" data-testid="plan-mode-chips">
+            {KINDS.map((k) => {
+              const on = !exclude.includes(k)
+              return (
+                <button
+                  key={k}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => toggleKind(k)}
+                  disabled={on && exclude.length === KINDS.length - 1}
+                  className={`min-h-10 rounded-full border px-3 text-sm font-medium ${on ? 'border-transparent text-white' : 'border-line-strong text-ink-2'}`}
+                  style={on ? { background: KIND_COLOR[k] } : undefined}
+                >
+                  {ICON[k]} {t(`plan.kind.${k}`)}
+                </button>
+              )
+            })}
+          </div>
+        )}
+      </section>
 
-        <div className="flex flex-col gap-3">
+      <div className="relative isolate z-0 md:sticky md:top-6 md:col-start-2 md:row-span-2 md:row-start-1 md:overflow-hidden md:rounded-2xl">
+        {pinFor && (
+          <div role="status" className="absolute inset-x-3 top-3 z-[500] flex items-center justify-between gap-2 rounded-xl bg-ink px-4 py-2 text-sm text-surface shadow-lg" data-testid="pin-banner">
+            <span>{t('plan.pinBanner', { field: pinFor === 'from' ? t('map.from') : t('map.to') })}</span>
+            <button type="button" onClick={() => setPinFor(null)} className="min-h-9 px-2 font-semibold underline">
+              {t('plan.cancel')}
+            </button>
+          </div>
+        )}
+        <Suspense fallback={<div className="grid place-items-center bg-canvas-2 text-sm text-muted" style={{ height: mapHeight }}>{t('map.loadingMap')}</div>}>
+          <PlanMap from={from} to={to} itinerary={it} marks={marks} onPick={pick} height={mapHeight} />
+        </Suspense>
+      </div>
+
+      <div className="flex flex-col gap-3 px-4 py-4 md:col-start-1 md:px-0 md:py-0">
           {planner.status === 'loading' && (
             <p role="status" className="text-sm text-muted">
               {t('plan.loadingData')}
@@ -326,8 +414,17 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
           <p className="text-[11px] leading-snug text-muted">
             {t('plan.note', { n: planner.routes || '…' })} {t('plan.landmarkNote')}
           </p>
-        </div>
       </div>
+
+      {sheet && (
+        <PlaceSheet
+          title={sheet === 'from' ? t('map.from') : t('map.to')}
+          near={from ?? to}
+          stations={stations}
+          onPick={(r) => onSheet(sheet, r)}
+          onClose={() => setSheet(null)}
+        />
+      )}
     </main>
   )
 }

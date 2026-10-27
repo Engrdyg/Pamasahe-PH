@@ -21,7 +21,7 @@ export const privacy: Record<Lang, { intro: string; sections: PrivacySection[] }
         title: 'What stays on your device',
         body: [
           'Your settings (language, appearance, the Student / Senior / PWD toggle, last mode used) and fare data are saved in your browser storage so the app works offline.',
-          'Trips you build with "Add to trip" and a ride in progress in the ride tracker are also saved in your browser storage so they survive a reload.',
+          'Trips you build with "Add to trip", a ride in progress in the ride tracker, and the places you save or recently picked in the route planner are also saved in your browser storage.',
           'This data never leaves your device unless you share it yourself. Clearing the site data in your browser, or "Clear trip" and "Discard" in the app, deletes it.',
         ],
       },
@@ -81,7 +81,7 @@ export const privacy: Record<Lang, { intro: string; sections: PrivacySection[] }
         title: 'Ano ang naiiwan sa device mo',
         body: [
           'Ang settings mo (wika, itsura, Estudyante / Senior / PWD toggle, huling mode) at ang fare data ay naka-save sa browser storage para gumana ang app kahit offline.',
-          'Ang mga biyahe sa "Idagdag sa biyahe" at ang tumatakbong ride sa ride tracker ay naka-save din sa browser storage para hindi mawala kapag na-reload.',
+          'Ang mga biyahe sa "Idagdag sa biyahe", ang tumatakbong ride sa ride tracker, at ang mga lugar na sinave mo o kamakailang pinili sa route planner ay naka-save din sa browser storage.',
           'Hindi ito lumalabas sa device mo maliban kung ikaw mismo ang mag-share. Mabubura ito kapag nilinis mo ang site data sa browser, o sa "Burahin ang biyahe" at "Burahin" sa app.',
         ],
       },

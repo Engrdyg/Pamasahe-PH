@@ -257,7 +257,9 @@ function legFare(line: Line, from: number, to: number, meters: number, modesById
  * Plan trips from `a` to `b`. Returns up to `max` itineraries: the best for
  * each number of rides, plus other direct routes, sorted by time.
  */
-export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b: LatLng, max = 5): Itinerary[] {
+export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b: LatLng, max = 5, exclude: LineKind[] = []): Itinerary[] {
+  const skip = new Set(exclude)
+  const allowed = (g: number) => !skip.has(net.lines[net.sLine[g]].kind)
   const N = net.sx.length
   const ax = px(a.lng), ay = py(a.lat), bx = px(b.lng), by = py(b.lat)
   const direct = Math.hypot(bx - ax, by - ay)
@@ -270,6 +272,7 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
   const rounds: Round[] = []
   let seeds = new Map<number, { cost: number; prev: number; walk: number }>()
   near(net, ax, ay, MAX_ACCESS, (g, d) => {
+    if (!allowed(g)) return
     const cost = d / WALK + WAIT[net.lines[net.sLine[g]].kind]
     const cur = seeds.get(g)
     if (!cur || cost < cur.cost) seeds.set(g, { cost, prev: -1, walk: d })
@@ -349,7 +352,7 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
           if (!(c + Math.max(0, Math.hypot(net.sx[g] - bx, net.sy[g] - by) - MAX_ACCESS) / FASTEST < bestTotal)) continue
           if (R.rideFrom[g] >= 0 && Math.abs(l.s[g - f0] - l.s[R.rideFrom[g] - f0]) < MIN_RIDE[l.kind]) continue
           near(net, net.sx[g], net.sy[g], MAX_TRANSFER, (h, d) => {
-            if (net.sLine[h] === li) return
+            if (net.sLine[h] === li || !allowed(h)) return
             const cost = c + d / WALK + WAIT[net.lines[net.sLine[h]].kind] + TRANSFER_PENALTY
             if (cost >= bestTotal) return
             const cur = next.get(h)

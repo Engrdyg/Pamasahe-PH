@@ -285,6 +285,29 @@
     "landmarkNote": "Galing sa OpenStreetMap ang mga landmark at pangalan ng kalye at maaaring tantiya lang.",
     "markBoard": "Sakay: {{place}}",
     "markTransfer": "Lipat: {{place}}",
-    "markAlight": "Baba: {{place}}"
+    "markAlight": "Baba: {{place}}",
+    "station": "Istasyon",
+    "allModes": "Lahat ng mode",
+    "someModes": "{{n}} sa 4 na mode",
+    "clear": "Burahin",
+    "kind": {
+      "jeep": "Jeep",
+      "uv": "UV Express",
+      "rail": "Tren",
+      "busway": "Busway"
+    },
+    "pinBanner": "Pindutin ang mapa para i-pin ang “{{field}}”",
+    "cancel": "Kanselahin",
+    "tabSuggestions": "Mungkahi",
+    "tabSaved": "Naka-save",
+    "tabRecent": "Kamakailan",
+    "searchPlace": "Maghanap ng lugar",
+    "here": "Kasalukuyang lokasyon",
+    "hereHint": "Gamitin ang lokasyon ko",
+    "pin": "I-pin sa mapa",
+    "noSaved": "Wala pang naka-save. Pindutin ang ☆ sa tabi ng lugar para i-save.",
+    "noRecent": "Wala pang kamakailang lugar.",
+    "save": "I-save ang lugar",
+    "unsave": "Alisin sa naka-save"
   }
 }
