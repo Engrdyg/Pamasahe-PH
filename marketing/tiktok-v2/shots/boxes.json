@@ -1,0 +1,143 @@
+{
+ "home": {
+  "jeep": {
+   "x": 16,
+   "y": 618,
+   "width": 173,
+   "height": 146
+  }
+ },
+ "jeep-empty": {
+  "km": {
+   "x": 33,
+   "y": 242,
+   "width": 291.140625,
+   "height": 48
+  }
+ },
+ "jeep-1": {},
+ "jeep-12": {
+  "km": {
+   "x": 33,
+   "y": 242,
+   "width": 291.140625,
+   "height": 48
+  },
+  "card": {
+   "x": 16,
+   "y": 487,
+   "width": 358,
+   "height": 327.625
+  },
+  "primary": {
+   "x": 33,
+   "y": 520,
+   "width": 165.515625,
+   "height": 53.625
+  }
+ },
+ "switch": {
+  "x": 16,
+  "y": 137,
+  "width": 266.125,
+  "height": 44
+ },
+ "jeep-12-disc": {
+  "switch": {
+   "x": 16,
+   "y": 137,
+   "width": 266.125,
+   "height": 44
+  },
+  "primary": {
+   "x": 33,
+   "y": 520,
+   "width": 183.078125,
+   "height": 53.625
+  }
+ },
+ "jeep-report-btn": {
+  "report": {
+   "x": 33,
+   "y": 753.625,
+   "width": 236.21875,
+   "height": 44
+  },
+  "add": {
+   "x": 33,
+   "y": 701.625,
+   "width": 209.140625,
+   "height": 44
+  }
+ },
+ "report": {
+  "over": {
+   "x": 46,
+   "y": 250.625,
+   "width": 298,
+   "height": 24
+  },
+  "panel": {
+   "x": 33,
+   "y": 69.625,
+   "width": 324,
+   "height": 932
+  }
+ },
+ "busway": {
+  "primary": {
+   "x": 33,
+   "y": 480,
+   "width": 165.515625,
+   "height": 53.625
+  }
+ },
+ "rail": {
+  "primary": {
+   "x": 33,
+   "y": 600,
+   "width": 165.515625,
+   "height": 53.625
+  }
+ },
+ "trip": {
+  "total": {
+   "x": 33,
+   "y": 118,
+   "width": 324,
+   "height": 64.359375
+  }
+ },
+ "ride-ready": {
+  "start": {
+   "x": 33,
+   "y": 580,
+   "width": 324,
+   "height": 48
+  }
+ },
+ "ride-4": {
+  "km": {
+   "x": 45,
+   "y": 342,
+   "width": 132,
+   "height": 36
+  }
+ },
+ "ride-14": {
+  "km": {
+   "x": 45,
+   "y": 342,
+   "width": 132,
+   "height": 36
+  }
+ },
+ "ride-24": {
+  "km": {
+   "x": 45,
+   "y": 342,
+   "width": 132,
+   "height": 36
+  }
+ }
+}

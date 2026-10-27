@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="fil">
+<head>
+<meta charset="utf-8" />
+<!--
+  Magkano Pamasahe — TikTok promo v2 (30 s, 1080×1920).
+  Deterministic timeline: window.seek(t) puts every element where it belongs at
+  time t (seconds). render.mjs steps through it frame by frame.
+  App screens in shots/ are real captures (capture.mjs); the 3D jeepney is the
+  app's own model (jeep3d.js, bundled from src/hero3d/jeepney.ts).
+-->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0b1220; font-family: "Liberation Sans", "DejaVu Sans", sans-serif; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+  .fill { position: absolute; inset: 0; }
+  .abs { position: absolute; left: 0; top: 0; will-change: transform, opacity; }
+  #bgNavy { background: radial-gradient(1100px 900px at 50% 45%, #1a3f86 0%, #0d1a36 55%, #070d1c 100%); }
+  #bgYellow { background: radial-gradient(1000px 800px at 50% 45%, #ffe07a, #ffc72c 70%); clip-path: circle(0px at 540px 960px); }
+  #bgLight { background: linear-gradient(180deg, #dfeafb 0%, #eef4fc 45%, #f8fafc 100%); clip-path: circle(0px at 540px 1300px); }
+  #bgEnd { background: radial-gradient(1100px 900px at 50% 50%, #1a3f86 0%, #0d1a36 55%, #070d1c 100%); clip-path: circle(0px at 540px 960px); }
+  .bokeh { position: absolute; border-radius: 50%; filter: blur(18px); }
+  .grid-lines { position: absolute; inset: 0; background-image: linear-gradient(rgba(11,61,145,.05) 2px, transparent 2px), linear-gradient(90deg, rgba(11,61,145,.05) 2px, transparent 2px); background-size: 90px 90px; }
+
+  .h { font-weight: 700; text-align: center; width: 1080px; letter-spacing: -0.02em; }
+  .white { color: #fff; } .yellow { color: #ffc72c; } .navy { color: #0b3d91; } .red { color: #dc2626; }
+  .shadow { text-shadow: 0 8px 30px rgba(0,0,0,.45); }
+  .mark { background: linear-gradient(180deg, transparent 58%, #ffc72c 58%, #ffc72c 92%, transparent 92%); padding: 0 8px; }
+
+  .tag { position: absolute; padding: 16px 30px; border-radius: 22px; background: #fff; color: #0f172a; font-weight: 800; font-size: 64px; box-shadow: 0 18px 40px rgba(0,0,0,.4); white-space: nowrap; }
+  .tag::after { content: ""; position: absolute; left: 50%; bottom: -16px; width: 32px; height: 32px; background: #fff; transform: translateX(-50%) rotate(45deg); border-radius: 4px; }
+  .tag .strike { position: absolute; left: -6%; right: -6%; top: 50%; height: 12px; background: #dc2626; border-radius: 6px; transform-origin: left center; transform: rotate(-12deg) scaleX(0); z-index: 2; }
+
+  .pill { display: inline-block; padding: 18px 36px; border-radius: 999px; font-weight: 800; font-size: 42px; white-space: nowrap; }
+  .pill-navy { background: #0b3d91; color: #fff; }
+  .pill-white { background: #fff; color: #0b3d91; box-shadow: 0 16px 40px rgba(0,0,0,.25); }
+  .pill-yellow { background: #ffc72c; color: #0b3d91; }
+
+  /* Phone */
+  #phone { position: absolute; left: 222px; top: 480px; width: 636px; height: 1394px; }
+  .bezel { position: absolute; inset: 0; border-radius: 86px; background: linear-gradient(145deg, #2b3547, #0b0f17 40%, #1c2433); box-shadow: 0 60px 120px rgba(11,30,70,.45), 0 0 0 3px #3a4558 inset; }
+  .screen { position: absolute; left: 18px; top: 18px; width: 600px; height: 1358px; border-radius: 70px; overflow: hidden; background: #f8fafc; }
+  .screen img { position: absolute; left: 0; top: 60px; width: 600px; height: 1298px; }
+  .status { position: absolute; left: 0; top: 0; width: 600px; height: 60px; background: #fff; z-index: 4; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 54px 8px; font-weight: 700; font-size: 26px; color: #0f172a; }
+  .island { position: absolute; left: 50%; top: 36px; width: 170px; height: 48px; border-radius: 30px; background: #000; transform: translateX(-50%); z-index: 5; }
+  .glare { position: absolute; inset: 18px; border-radius: 70px; background: linear-gradient(120deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 30%); pointer-events: none; z-index: 6; }
+  .tap { position: absolute; width: 110px; height: 110px; margin: -55px 0 0 -55px; border-radius: 50%; background: rgba(255,255,255,.55); border: 5px solid rgba(11,61,145,.55); box-shadow: 0 8px 24px rgba(0,0,0,.25); z-index: 7; }
+  .ripple { position: absolute; width: 110px; height: 110px; margin: -55px 0 0 -55px; border-radius: 50%; border: 6px solid #ffc72c; z-index: 7; }
+
+  /* Headings above the phone */
+  .head { position: absolute; left: 0; top: 120px; width: 1080px; text-align: center; }
+  .head .step { display: inline-flex; align-items: center; justify-content: center; width: 78px; height: 78px; border-radius: 50%; background: #0b3d91; color: #ffc72c; font-weight: 800; font-size: 44px; margin-bottom: 18px; }
+  .head .t { font-weight: 800; font-size: 68px; line-height: 1.05; color: #0b3d91; letter-spacing: -0.02em; padding: 0 50px; }
+  .head .s { font-size: 38px; color: #334155; margin-top: 14px; }
+
+  /* Stickers */
+  .sticker { position: absolute; background: #fff; border-radius: 40px; padding: 30px 38px; box-shadow: 0 30px 70px rgba(11,30,70,.35); border: 4px solid #e2e8f0; }
+  .sticker .lb { font-size: 30px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #64748b; white-space: nowrap; }
+  .sticker .big { font-size: 112px; font-weight: 800; color: #0b3d91; letter-spacing: -0.03em; line-height: 1.02; white-space: nowrap; }
+  .sticker .sm { font-size: 34px; color: #334155; margin-top: 6px; white-space: nowrap; }
+  .badge { position: absolute; right: -24px; top: -34px; background: #dc2626; color: #fff; font-weight: 800; font-size: 44px; padding: 12px 24px; border-radius: 999px; box-shadow: 0 10px 24px rgba(220,38,38,.4); transform: rotate(8deg); }
+  .leg { position: absolute; left: 30px; width: 400px; display: flex; align-items: center; gap: 18px; background: #fff; border-radius: 30px; padding: 20px 26px; box-shadow: 0 20px 50px rgba(11,30,70,.3); font-size: 36px; font-weight: 700; color: #0f172a; }
+  .leg .ic { font-size: 52px; }
+  .leg .amt { margin-left: auto; color: #0b3d91; font-weight: 800; }
+  .stamp { position: absolute; border: 10px solid #dc2626; color: #dc2626; border-radius: 26px; padding: 14px 30px; font-weight: 900; font-size: 74px; background: rgba(255,255,255,.95); letter-spacing: .02em; white-space: nowrap; }
+
+  #jeep3d { position: absolute; left: 0; top: 0; width: 1080px; height: 1080px; }
+  .url { font-family: "DejaVu Sans Mono", monospace; font-weight: 700; font-size: 44px; color: #0b3d91; background: #fff; padding: 24px 44px; border-radius: 999px; box-shadow: 0 20px 50px rgba(0,0,0,.35); white-space: nowrap; }
+  .flash { position: absolute; inset: 0; background: #fff; pointer-events: none; opacity: 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="fill" id="bgNavy"></div>
+  <div class="fill" id="bokeh"></div>
+
+  <!-- S1: hook -->
+  <canvas id="jeep3d" width="1080" height="1080"></canvas>
+  <div id="h1a" class="abs h white shadow" style="top:210px; font-size:96px">Sinisingil ka ba</div>
+  <div id="h1b" class="abs h yellow shadow" style="top:340px; font-size:128px; font-weight:900; white-space:nowrap">nang SOBRA?</div>
+  <div id="tag1" class="tag abs" style="left:90px; top:700px">₱15?<span class="strike"></span></div>
+  <div id="tag2" class="tag abs" style="left:770px; top:640px">₱20?<span class="strike"></span></div>
+  <div id="tag3" class="tag abs" style="left:110px; top:1420px">₱25?<span class="strike"></span></div>
+  <div id="tag4" class="tag abs" style="left:760px; top:1380px">₱18?<span class="strike"></span></div>
+  <div id="h1c" class="abs h white" style="top:1660px; font-size:52px; font-weight:400">Huwag nang manghula. 👇</div>
+
+  <!-- S2: yellow card -->
+  <div class="fill" id="bgYellow"></div>
+  <div id="h2a" class="abs h navy" style="top:640px; font-size:84px; font-weight:800">Alamin ang</div>
+  <div id="h2b" class="abs h navy" style="top:740px; font-size:150px; font-weight:900; letter-spacing:-0.03em">OPISYAL</div>
+  <div id="h2c" class="abs h navy" style="top:900px; font-size:84px; font-weight:800">na pamasahe</div>
+  <div id="h2d" class="abs" style="left:0; width:1080px; top:1070px; text-align:center"><span class="pill pill-navy">Batay sa LTFRB · Set 28, 2026</span></div>
+
+  <!-- Phone scenes -->
+  <div class="fill" id="bgLight"><div class="grid-lines"></div></div>
+  <div id="heads"></div>
+  <div id="phone">
+    <div class="bezel"></div>
+    <div class="screen" id="screen"><div class="status"><span>9:41</span><span>5G ▮▮▮ 87%</span></div></div>
+    <div class="island"></div>
+    <div class="glare"></div>
+    <div class="tap" id="tap"></div>
+    <div class="ripple" id="ripple"></div>
+  </div>
+
+  <div id="stFare" class="sticker abs" style="left:560px; top:1250px; width:480px">
+    <div class="lb" id="stFareLb">Jeep · 12 km</div>
+    <div class="big" id="stFareNum">₱0.00</div>
+    <div class="sm" id="stFareSm">Regular</div>
+    <div class="badge" id="stFareBadge">−20%</div>
+  </div>
+  <div id="stBus" class="sticker abs" style="left:540px; top:1240px; width:500px">
+    <div class="lb">🚌 EDSA Busway</div>
+    <div class="big">₱58.25</div>
+    <div class="sm">Monumento → Ayala</div>
+  </div>
+  <div id="stRail" class="sticker abs" style="left:40px; top:1260px; width:470px">
+    <div class="lb">🚆 MRT-3</div>
+    <div class="big">₱12.00</div>
+    <div class="sm">North Ave → Ayala</div>
+  </div>
+  <div id="stRide" class="sticker abs" style="left:560px; top:1220px; width:480px">
+    <div class="lb">🛰️ GPS · live</div>
+    <div class="big" id="stRideKm">0.0 km</div>
+    <div class="sm" id="stRideSm">0:00 · ₱14.00</div>
+  </div>
+  <div id="leg1" class="leg abs" style="top:1080px"><span class="ic">🚙</span>Jeep<span class="amt">₱30.00</span></div>
+  <div id="leg2" class="leg abs" style="top:1210px"><span class="ic">🚌</span>Busway<span class="amt">₱58.25</span></div>
+  <div id="leg3" class="leg abs" style="top:1340px"><span class="ic">🚆</span>MRT-3<span class="amt">₱12.00</span></div>
+  <div id="stTotal" class="sticker abs" style="left:560px; top:1500px; width:480px; background:#0b3d91; border-color:#0b3d91">
+    <div class="lb" style="color:#c3d4f5">Kabuuan</div>
+    <div class="big" id="stTotalNum" style="color:#ffc72c">₱0.00</div>
+  </div>
+  <div id="stamp" class="stamp abs" style="left:500px; top:1180px">SOBRA ₱10.00</div>
+  <div id="hotline" class="abs" style="left:520px; top:1360px"><span class="pill pill-navy" style="font-size:46px">📞 LTFRB 1342</span></div>
+
+  <!-- S9: end card -->
+  <div class="fill" id="bgEnd"></div>
+  <canvas id="jeep3dEnd" width="1080" height="1080" style="position:absolute; left:0; top:0"></canvas>
+  <img id="endLogo" class="abs" src="logo.svg" style="left:440px; top:150px; width:200px; height:200px" />
+  <div id="endTitle" class="abs h white shadow" style="top:380px; font-size:110px; font-weight:900">Magkano Pamasahe</div>
+  <div id="endSub" class="abs h" style="top:510px; font-size:44px; color:#c3d4f5">Jeep · UV · Bus · Busway · Taxi · TNVS · Tren</div>
+  <div id="endPills" class="abs" style="left:0; width:1080px; top:1430px; text-align:center">
+    <span class="pill pill-yellow" id="p1">Libre</span>
+    <span class="pill pill-yellow" id="p2" style="margin-left:18px">Offline</span>
+    <span class="pill pill-yellow" id="p3" style="margin-left:18px">Walang ads</span>
+  </div>
+  <div id="endUrl" class="abs" style="left:0; width:1080px; top:1570px; text-align:center"><span class="url">magkano-pamasahe.vercel.app</span></div>
+  <div id="endCta" class="abs h white" style="top:1730px; font-size:50px; font-weight:700">I-save at i-share sa barkada! 🚌</div>
+
+  <div class="flash" id="flash"></div>
+</div>
+
+<script src="jeep3d.js"></script>
+<script>
+const $ = (id) => document.getElementById(id)
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v))
+const seg = (t, a, b) => clamp((t - a) / (b - a))
+const E = {
+  lin: (x) => x,
+  out: (x) => 1 - Math.pow(1 - x, 3),
+  inOut: (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
+  in: (x) => x * x * x,
+  back: (x) => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2) },
+  elastic: (x) => (x === 0 || x === 1 ? x : Math.pow(2, -10 * x) * Math.sin((x * 10 - 0.75) * (2 * Math.PI) / 3) + 1),
+}
+const tw = (t, a, b, from, to, ease = E.out) => from + (to - from) * ease(seg(t, a, b))
+/** 0 before a, fades in a→b, holds, fades out c→d. */
+const win = (t, a, b, c, d) => (t < a || t > d ? 0 : t < b ? E.out(seg(t, a, b)) : t <= c ? 1 : 1 - E.in(seg(t, c, d)))
+function set(el, { x = 0, y = 0, s = 1, r = 0, o = 1 } = {}) {
+  el.style.transform = `translate(${x}px, ${y}px) scale(${s}) rotate(${r}deg)`
+  el.style.opacity = o
+  el.style.visibility = o <= 0.001 ? 'hidden' : 'visible'
+}
+/** Pop in with overshoot at a, out at d. */
+function pop(el, t, a, d, extra = {}) {
+  const o = win(t, a, a + 0.15, d - 0.2, d)
+  const s = t < d - 0.2 ? 0.4 + 0.6 * E.back(seg(t, a, a + 0.45)) : 1 - 0.15 * seg(t, d - 0.2, d)
+  set(el, { o, s, ...extra })
+}
+const peso = (v) => '₱' + v.toFixed(2)
+
+// ---------- Background bokeh (city lights) ----------
+const rnd = (() => { let s = 7; return () => ((s = (s * 16807) % 2147483647) / 2147483647) })()
+const lights = Array.from({ length: 26 }, () => {
+  const el = document.createElement('div')
+  el.className = 'bokeh'
+  const size = 40 + rnd() * 140
+  const hue = [48, 210, 0, 30][Math.floor(rnd() * 4)]
+  el.style.width = el.style.height = size + 'px'
+  el.style.background = `hsla(${hue}, 95%, 65%, ${0.18 + rnd() * 0.25})`
+  $('bokeh').appendChild(el)
+  return { el, x: rnd() * 1180 - 50, y: rnd() * 1920, v: 30 + rnd() * 90, ph: rnd() * 6 }
+})
+
+// ---------- Phone screens ----------
+// [image, start time, transition] — 'slide' = navigate, 'cut' = same screen updates
+const S = 600 / 390 // CSS px in the app → px on the phone screen
+const screens = [
+  ['home', 4.6, 'cut'],
+  ['jeep-empty', 7.15, 'slide'],
+  ['jeep-1', 8.25, 'cut'],
+  ['jeep-12', 8.55, 'cut'],
+  ['jeep-12-disc', 10.35, 'cut'],
+  ['busway', 12.1, 'slide'],
+  ['rail', 13.95, 'slide'],
+  ['ride-ready', 15.7, 'slide'],
+  ['ride-4', 16.75, 'cut'],
+  ['ride-14', 17.75, 'cut'],
+  ['ride-24', 18.75, 'cut'],
+  ['trip', 19.7, 'slide'],
+  ['report', 23.1, 'slide'],
+].map(([name, at, kind]) => {
+  const img = document.createElement('img')
+  img.src = `shots/${name}.png`
+  $('screen').appendChild(img)
+  return { img, at, kind }
+})
+// Taps on real element positions (CSS px from capture.mjs boxes)
+const taps = [
+  { t: 6.85, x: 102, y: 690 },  // Jeep tile
+  { t: 7.85, x: 178, y: 266 },  // distance field
+  { t: 10.25, x: 44, y: 159 },  // discount switch
+  { t: 16.45, x: 195, y: 604 }, // start ride
+]
+
+// ---------- Headings ----------
+const heads = [
+  [4.75, 7.2, '1', 'Pumili ng sasakyan', 'Jeep, UV, Bus, Busway, Taxi, TNVS, Tren'],
+  [7.2, 10.1, '2', 'I-type ang layo ng biyahe', 'Lalabas agad ang pamasahe'],
+  [10.1, 12.0, '%', 'Estudyante, Senior o PWD?', '20% diskwento, isang pindot lang'],
+  [12.0, 15.6, '🚆', 'EDSA Busway at LRT/MRT din', 'Piliin lang ang istasyon'],
+  [15.6, 19.6, '📍', 'Nakasakay na? I-track sa GPS', 'Sinusukat ang layo habang bumibiyahe'],
+  [19.6, 23.0, '＋', 'Ilang sakay? Total agad', 'Jeep + Busway + MRT sa isang listahan'],
+  [23.0, 26.3, '⚠', 'Na-overcharge? I-report', 'Handa na ang report para sa LTFRB'],
+].map(([a, b, step, title, sub]) => {
+  const el = document.createElement('div')
+  el.className = 'head'
+  el.innerHTML = `<div class="step">${step}</div><div class="t">${title}</div><div class="s">${sub}</div>`
+  $('heads').appendChild(el)
+  return { el, a, b }
+})
+
+// ---------- 3D jeepney ----------
+const j1 = window.jeep3d.mount($('jeep3d'))
+const j2 = window.jeep3d.mount($('jeep3dEnd'))
+
+window.seek = (t) => {
+  // Background lights drift
+  for (const l of lights) {
+    const x = ((l.x - t * l.v) % 1180 + 1180) % 1180 - 50
+    l.el.style.transform = `translate(${x}px, ${l.y + Math.sin(t * 0.8 + l.ph) * 30}px)`
+  }
+  $('bokeh').style.opacity = t < 3.6 ? 1 : t > 26.4 ? seg(t, 26.4, 27) : 0
+
+  // ---- S1 hook (0–3.3)
+  const s1 = t < 3.6
+  if (s1) {
+    const spin = -0.5 + 7.5 * (1 - Math.exp(-t * 1.4)) + t * 0.25
+    const s = 0.55 + 0.45 * E.back(seg(t, 0, 0.9))
+    $('jeep3d').style.transform = `translate(0px, ${500 + (1 - E.out(seg(t, 0, 0.8))) * 300}px) scale(${s})`
+    $('jeep3d').style.opacity = 1 - seg(t, 3.0, 3.3)
+    $('jeep3d').style.visibility = 'visible'
+    j1.render(spin, 18, 14)
+  } else $('jeep3d').style.visibility = 'hidden'
+  pop($('h1a'), t, 0.25, 3.3)
+  {
+    const o = win(t, 0.75, 0.85, 3.1, 3.3)
+    const s = t < 0.75 ? 2.4 : 2.4 - 1.4 * E.out(seg(t, 0.75, 0.95))
+    const shake = t > 0.95 && t < 1.25 ? Math.sin(t * 90) * 10 * (1 - seg(t, 0.95, 1.25)) : 0
+    set($('h1b'), { o, s, r: -3, x: shake })
+  }
+  ;['tag1', 'tag2', 'tag3', 'tag4'].forEach((id, i) => {
+    const a = 1.3 + i * 0.18
+    const wob = Math.sin(t * 3 + i) * 4
+    pop($(id), t, a, 3.25, { r: wob + (i % 2 ? 6 : -6), y: Math.sin(t * 2 + i) * 10 })
+    $(id).querySelector('.strike').style.transform = `rotate(-12deg) scaleX(${E.out(seg(t, 2.3 + i * 0.08, 2.5 + i * 0.08))})`
+  })
+  set($('h1c'), { o: win(t, 1.9, 2.2, 3.0, 3.3), y: tw(t, 1.9, 2.3, 40, 0) })
+
+  // ---- S2 yellow (3.1–4.8)
+  $('bgYellow').style.clipPath = `circle(${tw(t, 3.05, 3.55, 0, 1400, E.inOut)}px at 540px 960px)`
+  pop($('h2a'), t, 3.4, 4.85)
+  {
+    const o = win(t, 3.6, 3.65, 4.65, 4.85)
+    set($('h2b'), { o, s: t < 3.6 ? 2 : 2 - E.out(seg(t, 3.6, 3.8)), r: -2 })
+  }
+  pop($('h2c'), t, 3.85, 4.85)
+  set($('h2d'), { o: win(t, 4.05, 4.3, 4.65, 4.85), y: tw(t, 4.05, 4.4, 40, 0) })
+
+  // ---- Light phone scenes (4.5–26.5)
+  $('bgLight').style.clipPath = `circle(${tw(t, 4.45, 5.0, 0, 2000, E.inOut)}px at 540px 1300px)`
+  for (const h of heads) {
+    const o = win(t, h.a, h.a + 0.3, h.b - 0.25, h.b)
+    set(h.el, { o, y: t < h.a + 0.3 ? tw(t, h.a, h.a + 0.35, 50, 0) : tw(t, h.b - 0.25, h.b, 0, -40, E.in) })
+  }
+  {
+    // Phone rises in, gently floats, zooms on the fare, drops out at the end.
+    let y = tw(t, 4.55, 5.25, 1500, 0, E.out) + Math.sin(t * 1.3) * 6
+    if (t > 26.0) y += tw(t, 26.0, 26.5, 0, 1500, E.in)
+    const zoom = 1 + 0.16 * (win(t, 8.7, 9.2, 11.7, 12.1))
+    const ry = tw(t, 4.55, 5.25, -18, 0) + Math.sin(t * 0.9) * 1.5
+    const ph = $('phone')
+    ph.style.transform = `perspective(2400px) translate(0px, ${y}px) rotateY(${ry}deg) scale(${zoom})`
+    ph.style.transformOrigin = `318px 820px`
+    ph.style.visibility = t > 4.5 && t < 26.6 ? 'visible' : 'hidden'
+  }
+  // screens
+  let cur = -1
+  screens.forEach((sc, i) => { if (t >= sc.at) cur = i })
+  screens.forEach((sc, i) => {
+    let o = 0, x = 0
+    if (i === cur) {
+      if (sc.kind === 'slide') { x = (1 - E.inOut(seg(t, sc.at, sc.at + 0.4))) * 600; o = 1 }
+      else o = i === 0 ? 1 : E.out(seg(t, sc.at, sc.at + 0.12))
+    } else if (i === cur - 1) {
+      const nx = screens[cur]
+      const p = seg(t, nx.at, nx.at + 0.4)
+      if (nx.kind === 'slide') { x = -E.inOut(p) * 200; o = p < 1 ? 1 : 0 }
+      else o = seg(t, nx.at, nx.at + 0.12) < 1 ? 1 : 0
+    }
+    sc.img.style.zIndex = i === cur ? 2 : 1
+    set(sc.img, { x, o })
+  })
+  // taps
+  let tapShown = false
+  for (const tp of taps) {
+    if (t > tp.t - 0.4 && t < tp.t + 0.45) {
+      tapShown = true
+      const px = 18 + tp.x * S, py = 78 + tp.y * S
+      const press = t < tp.t ? 1 - 0.18 * seg(t, tp.t - 0.12, tp.t) : 0.82 + 0.18 * seg(t, tp.t, tp.t + 0.15)
+      const o = win(t, tp.t - 0.4, tp.t - 0.25, tp.t + 0.25, tp.t + 0.45)
+      $('tap').style.left = px + 'px'; $('tap').style.top = py + 'px'
+      set($('tap'), { o, s: press })
+      const rp = seg(t, tp.t, tp.t + 0.45)
+      $('ripple').style.left = px + 'px'; $('ripple').style.top = py + 'px'
+      set($('ripple'), { o: t >= tp.t ? 1 - rp : 0, s: 0.6 + rp * 1.6 })
+    }
+  }
+  if (!tapShown) { set($('tap'), { o: 0 }); set($('ripple'), { o: 0 }) }
+
+  // Fare sticker: count up to ₱30.00, then drop to ₱24.00 with the discount
+  pop($('stFare'), t, 8.75, 12.05, { r: tw(t, 8.75, 9.2, -6, -2) })
+  if (t < 10.35) {
+    $('stFareNum').textContent = peso(Math.round(30 * E.out(seg(t, 8.8, 9.4)) * 4) / 4)
+    $('stFareLb').textContent = 'Jeep · 12 km'
+    $('stFareSm').textContent = 'Regular na pamasahe'
+  } else {
+    $('stFareNum').textContent = peso(Math.round((30 - 6 * E.out(seg(t, 10.35, 10.8))) * 4) / 4)
+    $('stFareLb').textContent = 'Jeep · 12 km'
+    $('stFareSm').textContent = 'Estudyante / Senior / PWD'
+  }
+  pop($('stFareBadge'), t, 10.45, 12.05, { r: 8 })
+  pop($('stBus'), t, 12.55, 13.95, { r: -2 })
+  pop($('stRail'), t, 14.4, 15.7, { r: 2 })
+  // Ride: live distance and clock
+  pop($('stRide'), t, 16.7, 19.65, { r: -2 })
+  {
+    const p = seg(t, 16.75, 19.4)
+    $('stRideKm').textContent = (p * 1.0).toFixed(1) + ' km'
+    const secs = Math.round(p * 28)
+    $('stRideSm').textContent = `0:${String(secs).padStart(2, '0')} · ₱14.00`
+  }
+  // Trip legs fly in, then the total counts up
+  ;[['leg1', 19.95], ['leg2', 20.3], ['leg3', 20.65]].forEach(([id, a]) => {
+    const o = win(t, a, a + 0.2, 22.75, 23.05)
+    set($(id), { o, x: tw(t, a, a + 0.45, -500, 0, E.back), r: tw(t, a, a + 0.45, -8, 0) })
+  })
+  pop($('stTotal'), t, 21.1, 23.05, { r: 2 })
+  $('stTotalNum').textContent = peso(Math.round(100.25 * E.out(seg(t, 21.15, 21.9)) * 4) / 4)
+  // Report: stamp slams down, then the hotline
+  {
+    const a = 23.65
+    const o = win(t, a, a + 0.05, 26.0, 26.3)
+    const s = t < a ? 2.6 : 2.6 - 1.6 * E.out(seg(t, a, a + 0.18))
+    const shake = t > a + 0.18 && t < a + 0.45 ? Math.sin(t * 100) * 8 * (1 - seg(t, a + 0.18, a + 0.45)) : 0
+    set($('stamp'), { o, s, r: -8, x: shake })
+  }
+  pop($('hotline'), t, 24.4, 26.3, { r: -2 })
+
+  // ---- S9 end card (26.3–30)
+  $('bgEnd').style.clipPath = `circle(${tw(t, 26.25, 26.85, 0, 1400, E.inOut)}px at 540px 960px)`
+  if (t > 26.3) {
+    const s = 0.6 + 0.4 * E.back(seg(t, 26.5, 27.3))
+    $('jeep3dEnd').style.transform = `translate(0px, ${tw(t, 26.4, 27.2, 1000, 400)}px) scale(${s})`
+    $('jeep3dEnd').style.visibility = 'visible'
+    j2.render(2.2 + (t - 26.3) * 0.9, 15.5, 15)
+  } else $('jeep3dEnd').style.visibility = 'hidden'
+  pop($('endLogo'), t, 26.7, 31)
+  pop($('endTitle'), t, 26.85, 31)
+  set($('endSub'), { o: win(t, 27.1, 27.4, 31, 32), y: tw(t, 27.1, 27.5, 30, 0) })
+  pop($('p1'), t, 27.6, 31); pop($('p2'), t, 27.75, 31); pop($('p3'), t, 27.9, 31)
+  ;['p1', 'p2', 'p3'].forEach((id) => { $(id).style.display = 'inline-block' })
+  pop($('endUrl'), t, 28.2, 31)
+  set($('endCta'), { o: win(t, 28.6, 28.9, 31, 32), y: tw(t, 28.6, 29.0, 30, 0) + Math.sin(t * 6) * (t > 29 ? 4 : 0) })
+
+  // White flash on the big transitions
+  $('flash').style.opacity = 0.5 * (win(t, 3.0, 3.08, 3.08, 3.3) + win(t, 26.2, 26.28, 26.28, 26.5))
+}
+window.seek(0)
+</script>
+</body>
+</html>
