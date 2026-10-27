@@ -63,6 +63,26 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
   const [exclude, setExclude] = useState<LineKind[]>([])
   const [showModes, setShowModes] = useState(false)
   const excludeKey = exclude.join(',')
+  // Space left for the map on phones: viewport minus everything above it and the bottom nav.
+  const mapWrap = useRef<HTMLDivElement>(null)
+  const [avail, setAvail] = useState(() => window.innerHeight - 330)
+  useEffect(() => {
+    const measure = () => {
+      const el = mapWrap.current
+      if (!el) return
+      const top = el.getBoundingClientRect().top + window.scrollY
+      const nav = document.querySelector('nav[aria-label="Main"]')?.getBoundingClientRect().height ?? 0
+      const vh = window.visualViewport?.height ?? window.innerHeight
+      setAvail(Math.floor(vh - top - nav))
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    window.visualViewport?.addEventListener('resize', measure)
+    return () => {
+      window.removeEventListener('resize', measure)
+      window.visualViewport?.removeEventListener('resize', measure)
+    }
+  }, [headerH, showModes])
 
   // Rail and Busway stations as offline search suggestions
   const stations = useMemo<SavedPlace[]>(() => {
@@ -246,7 +266,10 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
     setTimeout(() => setAdded(false), 1800)
   }
 
-  const mapHeight = wide ? 'calc(100vh - 120px)' : results?.length ? '42dvh' : 'calc(100dvh - 270px)'
+  // Phone: before results the map fills the space between the fields and the
+  // bottom nav (measured); with results it takes about 55% of that.
+  const mapPx = Math.max(320, avail)
+  const mapHeight = wide ? 'calc(100vh - 120px)' : `${Math.round(results?.length ? Math.max(300, mapPx * 0.55) : mapPx)}px`
   const field = (f: Field) => {
     const text = f === 'from' ? fromText : toText
     return (
@@ -326,7 +349,7 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
         )}
       </section>
 
-      <div className="relative isolate z-0 md:sticky md:top-6 md:col-start-2 md:row-span-2 md:row-start-1 md:overflow-hidden md:rounded-2xl">
+      <div ref={mapWrap} className="relative isolate z-0 md:sticky md:top-6 md:col-start-2 md:row-span-2 md:row-start-1 md:overflow-hidden md:rounded-2xl">
         {pinFor && (
           <>
             <div role="status" className="absolute left-14 right-3 top-3 z-[500] rounded-xl bg-ink px-4 py-2 text-center text-sm text-surface shadow-lg" data-testid="pin-banner">
@@ -526,10 +549,12 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
               </button>
             </Card>
           )}
-          <p className="text-[11px] leading-snug text-muted">
-            {(from || to) && `${t('plan.dragHint')} `}
-            {t('plan.note', { n: planner.routes || '…' })} {t('plan.landmarkNote')}
-          </p>
+          {(results || wide) && (
+            <p className="text-[11px] leading-snug text-muted">
+              {(from || to) && `${t('plan.dragHint')} `}
+              {t('plan.note', { n: planner.routes || '…' })} {t('plan.landmarkNote')}
+            </p>
+          )}
       </div>
 
       {sheet && (

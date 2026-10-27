@@ -2,7 +2,10 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { useEffect, useRef } from 'react'
 import type { SlimItinerary } from '../lib/planner'
-import { DEFAULT_CENTER, type LatLng } from '../lib/routing'
+import type { LatLng } from '../lib/routing'
+
+// Opening view: Metro Manila (Manila Bay to Marikina, Caloocan to Parañaque)
+const METRO_MANILA = { lat: 14.585, lng: 121.03 }
 
 type Field = 'from' | 'to'
 export type MarkType = 'board' | 'transfer' | 'alight'
@@ -58,7 +61,7 @@ export default function PlanMap({ from, to, itinerary, colors = [], marks = [], 
 
   useEffect(() => {
     if (!el.current || map.current) return
-    const m = L.map(el.current, { zoomControl: true }).setView([DEFAULT_CENTER.lat, DEFAULT_CENTER.lng], 12)
+    const m = L.map(el.current, { zoomControl: true }).setView([METRO_MANILA.lat, METRO_MANILA.lng], 12)
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
@@ -154,6 +157,7 @@ export default function PlanMap({ from, to, itinerary, colors = [], marks = [], 
     if (!m) return
     m.invalidateSize()
     if (lastBounds.current && !pinning) m.fitBounds(lastBounds.current, { padding: [36, 36], maxZoom: 16 })
+    else if (!pinning && !from && !to) m.setView([METRO_MANILA.lat, METRO_MANILA.lng], m.getZoom())
   }, [height])
 
   return <div ref={el} style={{ height }} className="w-full" data-testid="plan-map" />
