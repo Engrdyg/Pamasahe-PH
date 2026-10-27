@@ -144,8 +144,13 @@
     "toggle": "Appearance: {{mode}}"
   },
   "hero": {
-    "title": "Magkano ang pamasahe?",
-    "sub": "Check the official fare before you ride."
+    "kicker": "Bayad po! 👋",
+    "title": "Where are you going?",
+    "sub": "Find the route and the right fare for every ride: jeep, UV, train and Busway.",
+    "cta": "Find a route",
+    "faresLink": "Or check the fare for each vehicle",
+    "faresTitle": "Fares by vehicle",
+    "tag": "Jeep, minimum"
   },
   "busway": {
     "route": "Route",

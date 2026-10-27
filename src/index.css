@@ -53,7 +53,6 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  height: 300px;
   overflow: hidden;
   background:
     radial-gradient(ellipse 70% 60% at 50% 75%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0) 70%),
@@ -67,16 +66,55 @@ body {
 .hero-text {
   position: relative;
   z-index: 1;
-  padding: 18px 20px 0;
-  text-align: center;
-  pointer-events: none;
+  padding: 20px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
-.hero-title { font-size: 1.6rem; line-height: 1.1; font-weight: 800; letter-spacing: -0.01em; margin: 0; color: var(--color-brand); }
-.hero-sub { font-size: 0.85rem; color: var(--color-ink-2); margin: 4px 0 0; }
+.hero-kicker { margin: 0; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-ink-2); }
+.hero-title { font-size: 1.9rem; line-height: 1.05; font-weight: 800; letter-spacing: -0.02em; margin: 0; color: var(--color-brand); }
+.hero-sub { font-size: 0.9rem; color: var(--color-ink-2); margin: 0; }
+.hero-search {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 20px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 12px 30px rgba(11, 61, 145, 0.15);
+  text-decoration: none;
+}
+.hero-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: var(--color-canvas);
+  border: 1px solid var(--color-line);
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+.hero-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.hero-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  border-radius: 999px;
+  background: var(--color-brand);
+  color: #fff;
+  font-weight: 700;
+}
+.dark .hero-cta { color: #0b1220; }
+.hero-link { align-self: center; font-size: 0.85rem; font-weight: 600; color: var(--color-brand); padding: 6px; background: none; border: 0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.hero-right { position: relative; height: 210px; }
 .hero-stage {
-  position: relative;
-  flex: 1;
-  min-height: 0;
+  position: absolute;
+  inset: 0;
   opacity: 0;
   transition: opacity 0.6s ease;
   touch-action: pan-y;
@@ -85,13 +123,33 @@ body {
 .hero-stage.is-ready { opacity: 1; }
 .hero-stage:active { cursor: grabbing; }
 .hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero-tag {
+  position: absolute;
+  right: 14px;
+  top: 8px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 14px;
+  border-radius: 16px;
+  background: var(--color-accent);
+  color: #0b1220;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  transform: rotate(3deg);
+  pointer-events: none;
+}
+.hero-tag-lb { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.hero-tag-num { font-size: 1.5rem; font-weight: 900; line-height: 1.05; font-variant-numeric: tabular-nums; }
 @media (min-width: 768px) {
   .map-canvas { height: 380px; }
-  .hero { flex-direction: row; align-items: center; height: 360px; }
-  .hero-text { flex: 0 0 40%; padding: 0 0 0 48px; text-align: left; }
-  .hero-title { font-size: 2.6rem; }
-  .hero-sub { font-size: 1.1rem; margin-top: 8px; }
-  .hero-stage { align-self: stretch; }
+  .hero { flex-direction: row; align-items: center; height: auto; min-height: 420px; }
+  .hero-text { flex: 0 0 44%; padding: 32px 0 32px 44px; }
+  .hero-title { font-size: 3rem; }
+  .hero-sub { font-size: 1.1rem; }
+  .hero-search { flex-direction: column; max-width: 440px; }
+  .hero-link { align-self: flex-start; }
+  .hero-right { flex: 1; align-self: stretch; height: auto; }
+  .hero-tag { right: 28px; top: 28px; padding: 10px 18px; }
+  .hero-tag-num { font-size: 2rem; }
 }
 
 /* ---------- Busway route strip ---------- */

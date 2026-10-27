@@ -144,8 +144,13 @@
     "toggle": "Itsura: {{mode}}"
   },
   "hero": {
-    "title": "Magkano ang pamasahe?",
-    "sub": "Alamin ang opisyal na pamasahe bago sumakay."
+    "kicker": "Bayad po! 👋",
+    "title": "Saan ka pupunta?",
+    "sub": "Hanapin ang ruta at ang tamang pamasahe bawat sakay: jeep, UV, tren at Busway.",
+    "cta": "Hanapin ang ruta",
+    "faresLink": "O tingnan ang pamasahe ng bawat sasakyan",
+    "faresTitle": "Pamasahe kada sasakyan",
+    "tag": "Jeep, minimum"
   },
   "busway": {
     "route": "Ruta",

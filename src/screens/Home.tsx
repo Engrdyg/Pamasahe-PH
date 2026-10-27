@@ -28,22 +28,7 @@ export function Home() {
         <Hero3D />
       </div>
       <div className="flex flex-col gap-4 px-4 md:gap-6 md:px-0">
-      <a
-        href="#/plan"
-        className="flex items-center gap-4 rounded-2xl bg-brand p-4 text-white shadow-md transition-transform active:scale-[0.99]"
-        data-testid="plan-open"
-      >
-        <span aria-hidden="true" className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-white/15 text-2xl">
-          🗺️
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-lg font-bold">{t('plan.homeTitle')}</span>
-          <span className="block text-sm text-white/80">{t('plan.homeSub')}</span>
-        </span>
-        <span aria-hidden="true" className="text-2xl">
-          ›
-        </span>
-      </a>
+      <h2 id="fares" className="scroll-mt-20 text-lg font-bold text-ink md:text-xl">{t('hero.faresTitle')}</h2>
       {!wide && <DiscountToggle />}
       <ul className="grid auto-rows-fr grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
         {categories.map((c) => (
