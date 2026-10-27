@@ -560,7 +560,7 @@ export function buildJeepney(): THREE.Group {
     jeep.add(rod(v(-3.08, 0.6, z), v(-3.08, 2.1, z), 0.022, mats.chrome))
     jeep.add(boxAt(-3.07, -3.0, 0.75, 1.42, z * 1.9 - 0.06, z * 1.9 + 0.06, mats.tail, 0.01))
   }
-  jeep.add(boxAt(-3.06, -3.02, 1.46, 1.5, -0.95, 0.95, mats.tail, 0))
+  for (const sgn of [1, -1]) jeep.add(boxAt(-3.06, -3.02, 1.46, 1.5, sgn > 0 ? 0.5 : -0.95, sgn > 0 ? 0.95 : -0.5, mats.tail, 0)) // tail strip, clear of the entrance
   jeep.add(boxAt(-3.32, -3.0, 0.36, 0.43, -0.45, 0.45, mats.chrome, 0.01))
   jeep.add(boxAt(-3.14, -3.02, 0.46, 0.6, -1.0, -0.45, mats.chrome, 0.02))
   jeep.add(boxAt(-3.14, -3.02, 0.46, 0.6, 0.45, 1.0, mats.chrome, 0.02))
