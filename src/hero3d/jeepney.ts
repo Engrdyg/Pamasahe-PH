@@ -272,6 +272,8 @@ export function buildJeepney(): THREE.Group {
     black: paint('#0f1115'),
     roof: paint('#14161b'),
     interior: new THREE.MeshStandardMaterial({ color: '#15181f', roughness: 0.9 }),
+    panel: new THREE.MeshStandardMaterial({ color: '#cbb89a', roughness: 0.6 }),
+    ceiling: new THREE.MeshStandardMaterial({ color: '#efe6d6', roughness: 0.7, side: THREE.DoubleSide }),
     floor: new THREE.MeshStandardMaterial({ color: '#2a2e36', metalness: 0.6, roughness: 0.5 }),
     seat: new THREE.MeshStandardMaterial({ color: '#8b1020', roughness: 0.55 }),
     dark: new THREE.MeshStandardMaterial({ color: '#202329', metalness: 0.5, roughness: 0.5 }),
@@ -305,7 +307,16 @@ export function buildJeepney(): THREE.Group {
     s.lineTo(DOOR.x0, BODY.y1)
     s.lineTo(BODY.x0, BODY.y1)
     s.closePath()
-    jeep.add(extrudeZ(s, 2.0, [mats.livery, mats.steel], 0.035))
+    // Hollow body: two side walls, so the passenger cabin is open inside.
+    for (const z of [0.965, -0.965]) {
+      const wall = extrudeZ(s, 0.07, [mats.livery, mats.steel], 0.02)
+      wall.position.z = z
+      jeep.add(wall)
+    }
+    jeep.add(boxAt(1.42, 1.47, BODY.y0, DOOR.sill, -0.97, 0.97, mats.steel, 0.01)) // front of the cab step
+    // Rear wall either side of the entrance
+    for (const sgn of [1, -1]) jeep.add(boxAt(BODY.x0, BODY.x0 + 0.06, BODY.y0, BODY.y1, sgn > 0 ? 0.4 : -0.97, sgn > 0 ? 0.97 : -0.4, mats.steel, 0.01))
+    jeep.add(boxAt(BODY.x0, BODY.x0 + 0.06, BODY.y0, 0.78, -0.4, 0.4, mats.steel, 0.01)) // under the entrance
     const flare = new THREE.Shape()
     flare.absarc(0, 0, ARCH + 0.09, Math.PI - a, a, true)
     flare.absarc(0, 0, ARCH, a, Math.PI - a, false)
@@ -348,11 +359,35 @@ export function buildJeepney(): THREE.Group {
   // Grab bars at the doorway
   for (const z of [0.99, -0.99]) jeep.add(rod(v(DOOR.x0 + 0.05, 1.1, z), v(DOOR.x0 + 0.05, 2.05, z), 0.018, mats.chrome))
 
-  // --- Passenger compartment: partition behind the cab, dark interior, benches.
-  jeep.add(boxAt(0.45, 0.52, DOOR.sill, 2.14, -0.95, 0.95, mats.interior, 0))
-  jeep.add(boxAt(-2.92, 0.45, 1.45, 2.14, -0.93, 0.93, mats.interior, 0))
-  for (const z of [0.62, -0.62]) jeep.add(boxAt(-2.8, 0.35, 1.5, 1.62, z - 0.22, z + 0.22, mats.seat, 0.03))
-  for (let i = 0; i < 6; i++) jeep.add(boxAt(-2.6 + i * 0.55, -2.4 + i * 0.55, 2.1, 2.13, -0.5, 0.5, mats.pink, 0)) // ceiling lights
+  // --- Passenger cabin (open): floor, panelled walls, two long benches facing
+  // each other, ceiling with lights and chrome grab rails.
+  jeep.add(boxAt(0.45, 0.52, 0.75, 2.14, -0.95, 0.95, mats.interior, 0)) // partition behind the cab
+  jeep.add(boxAt(BODY.x0 + 0.04, 0.46, 0.72, 0.78, -0.94, 0.94, mats.floor, 0))
+  for (const z of [0.927, -0.927]) jeep.add(boxAt(BODY.x0 + 0.06, 0.45, 0.78, 1.5, z - 0.005, z + 0.005, mats.panel, 0))
+  for (const z of [1, -1]) jeep.add(boxAt(WHEEL.rear - 0.5, WHEEL.rear + 0.5, 0.78, 0.98, z * 0.6, z * 0.92, mats.dark, 0.04)) // wheel wells
+  for (const z of [1, -1]) {
+    const inner = z * 0.5
+    const wall = z * 0.92
+    jeep.add(boxAt(-2.85, 0.38, 0.78, 1.04, Math.min(inner + z * 0.05, wall), Math.max(inner + z * 0.05, wall), mats.dark, 0.02)) // bench base
+    jeep.add(boxAt(-2.88, 0.4, 1.04, 1.16, Math.min(inner, wall), Math.max(inner, wall), mats.seat, 0.045)) // cushion
+    // Backrest: padded sections against the wall under the window sill
+    for (let i = 0; i < 6; i++) {
+      const x0 = -2.86 + i * 0.54
+      jeep.add(boxAt(x0, x0 + 0.52, 1.2, 1.56, Math.min(wall, wall - z * 0.07), Math.max(wall, wall - z * 0.07), mats.seat, 0.035))
+    }
+  }
+  jeep.add(boxAt(BODY.x0 + 0.04, 0.46, 2.12, 2.14, -0.94, 0.94, mats.ceiling, 0))
+  for (let i = 0; i < 6; i++) jeep.add(boxAt(-2.6 + i * 0.55, -2.42 + i * 0.55, 2.1, 2.12, -0.12, 0.12, mats.pink, 0)) // ceiling lights
+  // Grab rails (hawakan) along the ceiling, hung from short drops
+  for (const z of [0.42, -0.42]) {
+    jeep.add(rod(v(-2.92, 1.98, z), v(0.42, 1.98, z), 0.02, mats.chrome))
+    for (let i = 0; i < 7; i++) jeep.add(rod(v(-2.8 + i * 0.52, 1.98, z), v(-2.8 + i * 0.52, 2.12, z), 0.012, mats.chrome))
+  }
+  {
+    const lamp = new THREE.PointLight('#fff1dc', 3.5, 6, 1.6)
+    lamp.position.set(-1.2, 1.95, 0)
+    jeep.add(lamp)
+  }
   const pillarXs = [-2.96, -2.4, -1.84, -1.28, -0.72, -0.16, 0.45]
   for (const x of pillarXs) {
     for (const z of [0.98, -0.98]) jeep.add(boxAt(x - 0.04, x + 0.04, 1.5, 2.16, z - 0.035, z + 0.035, mats.chrome, 0.012))
@@ -521,7 +556,6 @@ export function buildJeepney(): THREE.Group {
   }
 
   // --- Rear: open entrance, grab bars, step, LED tail lights, bumper, exhaust, mud flaps.
-  jeep.add(boxAt(-3.04, -3.0, 0.62, 1.5, -0.4, 0.4, mats.interior, 0))
   for (const z of [0.47, -0.47]) {
     jeep.add(rod(v(-3.08, 0.6, z), v(-3.08, 2.1, z), 0.022, mats.chrome))
     jeep.add(boxAt(-3.07, -3.0, 0.75, 1.42, z * 1.9 - 0.06, z * 1.9 + 0.06, mats.tail, 0.01))
