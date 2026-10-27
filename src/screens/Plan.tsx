@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { PlaceSearch } from '../components/PlaceSearch'
 import { Card, ErrorNote } from '../components/ui'
 import { formatPesos } from '../engine'
-import type { Place } from '../lib/geocode'
+import { landmarkNear, type Place } from '../lib/geocode'
 import { KIND_COLOR } from '../lib/planColors'
 import type { LineKind, SlimItinerary, SlimLeg } from '../lib/planner'
 import type { LatLng } from '../lib/routing'
@@ -19,6 +19,8 @@ function parsePoint(s?: string): LatLng | null {
   return m ? { lat: Number(m[1]), lng: Number(m[2]) } : null
 }
 const km = (m: number) => (m / 1000).toFixed(1)
+const pkey = (p: LatLng) => `${p.lat.toFixed(4)},${p.lng.toFixed(4)}`
+type RideStep = Exclude<SlimLeg, { type: 'walk' }>
 const mins = (n: number) => Math.max(1, Math.round(n))
 
 /**
@@ -91,6 +93,37 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
   const modeName = (id: string) => modesById[id]?.name[lang] ?? id
   const fare = (r: number | null, d: number | null) => (r == null || d == null ? '—' : formatPesos(discount ? d : r))
   const it = results?.[selected] ?? null
+
+  // Landmark / street names for where to get on and off (Photon reverse
+  // geocoding, looked up only for the itinerary being shown).
+  const [places, setPlaces] = useState<Record<string, string | null>>({})
+  const typedDest = toText && toText !== t('map.pinned') && toText !== t('map.myLocationLabel') ? toText : null
+  useEffect(() => {
+    if (!it) return
+    const pts: LatLng[] = []
+    for (const l of it.legs) if (l.type === 'ride' && !l.fromStation) pts.push(l.path[0], l.path[l.path.length - 1])
+    if (!typedDest && to) pts.push(to)
+    let alive = true
+    for (const p of pts) {
+      const k = pkey(p)
+      void landmarkNear(p).then((name) => alive && setPlaces((cur) => (cur[k] === name ? cur : { ...cur, [k]: name })))
+    }
+    return () => {
+      alive = false
+    }
+  }, [it, to, typedDest])
+  const place = (p: LatLng) => {
+    const v = places[pkey(p)]
+    return v === undefined ? '…' : (v ?? t('plan.thePin'))
+  }
+  const walkText = (i: number, meters: number, minutes: number) => {
+    const m = Math.round(meters / 10) * 10
+    const min = mins(minutes)
+    const next = it?.legs[i + 1] as RideStep | undefined
+    if (!next) return t('plan.walkTo', { m, min, place: typedDest ?? (to ? place(to) : '') })
+    if (next.fromStation) return t('plan.walkToStation', { m, min, station: next.fromStation })
+    return t('plan.walkToStop', { m, min, place: place(next.path[0]) })
+  }
 
   const legLabel = (l: Exclude<SlimLeg, { type: 'walk' }>) =>
     l.fromStation ? `${l.fromStation} → ${l.toStation}` : `${km(l.meters)} km`
@@ -233,7 +266,7 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
                   l.type === 'walk' ? (
                     <li key={i} className="flex gap-3 text-sm text-ink-2">
                       <span aria-hidden="true">🚶</span>
-                      <span>{t('plan.walkStep', { m: Math.round(l.meters / 10) * 10, min: mins(l.minutes) })}</span>
+                      <span data-testid="plan-walk">{walkText(i, l.meters, l.minutes)}</span>
                     </li>
                   ) : (
                     <li key={i} className="flex gap-3">
@@ -245,6 +278,12 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
                           {modeName(l.line.modeId)}
                           {(l.line.kind === 'jeep' || l.line.kind === 'uv') && <span className="font-normal text-ink-2">: {l.line.name}</span>}
                         </span>
+                        {!l.fromStation && (
+                          <span className="flex flex-col text-xs text-ink" data-testid="plan-board">
+                            <span>▸ {t('plan.board', { place: place(l.path[0]) })}</span>
+                            <span>▸ {t('plan.alight', { place: place(l.path[l.path.length - 1]) })}</span>
+                          </span>
+                        )}
                         <span className="text-xs text-ink-2">
                           {legLabel(l)} · ≈ {t('plan.minutes', { n: mins(l.minutes) })}
                           {l.line.mc && <span className="text-muted"> · {l.line.mc}</span>}
@@ -271,7 +310,9 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
               </button>
             </Card>
           )}
-          <p className="text-[11px] leading-snug text-muted">{t('plan.note', { n: planner.routes || '…' })}</p>
+          <p className="text-[11px] leading-snug text-muted">
+            {t('plan.note', { n: planner.routes || '…' })} {t('plan.landmarkNote')}
+          </p>
         </div>
       </div>
     </main>

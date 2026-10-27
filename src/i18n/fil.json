@@ -267,10 +267,16 @@
     "transfers_other": "{{n}} lipat",
     "walk": "{{m}} m lakad",
     "steps": "Mga hakbang",
-    "walkStep": "Maglakad nang {{m}} m (mga {{min}} min)",
     "altFare": "{{mode}}: {{fare}}",
     "addAll": "Idagdag lahat sa biyahe",
     "sourceShort": "LTFRB fares · LTFRB NCR routes",
-    "note": "Mga ruta: LTFRB NCR route data ng jeep at UV Express ({{n}} ruta, ayon sa LTFRB memorandum circulars), at LRT-1, LRT-2, MRT-3 at EDSA Busway. Ipinapalagay na pabalik-balik ang ruta sa parehong kalsada; tantiya lang ang oras, hindi kasama ang traffic at paghihintay sa terminal. Opisyal na LTFRB/DOTr na pamasahe ang bawat sakay. Hindi kaanib ng LTFRB."
+    "note": "Mga ruta: LTFRB NCR route data ng jeep at UV Express ({{n}} ruta, ayon sa LTFRB memorandum circulars), at LRT-1, LRT-2, MRT-3 at EDSA Busway. Ipinapalagay na pabalik-balik ang ruta sa parehong kalsada; tantiya lang ang oras, hindi kasama ang traffic at paghihintay sa terminal. Opisyal na LTFRB/DOTr na pamasahe ang bawat sakay. Hindi kaanib ng LTFRB.",
+    "walkTo": "Maglakad nang {{m}} m (mga {{min}} min) papunta sa {{place}}",
+    "walkToStop": "Maglakad nang {{m}} m (mga {{min}} min) papunta sa sakayan malapit sa {{place}}",
+    "walkToStation": "Maglakad nang {{m}} m (mga {{min}} min) papunta sa {{station}} station",
+    "board": "Sumakay malapit sa {{place}}",
+    "alight": "Bumaba malapit sa {{place}}",
+    "thePin": "naka-pin sa mapa",
+    "landmarkNote": "Galing sa OpenStreetMap ang mga landmark at pangalan ng kalye at maaaring tantiya lang."
   }
 }

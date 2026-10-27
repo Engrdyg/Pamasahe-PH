@@ -36,7 +36,7 @@ export const privacy: Record<Lang, { intro: string; sections: PrivacySection[] }
       {
         title: 'Third-party services used by some features',
         body: [
-          'Place search: the text you type in "Where will you get on / off?" is sent to Photon by komoot (photon.komoot.io), an OpenStreetMap-based search.',
+          'Place search: the text you type in "Where will you get on / off?" is sent to Photon by komoot (photon.komoot.io), an OpenStreetMap-based search. In the route planner, the coordinates of the stops where you get on and off are also sent to Photon to name the nearest landmark or street.',
           'Maps: map images are loaded from OpenStreetMap (tile.openstreetmap.org), which can tell that server which area you are viewing.',
           'Hosting and analytics: the app is hosted on Vercel. Vercel Web Analytics counts page views per screen (for example "/calc/jeepney") without cookies and without identifying you. Like any website host, Vercel receives standard request data such as your IP address.',
           'These services have their own privacy policies. We do not sell or share data with anyone else.',
@@ -96,7 +96,7 @@ export const privacy: Record<Lang, { intro: string; sections: PrivacySection[] }
       {
         title: 'Mga third-party na serbisyo ng ilang feature',
         body: [
-          'Paghahanap ng lugar: ipinapadala ang tina-type mo sa "Saan ka sasakay / bababa?" sa Photon ng komoot (photon.komoot.io), isang search na batay sa OpenStreetMap.',
+          'Paghahanap ng lugar: ipinapadala ang tina-type mo sa "Saan ka sasakay / bababa?" sa Photon ng komoot (photon.komoot.io), isang search na batay sa OpenStreetMap. Sa route planner, ipinapadala rin sa Photon ang coordinates ng mga sakayan at babaan para mapangalanan ang pinakamalapit na landmark o kalye.',
           'Mapa: kinukuha ang mga larawan ng mapa mula sa OpenStreetMap (tile.openstreetmap.org), kaya malalaman ng server na iyon kung anong lugar ang tinitingnan mo.',
           'Hosting at analytics: naka-host ang app sa Vercel. Binibilang ng Vercel Web Analytics ang page views bawat screen (hal. "/calc/jeepney") nang walang cookies at hindi ka kinikilala. Gaya ng ibang website host, natatanggap ng Vercel ang karaniwang request data tulad ng IP address mo.',
           'May sariling privacy policy ang mga serbisyong ito. Hindi namin ibinebenta o ibinabahagi ang datos sa iba.',

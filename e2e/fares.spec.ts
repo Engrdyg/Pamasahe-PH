@@ -198,6 +198,9 @@ test.describe('route planner (NCR)', () => {
   test.use({ serviceWorkers: 'block' })
   test('Quiapo → Cubao: options with fares, steps on the map, add to trip', async ({ page }) => {
     await page.route('https://tile.openstreetmap.org/**', (r) => r.fulfill({ status: 204, body: '' }))
+    await page.route('https://photon.komoot.io/reverse**', (r) =>
+      r.fulfill({ json: { features: [{ geometry: { coordinates: [120.98, 14.6] }, properties: { name: 'Quiapo Church', osm_key: 'amenity', street: 'Plaza Miranda' } }] } }),
+    )
     await page.goto('/')
     await page.getByTestId('plan-open').click()
     await expect(page.getByTestId('plan')).toBeVisible()
@@ -207,6 +210,10 @@ test.describe('route planner (NCR)', () => {
     expect(await options.count()).toBeGreaterThan(1)
     await expect(page.getByTestId('plan-steps')).toContainText('LRT-2')
     await expect(page.getByTestId('plan-total')).toHaveText(/₱\d+\.\d\d/)
+    // Walking directions name the station / landmark
+    await expect(page.getByTestId('plan-walk').first()).toContainText('Recto station')
+    await page.getByTestId('plan-option').nth(1).click()
+    await expect(page.getByTestId('plan-board').first()).toContainText('Quiapo Church (Plaza Miranda)')
     await page.getByTestId('plan-add').click()
     await expect(page.getByTestId('trip-bar')).toBeVisible()
   })

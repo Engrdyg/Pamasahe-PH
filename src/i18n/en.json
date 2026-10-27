@@ -267,10 +267,16 @@
     "transfers_other": "{{n}} transfers",
     "walk": "{{m}} m walk",
     "steps": "Steps",
-    "walkStep": "Walk {{m}} m (about {{min}} min)",
     "altFare": "{{mode}}: {{fare}}",
     "addAll": "Add all rides to trip",
     "sourceShort": "LTFRB fares · LTFRB NCR routes",
-    "note": "Routes: LTFRB NCR jeepney and UV Express route data ({{n}} routes, per LTFRB memorandum circulars), plus LRT-1, LRT-2, MRT-3 and the EDSA Busway. Routes are assumed to run both ways along the same roads; times are estimates without traffic or waiting at terminals. Fares are official LTFRB/DOTr fares for each ride. Not affiliated with LTFRB."
+    "note": "Routes: LTFRB NCR jeepney and UV Express route data ({{n}} routes, per LTFRB memorandum circulars), plus LRT-1, LRT-2, MRT-3 and the EDSA Busway. Routes are assumed to run both ways along the same roads; times are estimates without traffic or waiting at terminals. Fares are official LTFRB/DOTr fares for each ride. Not affiliated with LTFRB.",
+    "walkTo": "Walk {{m}} m (about {{min}} min) to {{place}}",
+    "walkToStop": "Walk {{m}} m (about {{min}} min) to the stop near {{place}}",
+    "walkToStation": "Walk {{m}} m (about {{min}} min) to {{station}} station",
+    "board": "Get on near {{place}}",
+    "alight": "Get off near {{place}}",
+    "thePin": "the pin on the map",
+    "landmarkNote": "Landmarks and street names are from OpenStreetMap and may be approximate."
   }
 }
