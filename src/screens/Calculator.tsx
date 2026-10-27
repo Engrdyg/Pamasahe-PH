@@ -224,6 +224,7 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
             t('fare.sourceNote', { source: mode.source, date: formatEffective(mode.effective, lang) }),
           ]}
           sourceLabel={sourceLabel}
+          reportHotline={!ticketKind}
         />
       )
       body = (

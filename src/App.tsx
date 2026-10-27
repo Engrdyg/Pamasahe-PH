@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { BottomNav, TopBar } from './components/Nav'
 import { Sidebar } from './components/Sidebar'
+import { TripBar } from './components/TripBar'
 import type { Category } from './engine/types'
 import { formatEffective } from './lib/format'
 import { useRoute } from './lib/router'
@@ -10,6 +11,7 @@ import { Calculator } from './screens/Calculator'
 import { Compare } from './screens/Compare'
 import { Home } from './screens/Home'
 import { Support } from './screens/Support'
+import { Trip } from './screens/Trip'
 import { Tables } from './screens/Tables'
 import { useApp } from './state'
 
@@ -33,6 +35,8 @@ export default function App() {
   const { t } = useTranslation()
   const [section, arg] = useRoute()
   const wide = useWide()
+  const { trip } = useApp()
+  const tripPad = trip.length > 0 && section !== 'trip'
 
   let screen
   let title: string | undefined
@@ -50,6 +54,10 @@ export default function App() {
     screen = <Tables />
     title = t('tables.title')
     active = 'tables'
+  } else if (section === 'trip') {
+    screen = <Trip />
+    title = t('trip.title')
+    back = ''
   } else if (section === 'support') {
     screen = <Support />
     title = t('donate.title')
@@ -66,7 +74,7 @@ export default function App() {
     return (
       <div className="flex min-h-dvh bg-canvas text-ink">
         <Sidebar active={active} />
-        <div className="min-w-0 flex-1">
+        <div className={`min-w-0 flex-1 ${tripPad ? 'pb-24' : ''}`}>
           <UpdateBanner />
           {title && (
             <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-8 pt-8">
@@ -79,16 +87,18 @@ export default function App() {
             </div>
           )}
           {screen}
+          {section !== 'trip' && <TripBar wide />}
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-dvh bg-canvas pb-20 text-ink">
+    <div className={`min-h-dvh bg-canvas text-ink ${tripPad ? 'pb-40' : 'pb-20'}`}>
       <TopBar title={title} back={back} />
       <UpdateBanner />
       {screen}
+      {section !== 'trip' && <TripBar wide={false} />}
       <BottomNav active={active} />
     </div>
   )

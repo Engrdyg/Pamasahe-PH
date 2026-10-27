@@ -264,3 +264,52 @@ describe('Train (MRT/LRT)', () => {
     expect(screen.getByText('Source: LRMC · effective Apr 2, 2025')).toBeInTheDocument()
   })
 })
+
+describe('Overcharge report', () => {
+  it('compares the amount charged and builds a report', async () => {
+    const user = userEvent.setup()
+    renderApp('#/calc/taxi')
+    const km = screen.getByLabelText('Distance (km)')
+    await user.clear(km)
+    await user.type(km, '10')
+    const min = screen.getByLabelText('Travel time (min)')
+    await user.clear(min)
+    await user.type(min, '20')
+    await user.click(screen.getByTestId('report-open'))
+    await user.type(screen.getByTestId('report-charged'), '200')
+    expect(screen.getByText('That is not more than the official fare.')).toBeInTheDocument()
+    await user.clear(screen.getByTestId('report-charged'))
+    await user.type(screen.getByTestId('report-charged'), '300')
+    expect(screen.getByTestId('report-over')).toHaveTextContent('₱60.00 (+25.0%)')
+    await user.type(screen.getByTestId('report-plate'), 'abc 1234')
+    const text = screen.getByTestId('report-text')
+    expect(text).toHaveTextContent('Plate / body no.: ABC 1234')
+    expect(text).toHaveTextContent('Official fare: ₱240.00 (Regular)')
+    expect(screen.getByRole('link', { name: /Call LTFRB 1342/ })).toHaveAttribute('href', 'tel:1342')
+  })
+})
+
+describe('Multi-leg trip', () => {
+  it('adds legs from different modes and totals them', async () => {
+    const user = userEvent.setup()
+    const { unmount } = renderApp('#/calc/jeepney')
+    const km = screen.getByLabelText('Distance (km)')
+    await user.clear(km)
+    await user.type(km, '5')
+    await user.click(screen.getByTestId('trip-add')) // ₱16.00
+    expect(screen.getByTestId('trip-bar')).toHaveTextContent('1 leg · ₱16.00')
+    unmount()
+    renderApp('#/calc/rail')
+    await user.click(screen.getByRole('radio', { name: 'MRT-3' }))
+    await user.selectOptions(screen.getByLabelText('From'), 'North Avenue')
+    await user.selectOptions(screen.getByLabelText('To'), 'Ayala')
+    await user.click(screen.getByTestId('trip-add')) // ₱12.00
+    expect(screen.getByTestId('trip-bar')).toHaveTextContent('2 legs · ₱28.00')
+    window.location.hash = '#/trip'
+    await screen.findByTestId('trip-screen')
+    expect(screen.getAllByTestId('trip-leg')).toHaveLength(2)
+    expect(screen.getByTestId('trip-total')).toHaveTextContent('₱28.00')
+    await user.click(screen.getAllByRole('button', { name: 'Remove' })[0])
+    expect(screen.getByTestId('trip-total')).toHaveTextContent('₱12.00')
+  })
+})

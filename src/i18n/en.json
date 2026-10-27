@@ -204,5 +204,41 @@
     "weak": "Weak GPS signal. Move near a window or outdoors; tracking continues.",
     "nearest": "Nearest station: {{name}} · {{m}} m",
     "stationHint": "Start the ride at your boarding station. The nearest stop is picked for you, and the fare follows as the bus passes stations."
+  },
+  "trip": {
+    "add": "Add to trip",
+    "added": "Added to trip ✓",
+    "title": "My trip",
+    "bar": "Trip · {{n}} legs · {{total}}",
+    "bar_one": "Trip · 1 leg · {{total}}",
+    "empty": "No legs yet. Open any mode, get a fare, and tap \"Add to trip\". Add one leg per ride, e.g. jeep → MRT-3 → bus.",
+    "total": "Total fare",
+    "legs": "Legs",
+    "remove": "Remove",
+    "clear": "Clear trip",
+    "addMore": "Add another leg",
+    "share": "Share trip",
+    "shareText": "My trip ({{n}} legs): {{total}} regular, {{disc}} Student/Senior/PWD",
+    "note": "Each leg is paid separately; transfers between lines need a new ticket."
+  },
+  "report": {
+    "open": "Report overcharge",
+    "title": "Report an overcharge",
+    "charged": "How much were you charged? (₱)",
+    "plate": "Plate or body number",
+    "place": "Where / route (optional)",
+    "notes": "Other details (optional)",
+    "official": "Official fare",
+    "over": "Overcharge: {{amount}} ({{pct}})",
+    "notOver": "That is not more than the official fare.",
+    "enterAmount": "Enter the amount you paid to compare.",
+    "call": "Call LTFRB 1342",
+    "copy": "Copy report",
+    "copied": "Report copied",
+    "share": "Share report",
+    "preview": "Report preview",
+    "tip": "Take a photo of the plate or body number if you can, and keep your receipt.",
+    "close": "Close",
+    "railNote": "For trains, report to the line's operator at the station or on its official page."
   }
 }

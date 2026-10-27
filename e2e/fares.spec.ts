@@ -178,3 +178,18 @@ test.describe('train ride tracker (GPS picks stations)', () => {
     await expect(page.getByLabel('To')).toHaveValue('Ayala')
   })
 })
+
+test('multi-leg trip: jeep + busway, total survives a reload', async ({ page }) => {
+  await page.goto('/#/calc/jeepney')
+  await page.getByLabel('Distance (km)', { exact: true }).fill('12')
+  await page.getByTestId('trip-add').click() // ₱30.00
+  await page.goto('/#/calc/busway')
+  await page.getByLabel('From').selectOption('Monumento')
+  await page.getByLabel('To').selectOption('Ayala')
+  await page.getByTestId('trip-add').click() // ₱58.25
+  await expect(page.getByTestId('trip-bar')).toContainText('₱88.25')
+  await page.reload()
+  await page.getByTestId('trip-bar').click()
+  await expect(page.getByTestId('trip-total')).toHaveText('₱88.25')
+  await expect(page.getByTestId('trip-leg')).toHaveCount(2)
+})

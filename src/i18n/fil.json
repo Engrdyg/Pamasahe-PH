@@ -204,5 +204,41 @@
     "weak": "Mahina ang GPS signal. Lumapit sa bintana o lumabas; tuloy ang tracking.",
     "nearest": "Pinakamalapit na istasyon: {{name}} · {{m}} m",
     "stationHint": "Simulan ang biyahe sa sakayan mong istasyon. Kusang pipiliin ang pinakamalapit na stop, at susunod ang pamasahe habang dumadaan ang bus sa mga istasyon."
+  },
+  "trip": {
+    "add": "Idagdag sa biyahe",
+    "added": "Nadagdag sa biyahe ✓",
+    "title": "Biyahe ko",
+    "bar": "Biyahe · {{n}} leg · {{total}}",
+    "bar_one": "Biyahe · 1 leg · {{total}}",
+    "empty": "Wala pang leg. Buksan ang kahit anong mode, kumuha ng pamasahe, at pindutin ang \"Idagdag sa biyahe\". Isang leg bawat sakay, hal. jeep → MRT-3 → bus.",
+    "total": "Kabuuang pamasahe",
+    "legs": "Mga leg",
+    "remove": "Alisin",
+    "clear": "Burahin ang biyahe",
+    "addMore": "Magdagdag ng leg",
+    "share": "Ibahagi ang biyahe",
+    "shareText": "Biyahe ko ({{n}} leg): {{total}} regular, {{disc}} Estudyante/Senior/PWD",
+    "note": "Hiwalay ang bayad sa bawat leg; bagong tiket ang paglipat sa ibang linya."
+  },
+  "report": {
+    "open": "I-report ang sobrang singil",
+    "title": "Mag-report ng sobrang singil",
+    "charged": "Magkano ang siningil sa'yo? (₱)",
+    "plate": "Plate o body number",
+    "place": "Saan / ruta (opsyonal)",
+    "notes": "Iba pang detalye (opsyonal)",
+    "official": "Opisyal na pamasahe",
+    "over": "Sobra: {{amount}} ({{pct}})",
+    "notOver": "Hindi ito lampas sa opisyal na pamasahe.",
+    "enterAmount": "Ilagay ang ibinayad mo para maikumpara.",
+    "call": "Tawagan ang LTFRB 1342",
+    "copy": "Kopyahin ang report",
+    "copied": "Nakopya ang report",
+    "share": "Ibahagi ang report",
+    "preview": "Silip sa report",
+    "tip": "Kunan ng litrato ang plate o body number kung kaya, at itago ang resibo.",
+    "close": "Isara",
+    "railNote": "Para sa tren, i-report sa operator ng linya sa istasyon o sa opisyal nitong page."
   }
 }

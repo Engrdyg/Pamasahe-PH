@@ -3,6 +3,7 @@ import i18n from './i18n'
 import type { Lang, Manifest, Mode } from './engine/types'
 import { getPref, setPref } from './lib/prefs'
 import { applyTheme, watchSystemTheme, type Theme } from './lib/theme'
+import { loadTrip, newLegId, saveTrip, type TripLeg } from './lib/trip'
 import { checkForUpdate, loadFareData } from './lib/updater'
 
 interface AppState {
@@ -17,6 +18,10 @@ interface AppState {
   setTheme: (t: Theme) => void
   updated: Manifest | null
   dismissUpdate: () => void
+  trip: TripLeg[]
+  addLeg: (leg: Omit<TripLeg, 'id' | 'addedAt'>) => void
+  removeLeg: (id: string) => void
+  clearTrip: () => void
 }
 
 const Ctx = createContext<AppState | null>(null)
@@ -27,6 +32,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => getPref('lang'))
   const [theme, setThemeState] = useState<Theme>(() => getPref('theme'))
   const [updated, setUpdated] = useState<Manifest | null>(null)
+  const [trip, setTrip] = useState<TripLeg[]>(() => loadTrip())
+  useEffect(() => saveTrip(trip), [trip])
+  const addLeg = useCallback((leg: Omit<TripLeg, 'id' | 'addedAt'>) => setTrip((t) => [...t, { ...leg, id: newLegId(), addedAt: Date.now() }]), [])
+  const removeLeg = useCallback((id: string) => setTrip((t) => t.filter((l) => l.id !== id)), [])
+  const clearTrip = useCallback(() => setTrip([]), [])
 
   useEffect(() => {
     applyTheme(theme)
@@ -77,8 +87,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setTheme,
       updated,
       dismissUpdate,
+      trip,
+      addLeg,
+      removeLeg,
+      clearTrip,
     }),
-    [data, discount, setDiscount, lang, setLang, theme, setTheme, updated, dismissUpdate],
+    [data, discount, setDiscount, lang, setLang, theme, setTheme, updated, dismissUpdate, trip, addLeg, removeLeg, clearTrip],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

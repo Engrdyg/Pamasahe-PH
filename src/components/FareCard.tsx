@@ -4,6 +4,7 @@ import { formatPesos, increase, type Centavos } from '../engine'
 import { fmtPct, formatEffective } from '../lib/format'
 import { shareText } from '../lib/share'
 import { useApp } from '../state'
+import { ReportOvercharge } from './ReportOvercharge'
 import { Card } from './ui'
 
 export interface FareCardProps {
@@ -20,12 +21,17 @@ export interface FareCardProps {
   showNoOld?: boolean
   /** e.g. "LTFRB Sep 28, 2026" or "DOTr MRT-3 Mar 23, 2026"; used in the share text. */
   sourceLabel?: string
+  /** Offer the LTFRB 1342 hotline in the overcharge report (false for trains). */
+  reportHotline?: boolean
 }
 
 export function FareCard(p: FareCardProps) {
   const { t } = useTranslation()
-  const { discount, manifest, lang } = useApp()
+  const { discount, manifest, lang, addLeg } = useApp()
   const [copied, setCopied] = useState<string | null>(null)
+  const [added, setAdded] = useState(false)
+  const [reporting, setReporting] = useState(false)
+  const source = p.sourceLabel ?? `${manifest.source} ${formatEffective(manifest.effective, lang)}`
 
   const primary = discount ? p.discounted : p.regular
   const secondary = discount ? p.regular : p.discounted
@@ -40,13 +46,19 @@ export function FareCard(p: FareCardProps) {
       trip: p.tripLabel,
       regular: formatPesos(p.regular),
       discounted: formatPesos(p.discounted),
-      source: p.sourceLabel ?? `${manifest.source} ${formatEffective(manifest.effective, lang)}`,
+      source,
     })
     const r = await shareText(text)
     if (r === 'copied') {
       setCopied(t('fare.copied'))
       setTimeout(() => setCopied(null), 1500)
     }
+  }
+
+  const onAdd = () => {
+    addLeg({ modeName: p.modeName, tripLabel: p.tripLabel, regular: p.regular, discounted: p.discounted, source })
+    setAdded(true)
+    setTimeout(() => setAdded(false), 1800)
   }
 
   return (
@@ -106,7 +118,15 @@ export function FareCard(p: FareCardProps) {
         </p>
       ))}
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={onAdd}
+          className="min-h-11 rounded-full bg-brand px-4 text-sm font-semibold text-white"
+          data-testid="trip-add"
+        >
+          {added ? t('trip.added') : `+ ${t('trip.add')}`}
+        </button>
         <button
           type="button"
           onClick={onShare}
@@ -114,12 +134,33 @@ export function FareCard(p: FareCardProps) {
         >
           {t('fare.share')}
         </button>
+        {!reporting && (
+          <button
+            type="button"
+            onClick={() => setReporting(true)}
+            className="min-h-11 rounded-full border border-red-300 px-4 text-sm font-medium text-red-700 dark:border-red-800 dark:text-red-400"
+            data-testid="report-open"
+          >
+            ⚠ {t('report.open')}
+          </button>
+        )}
         {copied && (
           <span role="status" className="text-sm text-green-700">
             {copied}
           </span>
         )}
       </div>
+      {reporting && (
+        <ReportOvercharge
+          modeName={p.modeName}
+          tripLabel={p.tripLabel}
+          official={primary}
+          officialLabel={primaryLabel}
+          source={source}
+          hotline={p.reportHotline !== false}
+          onClose={() => setReporting(false)}
+        />
+      )}
     </Card>
   )
 }
