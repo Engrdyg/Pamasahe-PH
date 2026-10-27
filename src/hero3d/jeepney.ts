@@ -2,18 +2,28 @@ import * as THREE from 'three'
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js'
 
 /**
- * Procedural Philippine jeepney, roughly to scale in metres: x points to the
- * front, y up, z across. Ground is y = 0. Stainless body with painted
- * stripes, chrome trim, open passenger windows, route boards on the roof.
+ * Procedural "patok" jeepney (the souped-up Cubao–Antipolo kind), roughly to
+ * scale in metres: x points to the front, y up, z across (+z is the right /
+ * kerb side, the driver sits on the left). Ground is y = 0.
+ *
+ * Stainless body with airbrushed flames, open cab doorways on both sides with
+ * the driver's seat and dash inside, open passenger windows with visors, a
+ * rear entrance, chrome mags on low-profile tyres, bull bar, twin headlights,
+ * chrome horses, LED strips, antennas and underglow.
  */
 
-const RED = '#c8102e'
+const RED = '#d0102b'
 const YELLOW = '#ffc72c'
 const BLUE = '#0b3d91'
+const CYAN = '#22d3ee'
+const PINK = '#f0abfc'
 
 // Passenger body extent (side profile); the livery texture spans exactly this.
-const BODY = { x0: -3.0, x1: 1.45, y0: 0.55, y1: 1.5 }
-const WHEEL = { r: 0.42, w: 0.28, front: 2.05, rear: -1.85, z: 0.86 }
+const BODY = { x0: -3.0, x1: 1.45, y0: 0.5, y1: 1.5 }
+// Cab doorway (both sides): open from the step up to the roof.
+const DOOR = { x0: 0.55, x1: 1.38, sill: 0.9 }
+const WHEEL = { r: 0.44, w: 0.32, rim: 0.33, front: 2.05, rear: -1.85, z: 0.84 }
+const ARCH = 0.54
 
 function canvasTexture(w: number, h: number, draw: (g: CanvasRenderingContext2D) => void): THREE.CanvasTexture {
   const c = document.createElement('canvas')
@@ -27,69 +37,103 @@ function canvasTexture(w: number, h: number, draw: (g: CanvasRenderingContext2D)
   return tex
 }
 
-/** Side livery: brushed stainless with hand-painted stripes and stars. */
+/** Side livery: polished stainless with airbrushed flames sweeping back from the cab. */
 function liveryTexture(): THREE.CanvasTexture {
   return canvasTexture(1024, 256, (g) => {
     const steel = g.createLinearGradient(0, 0, 0, 256)
-    steel.addColorStop(0, '#eef1f4')
-    steel.addColorStop(0.5, '#c9cfd6')
-    steel.addColorStop(1, '#e3e7eb')
+    steel.addColorStop(0, '#f4f6f8')
+    steel.addColorStop(0.45, '#c3cad3')
+    steel.addColorStop(0.55, '#e9edf1')
+    steel.addColorStop(1, '#b9c1cb')
     g.fillStyle = steel
     g.fillRect(0, 0, 1024, 256)
-    // Brushed grain
-    for (let i = 0; i < 500; i++) {
-      g.fillStyle = `rgba(255,255,255,${Math.random() * 0.08})`
-      g.fillRect(Math.random() * 1024, Math.random() * 256, 40 + Math.random() * 120, 1)
+    for (let i = 0; i < 600; i++) {
+      g.fillStyle = `rgba(255,255,255,${Math.random() * 0.1})`
+      g.fillRect(Math.random() * 1024, Math.random() * 256, 40 + Math.random() * 160, 1)
     }
-    // Rocker band
-    g.fillStyle = RED
-    g.fillRect(0, 216, 1024, 40)
-    g.fillStyle = YELLOW
-    g.fillRect(0, 208, 1024, 8)
-    // Sweeping stripes from the front (right) toward the back
-    const swoosh = (color: string, y: number, thick: number) => {
-      g.fillStyle = color
+    // Flames: tongues starting at the cab (right) licking toward the back (left).
+    const flame = (y: number, len: number, thick: number, colors: string[]) => {
+      const grad = g.createLinearGradient(1024, 0, 1024 - len, 0)
+      colors.forEach((c, i) => grad.addColorStop(i / (colors.length - 1), c))
+      g.fillStyle = grad
       g.beginPath()
-      g.moveTo(1024, y)
-      g.bezierCurveTo(760, y - 70, 520, y + 60, 0, y - 10)
-      g.lineTo(0, y - 10 + thick)
-      g.bezierCurveTo(520, y + 60 + thick, 760, y - 70 + thick, 1024, y + thick)
-      g.closePath()
-      g.fill()
-    }
-    swoosh(BLUE, 120, 26)
-    swoosh(YELLOW, 150, 10)
-    swoosh(RED, 164, 16)
-    // Belt line trim
-    g.fillStyle = '#8b939c'
-    g.fillRect(0, 0, 1024, 6)
-    // Stars
-    g.fillStyle = YELLOW
-    for (const [x, y, r] of [[860, 60, 14], [905, 44, 9], [940, 70, 11], [120, 60, 10], [160, 44, 7]] as const) {
-      g.beginPath()
-      for (let i = 0; i < 10; i++) {
-        const a = (Math.PI / 5) * i - Math.PI / 2
-        const rr = i % 2 ? r * 0.45 : r
-        g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr)
+      g.moveTo(1024, y - thick)
+      const tongues = 5
+      for (let i = 0; i < tongues; i++) {
+        const x0 = 1024 - (len * i) / tongues
+        const x1 = 1024 - (len * (i + 1)) / tongues
+        g.quadraticCurveTo(x0 - (x0 - x1) * 0.3, y - thick * (1.6 - i * 0.2), x1, y - thick * 0.2)
+        g.quadraticCurveTo(x1 + (x0 - x1) * 0.5, y, x1 + (x0 - x1) * 0.15, y + thick * 0.15)
+      }
+      g.lineTo(1024 - len * 0.98, y + thick * 0.4)
+      for (let i = tongues - 1; i >= 0; i--) {
+        const x0 = 1024 - (len * i) / tongues
+        const x1 = 1024 - (len * (i + 1)) / tongues
+        g.quadraticCurveTo(x1 + (x0 - x1) * 0.4, y + thick * (1.5 - i * 0.18), x0, y + thick)
       }
       g.closePath()
       g.fill()
     }
+    flame(150, 900, 46, [RED, '#f97316', YELLOW, 'rgba(255,199,44,0)'])
+    flame(160, 640, 26, ['#fde047', '#fb923c', 'rgba(251,146,60,0)'])
+    // Electric blue speed streaks above the flames
+    for (const [y, len, w] of [[78, 760, 9], [96, 600, 6], [110, 420, 4]] as const) {
+      const grad = g.createLinearGradient(1024, 0, 1024 - len, 0)
+      grad.addColorStop(0, BLUE)
+      grad.addColorStop(0.6, CYAN)
+      grad.addColorStop(1, 'rgba(34,211,238,0)')
+      g.fillStyle = grad
+      g.fillRect(1024 - len, y, len, w)
+    }
+    // Black rocker with a chrome pinstripe
+    g.fillStyle = '#111318'
+    g.fillRect(0, 222, 1024, 34)
+    g.fillStyle = PINK
+    g.fillRect(0, 216, 1024, 4)
+    g.fillStyle = '#8b939c'
+    g.fillRect(0, 0, 1024, 6)
   })
 }
 
-function signTexture(text: string, w = 1024, h = 128, bg = '#fffdf5', fg = '#111827'): THREE.CanvasTexture {
+function textTexture(
+  text: string,
+  { w = 1024, h = 128, bg = '#fffdf5', fg = '#111827', border = RED as string | null, italic = false, glow = null as string | null } = {},
+): THREE.CanvasTexture {
   return canvasTexture(w, h, (g) => {
-    g.fillStyle = bg
-    g.fillRect(0, 0, w, h)
-    g.strokeStyle = RED
-    g.lineWidth = 10
-    g.strokeRect(5, 5, w - 10, h - 10)
-    g.fillStyle = fg
-    g.font = `900 ${Math.round(h * 0.56)}px "Arial Black", Arial, sans-serif`
+    if (bg) {
+      g.fillStyle = bg
+      g.fillRect(0, 0, w, h)
+    }
+    if (border) {
+      g.strokeStyle = border
+      g.lineWidth = 10
+      g.strokeRect(5, 5, w - 10, h - 10)
+    }
+    g.font = `${italic ? 'italic ' : ''}900 ${Math.round(h * 0.6)}px "Arial Black", Arial, sans-serif`
     g.textAlign = 'center'
     g.textBaseline = 'middle'
-    g.fillText(text, w / 2, h / 2 + 4, w - 60)
+    if (glow) {
+      g.shadowColor = glow
+      g.shadowBlur = h * 0.15
+    }
+    if (!bg) {
+      g.lineWidth = h * 0.09
+      g.strokeStyle = '#111318'
+      g.strokeText(text, w / 2, h / 2 + 4, w - 40)
+    }
+    g.fillStyle = fg
+    g.fillText(text, w / 2, h / 2 + 4, w - 40)
+  })
+}
+
+function glowTexture(color: string): THREE.CanvasTexture {
+  return canvasTexture(256, 128, (g) => {
+    const grad = g.createRadialGradient(128, 64, 4, 128, 64, 128)
+    grad.addColorStop(0, color)
+    grad.addColorStop(1, 'rgba(0,0,0,0)')
+    g.setTransform(1, 0, 0, 0.5, 0, 32)
+    g.fillStyle = grad
+    g.fillRect(0, 0, 256, 256)
   })
 }
 
@@ -108,6 +152,16 @@ function boxAt(x0: number, x1: number, y0: number, y1: number, z0: number, z1: n
   return m
 }
 
+function rod(from: THREE.Vector3, to: THREE.Vector3, r: number, mat: THREE.Material): THREE.Mesh {
+  const len = from.distanceTo(to)
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 12), mat)
+  m.position.copy(from).add(to).multiplyScalar(0.5)
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), to.clone().sub(from).normalize())
+  m.castShadow = true
+  return m
+}
+const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z)
+
 function extrudeZ(shape: THREE.Shape, depth: number, mat: THREE.Material | THREE.Material[], bevel = 0.03): THREE.Mesh {
   const geo = new THREE.ExtrudeGeometry(shape, {
     depth: depth - bevel * 2,
@@ -124,13 +178,39 @@ function extrudeZ(shape: THREE.Shape, depth: number, mat: THREE.Material | THREE
   return m
 }
 
-function wheel(mats: { tire: THREE.Material; chrome: THREE.Material; dark: THREE.Material }): THREE.Group {
+/** Decal on the outside of a side panel; reads correctly from both sides. */
+function decal(tex: THREE.Texture, w: number, h: number, x: number, y: number, side: 1 | -1, zOut = 1.04): THREE.Mesh {
+  const m = new THREE.Mesh(
+    new THREE.PlaneGeometry(w, h),
+    new THREE.MeshStandardMaterial({ map: tex, transparent: true, roughness: 0.3, metalness: 0.2, polygonOffset: true, polygonOffsetFactor: -2 }),
+  )
+  m.position.set(x, y, side * zOut)
+  if (side < 0) m.rotation.y = Math.PI
+  return m
+}
+
+/** Rearing chrome horse silhouette, facing +x, about 0.3 m tall. */
+function horseShape(): THREE.Shape {
+  const p = [
+    [0, 0], [0.05, 0.08], [0.03, 0.14], [0.0, 0.19], [-0.07, 0.14], [-0.03, 0.23], [0.05, 0.25], [0.15, 0.26],
+    [0.19, 0.31], [0.22, 0.38], [0.25, 0.4], [0.3, 0.37], [0.28, 0.34], [0.24, 0.33], [0.23, 0.27], [0.3, 0.27],
+    [0.33, 0.21], [0.29, 0.22], [0.25, 0.23], [0.2, 0.2], [0.16, 0.16], [0.09, 0.15], [0.11, 0.06], [0.09, 0.0],
+  ]
+  const s = new THREE.Shape()
+  s.moveTo(p[0][0], p[0][1])
+  for (const [x, y] of p.slice(1)) s.lineTo(x, y)
+  s.closePath()
+  return s
+}
+
+type Mats = Record<'tire' | 'chrome' | 'dark' | 'rimBarrel', THREE.Material>
+
+/** Low-profile tyre on a ten-spoke chrome mag. */
+function wheel(mats: Mats): THREE.Group {
   const g = new THREE.Group()
-  const { r, w } = WHEEL
-  // Tire: lathe of a rounded cross-section around the axle.
-  const inner = 0.27
-  const c = 0.07
-  const pts: THREE.Vector2[] = [new THREE.Vector2(inner, -w / 2)]
+  const { r, w, rim } = WHEEL
+  const c = 0.05
+  const pts: THREE.Vector2[] = [new THREE.Vector2(rim, -w / 2 + 0.02)]
   for (let i = 0; i <= 8; i++) {
     const a = -Math.PI / 2 + (i / 8) * (Math.PI / 2)
     pts.push(new THREE.Vector2(r - c + Math.cos(a) * c, -w / 2 + c + Math.sin(a) * c))
@@ -139,28 +219,34 @@ function wheel(mats: { tire: THREE.Material; chrome: THREE.Material; dark: THREE
     const a = (i / 8) * (Math.PI / 2)
     pts.push(new THREE.Vector2(r - c + Math.cos(a) * c, w / 2 - c + Math.sin(a) * c))
   }
-  pts.push(new THREE.Vector2(inner, w / 2))
-  const tire = new THREE.Mesh(new THREE.LatheGeometry(pts, 48), mats.tire)
+  pts.push(new THREE.Vector2(rim, w / 2 - 0.02))
+  const tire = new THREE.Mesh(new THREE.LatheGeometry(pts, 56), mats.tire)
   tire.rotation.x = Math.PI / 2
   tire.castShadow = true
   g.add(tire)
-  // Steel rim, chrome hub cap and lug nuts on both faces.
-  const rim = new THREE.Mesh(new THREE.CylinderGeometry(inner + 0.005, inner + 0.005, w - 0.04, 40), mats.dark)
-  rim.rotation.x = Math.PI / 2
-  g.add(rim)
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(rim, rim, w - 0.05, 48, 1, true), mats.rimBarrel)
+  barrel.rotation.x = Math.PI / 2
+  g.add(barrel)
   for (const s of [1, -1]) {
-    const cap = new THREE.Mesh(new THREE.SphereGeometry(0.2, 32, 12, 0, Math.PI * 2, 0, Math.PI / 2.6), mats.chrome)
-    cap.rotation.x = (s * Math.PI) / 2
-    cap.position.z = s * (w / 2 - 0.1)
-    cap.scale.y = 0.6
-    g.add(cap)
-    for (let i = 0; i < 6; i++) {
-      const a = (i / 6) * Math.PI * 2
-      const nut = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.018, 0.03, 8), mats.chrome)
-      nut.rotation.x = Math.PI / 2
-      nut.position.set(Math.cos(a) * 0.15, Math.sin(a) * 0.15, s * (w / 2 - 0.01))
-      g.add(nut)
+    const face = new THREE.Group()
+    face.position.z = s * (w / 2 - 0.035)
+    const lip = new THREE.Mesh(new THREE.TorusGeometry(rim - 0.01, 0.022, 10, 56), mats.chrome)
+    face.add(lip)
+    const dish = new THREE.Mesh(new THREE.CircleGeometry(rim - 0.02, 48), mats.dark)
+    dish.position.z = -s * 0.03
+    if (s < 0) dish.rotation.y = Math.PI
+    face.add(dish)
+    for (let i = 0; i < 10; i++) {
+      const a = (i / 10) * Math.PI * 2
+      const spoke = new THREE.Mesh(new RoundedBoxGeometry(0.25, 0.035, 0.03, 2, 0.01), mats.chrome)
+      spoke.position.set(Math.cos(a) * 0.18, Math.sin(a) * 0.18, 0)
+      spoke.rotation.z = a
+      face.add(spoke)
     }
+    const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.085, 0.05, 32), mats.chrome)
+    hub.rotation.x = Math.PI / 2
+    face.add(hub)
+    g.add(face)
   }
   return g
 }
@@ -175,98 +261,152 @@ export function buildJeepney(): THREE.Group {
   livery.repeat.set(1 / spanX, 1 / spanY)
   livery.offset.set(-BODY.x0 / spanX, -BODY.y0 / spanY)
 
+  const paint = (color: string) => new THREE.MeshPhysicalMaterial({ color, metalness: 0.5, roughness: 0.28, clearcoat: 1, clearcoatRoughness: 0.08 })
+  const glowMat = (color: string, k = 1.6) => new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: k, roughness: 0.3 })
   const mats = {
-    livery: new THREE.MeshStandardMaterial({ map: livery, metalness: 0.55, roughness: 0.32 }),
-    steel: new THREE.MeshStandardMaterial({ color: '#d4d9df', metalness: 0.85, roughness: 0.28 }),
-    chrome: new THREE.MeshStandardMaterial({ color: '#ffffff', metalness: 1, roughness: 0.08 }),
-    red: new THREE.MeshStandardMaterial({ color: RED, metalness: 0.3, roughness: 0.35 }),
-    yellow: new THREE.MeshStandardMaterial({ color: YELLOW, metalness: 0.2, roughness: 0.4 }),
-    blue: new THREE.MeshStandardMaterial({ color: BLUE, metalness: 0.3, roughness: 0.35 }),
-    roof: new THREE.MeshStandardMaterial({ color: '#f3f4f6', metalness: 0.2, roughness: 0.45 }),
-    interior: new THREE.MeshStandardMaterial({ color: '#1b1f27', roughness: 0.9 }),
-    seat: new THREE.MeshStandardMaterial({ color: '#7f1d1d', roughness: 0.6 }),
-    dark: new THREE.MeshStandardMaterial({ color: '#23262d', metalness: 0.4, roughness: 0.6 }),
-    tire: new THREE.MeshStandardMaterial({ color: '#16171a', roughness: 0.88 }),
-    glass: new THREE.MeshPhysicalMaterial({
-      color: '#9fb7c9',
-      metalness: 0,
-      roughness: 0.04,
-      transparent: true,
-      opacity: 0.32,
-      envMapIntensity: 1.6,
-      side: THREE.DoubleSide,
-    }),
-    lamp: new THREE.MeshStandardMaterial({ color: '#fff8e1', emissive: '#fff3c4', emissiveIntensity: 0.9, roughness: 0.1 }),
-    tail: new THREE.MeshStandardMaterial({ color: '#b91c1c', emissive: '#7f1d1d', emissiveIntensity: 0.6, roughness: 0.2 }),
-    amber: new THREE.MeshStandardMaterial({ color: '#f59e0b', emissive: '#92400e', emissiveIntensity: 0.4, roughness: 0.2 }),
+    livery: new THREE.MeshPhysicalMaterial({ map: livery, metalness: 0.6, roughness: 0.25, clearcoat: 1, clearcoatRoughness: 0.1 }),
+    steel: new THREE.MeshStandardMaterial({ color: '#d7dce2', metalness: 0.9, roughness: 0.22 }),
+    chrome: new THREE.MeshStandardMaterial({ color: '#ffffff', metalness: 1, roughness: 0.06 }),
+    red: paint(RED),
+    blue: paint(BLUE),
+    black: paint('#0f1115'),
+    roof: paint('#14161b'),
+    interior: new THREE.MeshStandardMaterial({ color: '#15181f', roughness: 0.9 }),
+    floor: new THREE.MeshStandardMaterial({ color: '#2a2e36', metalness: 0.6, roughness: 0.5 }),
+    seat: new THREE.MeshStandardMaterial({ color: '#8b1020', roughness: 0.55 }),
+    dark: new THREE.MeshStandardMaterial({ color: '#202329', metalness: 0.5, roughness: 0.5 }),
+    rimBarrel: new THREE.MeshStandardMaterial({ color: '#9aa3ad', metalness: 1, roughness: 0.25, side: THREE.DoubleSide }),
+    tire: new THREE.MeshStandardMaterial({ color: '#141518', roughness: 0.85 }),
+    glass: new THREE.MeshPhysicalMaterial({ color: '#2b3a4a', metalness: 0, roughness: 0.03, transparent: true, opacity: 0.45, envMapIntensity: 2, side: THREE.DoubleSide }),
+    visor: new THREE.MeshPhysicalMaterial({ color: '#1e293b', roughness: 0.1, transparent: true, opacity: 0.7, side: THREE.DoubleSide }),
+    lamp: glowMat('#fffbeb', 1.2),
+    led: glowMat('#ffffff', 2),
+    cyan: glowMat(CYAN),
+    pink: glowMat('#e879f9'),
+    tail: glowMat('#ef4444', 1.4),
+    amber: glowMat('#f59e0b', 1.2),
   }
 
   // --- Chassis and axles
-  jeep.add(boxAt(-2.9, 2.75, 0.36, 0.56, -0.62, 0.62, mats.dark, 0.02))
-  for (const x of [WHEEL.front, WHEEL.rear]) {
-    const axle = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, WHEEL.z * 2, 12), mats.dark)
-    axle.rotation.x = Math.PI / 2
-    axle.position.set(x, WHEEL.r, 0)
-    jeep.add(axle)
-  }
+  jeep.add(boxAt(-2.9, 2.75, 0.3, 0.5, -0.62, 0.62, mats.dark, 0.02))
+  for (const x of [WHEEL.front, WHEEL.rear]) jeep.add(rod(v(x, WHEEL.r, -WHEEL.z), v(x, WHEEL.r, WHEEL.z), 0.05, mats.dark))
 
-  // --- Passenger body: side profile with a real rear wheel arch, extruded across.
+  // --- Body side profile: rear wheel arch and the cab doorway, extruded across the width.
+  const a = Math.asin((BODY.y0 - WHEEL.r) / ARCH)
   {
     const s = new THREE.Shape()
-    const a = Math.asin((BODY.y0 - WHEEL.r) / 0.52)
     s.moveTo(BODY.x0, BODY.y0)
-    s.lineTo(WHEEL.rear - Math.cos(a) * 0.52, BODY.y0)
-    s.absarc(WHEEL.rear, WHEEL.r, 0.52, Math.PI - a, a, true)
+    s.lineTo(WHEEL.rear - Math.cos(a) * ARCH, BODY.y0)
+    s.absarc(WHEEL.rear, WHEEL.r, ARCH, Math.PI - a, a, true)
     s.lineTo(BODY.x1, BODY.y0)
-    s.lineTo(BODY.x1, BODY.y1)
+    s.lineTo(BODY.x1, DOOR.sill)
+    s.lineTo(DOOR.x0 + 0.3, DOOR.sill)
+    s.quadraticCurveTo(DOOR.x0, DOOR.sill, DOOR.x0, DOOR.sill + 0.3)
+    s.lineTo(DOOR.x0, BODY.y1)
     s.lineTo(BODY.x0, BODY.y1)
     s.closePath()
-    const body = extrudeZ(s, 2.0, [mats.livery, mats.steel], 0.035)
-    jeep.add(body)
-    // Rear fender flare (chrome) around the arch, both sides.
+    jeep.add(extrudeZ(s, 2.0, [mats.livery, mats.steel], 0.035))
     const flare = new THREE.Shape()
-    flare.absarc(0, 0, 0.6, Math.PI - a, a, true)
-    flare.absarc(0, 0, 0.52, a, Math.PI - a, false)
+    flare.absarc(0, 0, ARCH + 0.09, Math.PI - a, a, true)
+    flare.absarc(0, 0, ARCH, a, Math.PI - a, false)
     for (const z of [1.02, -1.02]) {
-      const f = extrudeZ(flare, 0.08, mats.chrome, 0.012)
+      const f = extrudeZ(flare, 0.09, mats.chrome, 0.015)
       f.position.set(WHEEL.rear, WHEEL.r, z)
       jeep.add(f)
     }
+    // Chrome trim around the doorway edge
+    for (const z of [1.015, -1.015]) {
+      jeep.add(boxAt(DOOR.x0 - 0.02, DOOR.x0 + 0.02, DOOR.sill + 0.25, BODY.y1, z - 0.02, z + 0.02, mats.chrome, 0.01))
+      jeep.add(boxAt(DOOR.x0 + 0.25, BODY.x1, DOOR.sill - 0.02, DOOR.sill + 0.02, z - 0.02, z + 0.02, mats.chrome, 0.01))
+    }
+  }
+  // Side decals: jeepney name on the rear quarter
+  {
+    const name = textTexture('Antipolo Express', { w: 1024, h: 160, bg: '', fg: YELLOW, border: null, italic: true, glow: '#f97316' })
+    for (const s of [1, -1] as const) jeep.add(decal(name, 1.5, 0.24, -2.15, 1.28, s, 1.037))
   }
 
-  // --- Window band: dark interior, benches, pillars, belt and roof rails.
-  jeep.add(boxAt(-2.92, 1.4, 1.45, 2.14, -0.93, 0.93, mats.interior, 0))
-  for (const z of [0.62, -0.62]) jeep.add(boxAt(-2.8, 1.1, 1.5, 1.62, z - 0.22, z + 0.22, mats.seat, 0.03))
-  const pillarXs = [-2.96, -2.4, -1.84, -1.28, -0.72, -0.16, 0.4, 0.96, 1.41]
+  // --- Cab: open doorways on both sides with floor, seats, dash and steering wheel inside.
+  jeep.add(boxAt(DOOR.x0 - 0.05, BODY.x1, DOOR.sill - 0.04, DOOR.sill, -0.96, 0.96, mats.floor, 0))
+  jeep.add(boxAt(1.36, 1.5, DOOR.sill, 1.5, -0.97, 0.97, mats.black, 0.02)) // cowl under the windshield
+  jeep.add(boxAt(1.12, 1.36, 1.22, 1.46, -0.92, 0.92, mats.dark, 0.04)) // dashboard
+  jeep.add(boxAt(1.12, 1.14, 1.3, 1.36, -0.85, 0.85, mats.cyan, 0)) // dash LED strip
+  for (const [z0, z1] of [[-0.9, -0.15], [0.12, 0.9]]) {
+    jeep.add(boxAt(0.62, 1.0, DOOR.sill, 1.12, z0, z1, mats.seat, 0.05))
+    jeep.add(boxAt(0.55, 0.66, 1.1, 1.62, z0, z1, mats.seat, 0.05))
+  }
+  {
+    const sw = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.022, 10, 32), mats.black)
+    sw.position.set(1.08, 1.52, -0.52)
+    sw.rotation.y = Math.PI / 2
+    sw.rotation.x = 0.0
+    sw.rotateX(-0.5)
+    jeep.add(sw)
+    jeep.add(rod(v(1.08, 1.52, -0.52), v(1.25, 1.3, -0.52), 0.025, mats.dark))
+    jeep.add(rod(v(1.05, 1.05, -0.55), v(1.2, 0.92, -0.55), 0.03, mats.chrome)) // gear stick
+  }
+  // Grab bars at the doorway
+  for (const z of [0.99, -0.99]) jeep.add(rod(v(DOOR.x0 + 0.05, 1.1, z), v(DOOR.x0 + 0.05, 2.05, z), 0.018, mats.chrome))
+
+  // --- Passenger compartment: partition behind the cab, dark interior, benches.
+  jeep.add(boxAt(0.45, 0.52, DOOR.sill, 2.14, -0.95, 0.95, mats.interior, 0))
+  jeep.add(boxAt(-2.92, 0.45, 1.45, 2.14, -0.93, 0.93, mats.interior, 0))
+  for (const z of [0.62, -0.62]) jeep.add(boxAt(-2.8, 0.35, 1.5, 1.62, z - 0.22, z + 0.22, mats.seat, 0.03))
+  for (let i = 0; i < 6; i++) jeep.add(boxAt(-2.6 + i * 0.55, -2.4 + i * 0.55, 2.1, 2.13, -0.5, 0.5, mats.pink, 0)) // ceiling lights
+  const pillarXs = [-2.96, -2.4, -1.84, -1.28, -0.72, -0.16, 0.45]
   for (const x of pillarXs) {
-    for (const z of [0.98, -0.98]) jeep.add(boxAt(x - 0.04, x + 0.04, 1.5, 2.16, z - 0.035, z + 0.035, mats.steel, 0.012))
+    for (const z of [0.98, -0.98]) jeep.add(boxAt(x - 0.04, x + 0.04, 1.5, 2.16, z - 0.035, z + 0.035, mats.chrome, 0.012))
   }
   for (const z of [1.0, -1.0]) {
-    jeep.add(boxAt(-3.0, 1.45, 1.49, 1.54, z - 0.03, z + 0.03, mats.chrome, 0.01)) // belt trim
-    // Rolled-up canvas curtains under the roof
-    const curtain = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 4.3, 12), mats.blue)
+    jeep.add(boxAt(BODY.x0, DOOR.x0, 1.49, 1.54, z - 0.03, z + 0.03, mats.chrome, 0.01)) // belt trim
+    const curtain = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 3.35, 12), mats.blue)
     curtain.rotation.z = Math.PI / 2
-    curtain.position.set(-0.78, 2.08, z * 1.01)
+    curtain.position.set(-1.25, 2.08, z * 1.01)
     jeep.add(curtain)
+    // Tinted rain visor over the windows
+    const vis = boxAt(-3.0, 0.5, 2.0, 2.03, -0.1, 0.1, mats.visor, 0)
+    vis.position.z = z * 1.08
+    vis.rotation.x = z * 0.5
+    jeep.add(vis)
   }
 
-  // --- Roof with overhang, side route boards and front sign.
+  // --- Roof: black, with front visor spoiler, LED strips, rear spoiler, route boards, antennas.
   jeep.add(boxAt(-3.12, 1.78, 2.14, 2.24, -1.08, 1.08, mats.roof, 0.04))
   {
-    const side = new THREE.MeshStandardMaterial({ map: signTexture('CUBAO • QUIAPO • DIVISORIA', 2048, 128, YELLOW, BLUE), roughness: 0.5 })
-    const board = boxAt(-2.7, 1.0, 2.24, 2.44, -1.0, 1.0, [mats.red, mats.red, mats.roof, mats.roof, side, side], 0.0)
-    jeep.add(board)
-    const front = new THREE.MeshStandardMaterial({ map: signTexture('CUBAO – QUIAPO'), roughness: 0.4, emissive: '#ffffff', emissiveIntensity: 0.12, emissiveMap: null })
-    jeep.add(boxAt(1.12, 1.28, 2.24, 2.56, -0.78, 0.78, [front, mats.red, mats.red, mats.red, mats.red, mats.red], 0.0))
-    for (const z of [1.08, -1.08]) {
-      const rail = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 4.9, 10), mats.chrome)
-      rail.rotation.z = Math.PI / 2
-      rail.position.set(-0.67, 2.27, z)
-      jeep.add(rail)
+    const s = new THREE.Shape()
+    s.moveTo(0, 0)
+    s.lineTo(0.26, -0.07)
+    s.lineTo(0.26, -0.1)
+    s.lineTo(0, -0.05)
+    s.closePath()
+    const vs = extrudeZ(s, 2.12, mats.black, 0.015)
+    vs.position.set(1.72, 2.22, 0)
+    jeep.add(vs)
+    jeep.add(boxAt(1.8, 1.97, 2.12, 2.13, -1.0, 1.0, mats.cyan, 0)) // LED under the visor
+    for (const z of [1.085, -1.085]) {
+      jeep.add(boxAt(-3.1, 1.76, 2.15, 2.19, z - 0.01, z + 0.01, mats.cyan, 0))
+      jeep.add(boxAt(-3.1, 1.76, 2.2, 2.23, z - 0.012, z + 0.012, mats.chrome, 0))
+    }
+    // Rear roof wing on two stalks
+    jeep.add(boxAt(-3.2, -2.9, 2.36, 2.4, -1.02, 1.02, mats.black, 0.015))
+    for (const z of [0.8, -0.8]) jeep.add(boxAt(-3.02, -2.98, 2.24, 2.36, z - 0.03, z + 0.03, mats.chrome, 0))
+    const side = new THREE.MeshStandardMaterial({ map: textTexture('CUBAO • MARCOS HIGHWAY • ANTIPOLO', { w: 2048, h: 128, bg: YELLOW, fg: BLUE }), roughness: 0.5 })
+    jeep.add(boxAt(-2.7, 1.0, 2.24, 2.44, -0.98, 0.98, [mats.red, mats.red, mats.roof, mats.roof, side, side], 0.0))
+    const front = new THREE.MeshStandardMaterial({ map: textTexture('CUBAO – ANTIPOLO', { bg: '#fffdf5' }), roughness: 0.4, emissive: '#ffffff', emissiveIntensity: 0.15 })
+    front.emissiveMap = front.map
+    jeep.add(boxAt(1.12, 1.28, 2.24, 2.58, -0.8, 0.8, [front, mats.red, mats.red, mats.red, mats.red, mats.red], 0.0))
+    // Antennas with red tips, raked back
+    const tip = glowMat('#ef4444', 1)
+    for (const [x, z] of [[1.6, 1.0], [1.6, -1.0], [1.45, 0.9], [-3.0, -1.0]]) {
+      const top = v(x - 0.35, 3.15, z * 1.02)
+      jeep.add(rod(v(x, 2.24, z), top, 0.008, mats.chrome))
+      const ball = new THREE.Mesh(new THREE.SphereGeometry(0.025, 10, 8), tip)
+      ball.position.copy(top)
+      jeep.add(ball)
     }
   }
 
-  // --- Windshield: split glass in a steel frame, leaning back slightly.
+  // --- Windshield: tinted split glass with a name banner across the top.
   {
     const ws = new THREE.Group()
     ws.position.set(1.46, 1.5, 0)
@@ -277,104 +417,121 @@ export function buildJeepney(): THREE.Group {
       pane.position.set(0.0, 0.32, z)
       ws.add(pane)
     }
-    for (const z of [-0.97, 0, 0.97]) ws.add(boxAt(-0.04, 0.04, 0, 0.66, z - 0.04, z + 0.04, mats.steel, 0.01))
-    ws.add(boxAt(-0.04, 0.05, 0.6, 0.66, -1.0, 1.0, mats.steel, 0.01))
+    const banner = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.9, 0.13),
+      new THREE.MeshStandardMaterial({ map: textTexture('★ ANTIPOLO ★', { w: 1024, h: 96, bg: '#0b1b3f', fg: CYAN, border: null, glow: CYAN }), transparent: true, opacity: 0.95 }),
+    )
+    banner.rotation.y = Math.PI / 2
+    banner.position.set(0.012, 0.55, 0)
+    ws.add(banner)
+    for (const z of [-0.97, 0, 0.97]) ws.add(boxAt(-0.04, 0.04, 0, 0.66, z - 0.04, z + 0.04, mats.chrome, 0.01))
+    ws.add(boxAt(-0.04, 0.05, 0.6, 0.66, -1.0, 1.0, mats.chrome, 0.01))
     jeep.add(ws)
-    // Steering wheel visible through the glass
-    const sw = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.02, 8, 24), mats.dark)
-    sw.position.set(1.15, 1.62, 0.5)
-    sw.rotation.y = Math.PI / 2
-    sw.rotation.x = 0.5
-    jeep.add(sw)
   }
 
-  // --- Hood: sloped profile, stainless with a red centre stripe.
+  // --- Hood: stainless with a candy blue stripe, chrome horses and air horns.
   {
     const s = new THREE.Shape()
-    s.moveTo(1.45, 0.62)
-    s.lineTo(2.88, 0.62)
+    s.moveTo(1.45, 0.58)
+    s.lineTo(2.88, 0.58)
     s.lineTo(2.88, 1.16)
     s.quadraticCurveTo(2.2, 1.28, 1.45, 1.34)
     s.closePath()
     jeep.add(extrudeZ(s, 1.46, mats.steel, 0.05))
-    const stripe = extrudeZ(s, 0.18, mats.red, 0.02)
-    stripe.scale.set(1, 1.005, 1)
-    stripe.position.y = 0.004
+    const stripe = extrudeZ(s, 0.22, mats.blue, 0.02)
+    stripe.scale.set(1.002, 1.012, 1)
     jeep.add(stripe)
-    // Twin air horns on the cowl
+    for (const z of [0.3, -0.3]) {
+      const horse = extrudeZ(horseShape(), 0.035, mats.steel, 0.008)
+      horse.position.set(2.4, 1.2, z)
+      jeep.add(horse)
+    }
     for (const z of [0.45, -0.45]) {
-      const horn = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.32, 16, 1, true), mats.chrome)
+      const horn = new THREE.Mesh(new THREE.ConeGeometry(0.055, 0.36, 18, 1, true), mats.chrome)
       horn.rotation.z = -Math.PI / 2
-      horn.position.set(1.9, 1.33, z)
+      horn.position.set(1.85, 1.34, z)
       jeep.add(horn)
     }
   }
 
-  // --- Front fenders, running boards, grille, lamps, bumper.
+  // --- Front fenders (candy red), running boards with marker lights.
   {
+    const R = ARCH + 0.08
     const f = new THREE.Shape()
-    f.moveTo(-0.62, 0.0)
-    f.absarc(0, 0, 0.62, Math.PI, 0, true)
-    f.lineTo(0.7, 0.0)
-    f.lineTo(0.7, 0.06)
-    f.lineTo(0.54, 0.06)
-    f.absarc(0, 0, 0.52, 0, Math.PI, false)
-    f.lineTo(-0.62, 0.0)
+    f.moveTo(-R, 0.0)
+    f.absarc(0, 0, R, Math.PI, 0, true)
+    f.lineTo(R + 0.08, 0.0)
+    f.lineTo(R + 0.08, 0.06)
+    f.lineTo(ARCH, 0.06)
+    f.absarc(0, 0, ARCH, 0, Math.PI, false)
+    f.lineTo(-R, 0.0)
     for (const z of [WHEEL.z, -WHEEL.z]) {
-      const m = extrudeZ(f, 0.36, mats.red, 0.03)
-      m.position.set(WHEEL.front, WHEEL.r + 0.06, z)
+      const m = extrudeZ(f, 0.4, mats.red, 0.03)
+      m.position.set(WHEEL.front, WHEEL.r + 0.04, z)
       jeep.add(m)
     }
-    for (const z of [0.86, -0.86]) jeep.add(boxAt(1.1, 1.5, 0.44, 0.5, z - 0.2, z + 0.2, mats.chrome, 0.01))
+    for (const z of [0.86, -0.86]) jeep.add(boxAt(1.0, 1.5, 0.4, 0.46, z - 0.2, z + 0.2, mats.chrome, 0.01))
   }
-  jeep.add(boxAt(2.86, 2.93, 0.7, 1.12, -0.52, 0.52, mats.dark, 0.01))
-  for (let i = 0; i < 11; i++) {
-    const z = -0.48 + (i * 0.96) / 10
-    jeep.add(boxAt(2.9, 2.96, 0.72, 1.1, z - 0.018, z + 0.018, mats.chrome, 0.008))
-  }
-  jeep.add(boxAt(2.88, 2.98, 1.1, 1.15, -0.56, 0.56, mats.chrome, 0.012))
-  for (const z of [0.66, -0.66]) {
-    const bezel = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.08, 32), mats.chrome)
-    bezel.rotation.z = Math.PI / 2
-    bezel.position.set(2.88, 1.0, z)
-    jeep.add(bezel)
-    const lens = new THREE.Mesh(new THREE.SphereGeometry(0.11, 24, 12, 0, Math.PI * 2, 0, Math.PI / 3), mats.lamp)
-    lens.rotation.z = -Math.PI / 2
-    lens.position.set(2.89, 1.0, z)
-    jeep.add(lens)
-    const sig = boxAt(2.86, 2.94, 0.78, 0.86, z - 0.07, z + 0.07, mats.amber, 0.01)
-    jeep.add(sig)
-  }
-  jeep.add(boxAt(2.92, 3.08, 0.5, 0.68, -1.02, 1.02, mats.chrome, 0.03))
-  for (const z of [0.36, -0.36]) {
-    const fog = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.06, 20), mats.lamp)
-    fog.rotation.z = Math.PI / 2
-    fog.position.set(3.1, 0.59, z)
-    jeep.add(fog)
-  }
-
-  // --- Side mirrors on stalks
+  // Chrome side skirts with blue marker lights
   for (const s of [1, -1]) {
-    const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 0.35, 8), mats.chrome)
-    stalk.rotation.x = (s * Math.PI) / 2.6
-    stalk.position.set(1.55, 1.75, s * 1.12)
-    jeep.add(stalk)
-    const mirror = boxAt(1.5, 1.56, 1.8, 2.0, s * 1.22 - 0.09, s * 1.22 + 0.09, mats.chrome, 0.02)
-    jeep.add(mirror)
+    jeep.add(boxAt(-1.25, 1.0, 0.4, 0.52, s * 1.0 - 0.03, s * 1.0 + 0.03, mats.chrome, 0.015))
+    jeep.add(boxAt(-3.0, -2.38, 0.4, 0.52, s * 1.0 - 0.03, s * 1.0 + 0.03, mats.chrome, 0.015))
+    for (let i = 0; i < 7; i++) {
+      const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.022, 10, 8), i % 2 ? mats.cyan : mats.amber)
+      lamp.position.set(-1.1 + i * 0.32, 0.46, s * 1.035)
+      jeep.add(lamp)
+    }
   }
 
-  // --- Rear: doorway, grab bars, step, bumper, tail lamps, mud flaps.
+  // --- Front: grille, twin headlights, signals, bull bar, bumper and LED fog bar.
+  jeep.add(boxAt(2.86, 2.93, 0.66, 1.12, -0.38, 0.38, mats.dark, 0.01))
+  for (let i = 0; i < 11; i++) {
+    const z = -0.34 + (i * 0.68) / 10
+    jeep.add(boxAt(2.9, 2.97, 0.68, 1.1, z - 0.016, z + 0.016, mats.chrome, 0.008))
+  }
+  jeep.add(boxAt(2.88, 2.99, 1.1, 1.15, -0.4, 0.4, mats.chrome, 0.012))
+  for (const s of [1, -1]) {
+    // Twin round headlights per side (outer slightly behind the inner)
+    for (const [z, x] of [[0.72, 2.88], [0.5, 2.9]]) {
+      const bezel = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.08, 32), mats.chrome)
+      bezel.rotation.z = Math.PI / 2
+      bezel.position.set(x, 1.0, s * z)
+      jeep.add(bezel)
+      const lens = new THREE.Mesh(new THREE.SphereGeometry(0.085, 24, 12, 0, Math.PI * 2, 0, Math.PI / 3), mats.lamp)
+      lens.rotation.z = -Math.PI / 2
+      lens.position.set(x + 0.01, 1.0, s * z)
+      jeep.add(lens)
+    }
+    jeep.add(boxAt(2.86, 2.94, 0.76, 0.84, s * 0.72 - 0.07, s * 0.72 + 0.07, mats.amber, 0.01))
+  }
+  jeep.add(boxAt(2.92, 3.08, 0.46, 0.64, -1.02, 1.02, mats.chrome, 0.03))
+  jeep.add(boxAt(3.08, 3.1, 0.5, 0.6, -0.6, 0.6, mats.led, 0)) // LED fog bar
+  {
+    const bx = 3.2
+    jeep.add(rod(v(bx, 0.9, -0.72), v(bx, 0.9, 0.72), 0.03, mats.chrome))
+    jeep.add(rod(v(bx, 0.7, -0.72), v(bx, 0.7, 0.72), 0.03, mats.chrome))
+    for (const z of [-0.72, -0.25, 0.25, 0.72]) jeep.add(rod(v(bx, 0.55, z), v(bx, 0.95, z), 0.03, mats.chrome))
+    for (const z of [-0.72, 0.72]) jeep.add(rod(v(3.06, 0.55, z), v(bx, 0.55, z), 0.03, mats.chrome))
+  }
+
+  // --- Side mirrors on chrome stalks
+  for (const s of [1, -1]) {
+    jeep.add(rod(v(1.48, 1.62, s * 0.98), v(1.6, 1.82, s * 1.22), 0.016, mats.chrome))
+    jeep.add(boxAt(1.56, 1.62, 1.8, 2.04, s * 1.24 - 0.11, s * 1.24 + 0.11, mats.chrome, 0.03))
+  }
+
+  // --- Rear: open entrance, grab bars, step, LED tail lights, bumper, exhaust, mud flaps.
   jeep.add(boxAt(-3.04, -3.0, 0.62, 1.5, -0.4, 0.4, mats.interior, 0))
   for (const z of [0.47, -0.47]) {
-    const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 1.5, 10), mats.chrome)
-    bar.position.set(-3.08, 1.35, z)
-    jeep.add(bar)
-    jeep.add(boxAt(-3.08, -3.0, 1.0, 1.26, z * 1.85 - 0.07, z * 1.85 + 0.07, mats.tail, 0.01))
+    jeep.add(rod(v(-3.08, 0.6, z), v(-3.08, 2.1, z), 0.022, mats.chrome))
+    jeep.add(boxAt(-3.07, -3.0, 0.75, 1.42, z * 1.9 - 0.06, z * 1.9 + 0.06, mats.tail, 0.01))
   }
-  jeep.add(boxAt(-3.32, -3.0, 0.4, 0.47, -0.45, 0.45, mats.chrome, 0.01))
-  jeep.add(boxAt(-3.14, -3.02, 0.5, 0.62, -1.0, -0.45, mats.chrome, 0.02))
-  jeep.add(boxAt(-3.14, -3.02, 0.5, 0.62, 0.45, 1.0, mats.chrome, 0.02))
-  for (const z of [0.82, -0.82]) jeep.add(boxAt(-2.42, -2.4, 0.1, 0.55, z - 0.16, z + 0.16, mats.red, 0.0))
+  jeep.add(boxAt(-3.06, -3.02, 1.46, 1.5, -0.95, 0.95, mats.tail, 0))
+  jeep.add(boxAt(-3.32, -3.0, 0.36, 0.43, -0.45, 0.45, mats.chrome, 0.01))
+  jeep.add(boxAt(-3.14, -3.02, 0.46, 0.6, -1.0, -0.45, mats.chrome, 0.02))
+  jeep.add(boxAt(-3.14, -3.02, 0.46, 0.6, 0.45, 1.0, mats.chrome, 0.02))
+  jeep.add(rod(v(-2.6, 0.3, 0.62), v(-3.3, 0.3, 0.62), 0.05, mats.chrome))
+  for (const z of [0.82, -0.82]) jeep.add(boxAt(-2.47, -2.45, 0.1, 0.5, z - 0.17, z + 0.17, mats.chrome, 0.0))
 
   // --- Wheels
   for (const x of [WHEEL.front, WHEEL.rear]) {
@@ -385,7 +542,15 @@ export function buildJeepney(): THREE.Group {
     }
   }
 
-  // Centre the jeepney over the turntable.
+  // --- Underglow on the ground
+  const glow = new THREE.Mesh(
+    new THREE.PlaneGeometry(6.8, 2.8),
+    new THREE.MeshBasicMaterial({ map: glowTexture('rgba(217,70,239,0.85)'), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }),
+  )
+  glow.rotation.x = -Math.PI / 2
+  glow.position.set(-0.4, 0.012, 0)
+  jeep.add(glow)
+
   jeep.position.x = -0.04
   return jeep
 }
