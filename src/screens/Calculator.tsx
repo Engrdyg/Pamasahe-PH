@@ -27,6 +27,7 @@ import { Card, Chips, DiscountToggle, ErrorNote, NumberField, Select } from '../
 import { fmtKm, formatEffective, localized } from '../lib/format'
 import { getPref, setPref } from '../lib/prefs'
 import { nearestStation, stationPoints } from '../lib/stations'
+import { rateSummary } from '../lib/rates'
 import { useApp } from '../state'
 
 const num = (s: string) => (s.trim() === '' ? Number.NaN : Number(s))
@@ -64,7 +65,7 @@ function errorText(t: (k: string) => string, e: unknown): string {
 
 export function Calculator({ category }: { category: Category }) {
   const { t } = useTranslation()
-  const { modes, lang } = useApp()
+  const { modes, lang, discount } = useApp()
   const { inCategory, mode, select } = useModeSelection(category, modes)
 
   if (!mode) return <ErrorNote>{t('common.pending')}</ErrorNote>
@@ -82,6 +83,15 @@ export function Calculator({ category }: { category: Category }) {
           value={mode.id}
           onChange={select}
         />
+      )}
+      {mode.status !== 'pending_data' && (
+        <p
+          className="flex items-start gap-2 rounded-2xl border border-accent/60 bg-accent/15 px-4 py-3 text-base font-semibold text-ink"
+          data-testid="rate-summary"
+        >
+          <span aria-hidden="true">📏</span>
+          <span>{rateSummary(mode, discount, t)}</span>
+        </p>
       )}
       <div className="md:hidden">
         <DiscountToggle compact />

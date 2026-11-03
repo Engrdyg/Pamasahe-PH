@@ -321,5 +321,19 @@
     "legendStop": "Hintuan / istasyon",
     "fromShort": "Sakayan",
     "toShort": "Babaan"
+  },
+  "rate": {
+    "addOn": "{{base}} sa unang {{km}} km, +{{per}} bawat susunod na km",
+    "perKm": "{{per}} bawat km",
+    "taxi": "{{flag}} flag-down, +{{km}} bawat km, +{{min}} bawat minuto",
+    "airport": "{{flag}} sa unang {{m}} m, +{{step}} bawat {{stepM}} m, +{{time}} bawat {{timeMin}} min",
+    "tnvs": "Flag-down {{lo}} hanggang {{hi}} depende sa sasakyan, dagdag bawat km at minuto",
+    "matrix": "Minimum na pamasahe {{min}}; depende sa istasyon",
+    "discountTotal": "({{pct}}% off sa kabuuan para sa Estudyante / Senior / PWD)",
+    "fromAddOn": "{{base}} · unang {{km}} km",
+    "fromPerKm": "{{per}} bawat km",
+    "fromFlag": "Mula {{flag}} flag-down",
+    "fromMin": "Mula {{min}}",
+    "title": "Patakaran ng pamasahe"
   }
 }

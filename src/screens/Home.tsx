@@ -1,10 +1,12 @@
 import { useTranslation } from 'react-i18next'
 import type { Category } from '../engine/types'
 import { setPref } from '../lib/prefs'
+import { categoryFrom } from '../lib/rates'
 import { useWide } from '../lib/useMediaQuery'
 import { InstallCard } from '../components/InstallCard'
 import { Hero3D } from '../components/Hero3D'
 import { DiscountToggle } from '../components/ui'
+import { useApp } from '../state'
 
 // One icon set in the same style for every category (public/icons/*.svg),
 // so tiles look identical on every phone instead of mixing emoji fonts.
@@ -22,6 +24,7 @@ const categories: { id: Category; icon: string }[] = [
 export function Home() {
   const { t } = useTranslation()
   const wide = useWide()
+  const { modes, discount } = useApp()
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-4 pb-4 md:max-w-6xl md:gap-6 md:px-8 md:py-8">
       <div className="md:overflow-hidden md:rounded-3xl md:shadow-lg">
@@ -43,6 +46,11 @@ export function Home() {
               <span>
                 <span className="block text-base font-semibold text-ink">{t(`category.${c.id}`)}</span>
                 <span className="block text-xs text-muted">{t(`categoryHint.${c.id}`)}</span>
+                {categoryFrom(c.id, modes, discount, t) && (
+                  <span className="mt-1.5 block text-sm font-bold text-brand" data-testid={`tile-rate-${c.id}`}>
+                    {categoryFrom(c.id, modes, discount, t)}
+                  </span>
+                )}
               </span>
             </a>
           </li>

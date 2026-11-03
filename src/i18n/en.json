@@ -321,5 +321,19 @@
     "legendStop": "Stop / station",
     "fromShort": "From",
     "toShort": "To"
+  },
+  "rate": {
+    "addOn": "{{base}} for the first {{km}} km, +{{per}} per succeeding km",
+    "perKm": "{{per}} per km",
+    "taxi": "{{flag}} flag-down, +{{km}} per km, +{{min}} per minute",
+    "airport": "{{flag}} for the first {{m}} m, +{{step}} per {{stepM}} m, +{{time}} per {{timeMin}} min",
+    "tnvs": "Flag-down {{lo}} to {{hi}} depending on the vehicle, plus per km and per minute",
+    "matrix": "Minimum fare {{min}}; depends on the stations",
+    "discountTotal": "({{pct}}% off the total for Student / Senior / PWD)",
+    "fromAddOn": "{{base}} · first {{km}} km",
+    "fromPerKm": "{{per}} per km",
+    "fromFlag": "From {{flag}} flag-down",
+    "fromMin": "From {{min}}",
+    "title": "Fare rule"
   }
 }
