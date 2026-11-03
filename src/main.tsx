@@ -8,7 +8,20 @@ import './index.css'
 import { hideSplash } from './lib/splash'
 import { AppProvider } from './state'
 
-registerSW({ immediate: true })
+registerSW({ immediate: true, onRegisteredSW: () => void warmShell() })
+
+/**
+ * The HTML shell is cached network-first when pages load through the
+ * service worker, which only starts with the second visit. Fetch it once the
+ * worker controls this page so a first-time visitor can reload offline too.
+ */
+async function warmShell() {
+  const sw = navigator.serviceWorker
+  if (!sw) return
+  await sw.ready
+  if (!sw.controller) await new Promise((r) => sw.addEventListener('controllerchange', r, { once: true }))
+  await fetch(import.meta.env.BASE_URL, { credentials: 'same-origin' }).catch(() => {})
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

@@ -67,7 +67,11 @@ export default defineConfig({
         clientsClaim: true,
         runtimeCaching: [
           {
-            urlPattern: ({ request }) => request.mode === 'navigate',
+            // Page loads, plus the app's own warm-up fetch of the shell (see
+            // src/main.tsx) so the very first visit already works offline.
+            urlPattern: ({ request, url, sameOrigin }) =>
+              request.mode === 'navigate' ||
+              (sameOrigin && url.pathname === new URL((globalThis as unknown as { registration: { scope: string } }).registration.scope).pathname),
             handler: 'NetworkFirst',
             options: { cacheName: 'pages', networkTimeoutSeconds: 4 },
           },
