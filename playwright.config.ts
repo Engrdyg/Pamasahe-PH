@@ -16,6 +16,9 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:4173',
     trace: 'retain-on-failure',
     ...devices['Pixel 5'],
+    // The Home hero spins a 3D jeepney; with software WebGL on slow CI
+    // runners that starves the page. Reduced motion renders one still frame.
+    contextOptions: { reducedMotion: 'reduce' },
     launchOptions,
   },
   webServer: {
