@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="fil">
+<head>
+<meta charset="utf-8" />
+<!--
+  Bayad Po — TikTok video with 3D b-roll, zooms, word-by-word captions and
+  sound-effect cues (60 s, 1080×1920, 30 fps). window.seek(t) draws time t;
+  window.CUES lists the sound effects (mix.py lays them over the music).
+  App screens: captures of the real app with stand-in map tiles and place
+  names (see ../tiktok-60s/capture.mjs). B-roll: broll.js (the app's 3D
+  jeepney on a generated street). No voice-over.
+-->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #0b1220; font-family: "Liberation Sans", "DejaVu Sans", sans-serif; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+  .fill { position: absolute; inset: 0; }
+  .abs { position: absolute; left: 0; top: 0; will-change: transform, opacity; }
+  #bgNavy { background: radial-gradient(1100px 900px at 50% 45%, #1a3f86 0%, #0d1a36 55%, #070d1c 100%); }
+  #bgYellow { background: radial-gradient(1000px 800px at 50% 45%, #ffe07a, #ffc72c 70%); clip-path: circle(0px at 540px 960px); }
+  #bgLight { background: linear-gradient(180deg, #dfeafb 0%, #eef4fc 45%, #f8fafc 100%); clip-path: circle(0px at 540px 1300px); }
+  #bgEnd { background: radial-gradient(1100px 900px at 50% 50%, #1a3f86 0%, #0d1a36 55%, #070d1c 100%); clip-path: circle(0px at 540px 960px); }
+  .bokeh { position: absolute; border-radius: 50%; filter: blur(18px); }
+  .grid-lines { position: absolute; inset: 0; background-image: linear-gradient(rgba(11,61,145,.05) 2px, transparent 2px), linear-gradient(90deg, rgba(11,61,145,.05) 2px, transparent 2px); background-size: 90px 90px; }
+
+  .h { font-weight: 700; text-align: center; width: 1080px; letter-spacing: -0.02em; }
+  .white { color: #fff; } .yellow { color: #ffc72c; } .navy { color: #0b3d91; } .red { color: #dc2626; }
+  .shadow { text-shadow: 0 8px 30px rgba(0,0,0,.45); }
+  .mark { background: linear-gradient(180deg, transparent 58%, #ffc72c 58%, #ffc72c 92%, transparent 92%); padding: 0 8px; }
+
+  .tag { position: absolute; padding: 16px 30px; border-radius: 22px; background: #fff; color: #0f172a; font-weight: 800; font-size: 64px; box-shadow: 0 18px 40px rgba(0,0,0,.4); white-space: nowrap; }
+  .tag::after { content: ""; position: absolute; left: 50%; bottom: -16px; width: 32px; height: 32px; background: #fff; transform: translateX(-50%) rotate(45deg); border-radius: 4px; }
+  .tag .strike { position: absolute; left: -6%; right: -6%; top: 50%; height: 12px; background: #dc2626; border-radius: 6px; transform-origin: left center; transform: rotate(-12deg) scaleX(0); z-index: 2; }
+
+  .pill { display: inline-block; padding: 18px 36px; border-radius: 999px; font-weight: 800; font-size: 42px; white-space: nowrap; }
+  .pill-navy { background: #0b3d91; color: #fff; }
+  .pill-white { background: #fff; color: #0b3d91; box-shadow: 0 16px 40px rgba(0,0,0,.25); }
+  .pill-yellow { background: #ffc72c; color: #0b3d91; }
+
+  /* Phone */
+  #phone { position: absolute; left: 222px; top: 480px; width: 636px; height: 1394px; }
+  .bezel { position: absolute; inset: 0; border-radius: 86px; background: linear-gradient(145deg, #2b3547, #0b0f17 40%, #1c2433); box-shadow: 0 60px 120px rgba(11,30,70,.45), 0 0 0 3px #3a4558 inset; }
+  .screen { position: absolute; left: 18px; top: 18px; width: 600px; height: 1358px; border-radius: 70px; overflow: hidden; background: #f8fafc; }
+  .screen img { position: absolute; left: 0; top: 60px; width: 600px; height: 1298px; }
+  .status { position: absolute; left: 0; top: 0; width: 600px; height: 60px; background: #fff; z-index: 4; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 54px 8px; font-weight: 700; font-size: 26px; color: #0f172a; }
+  .island { position: absolute; left: 50%; top: 36px; width: 170px; height: 48px; border-radius: 30px; background: #000; transform: translateX(-50%); z-index: 5; }
+  .glare { position: absolute; inset: 18px; border-radius: 70px; background: linear-gradient(120deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 30%); pointer-events: none; z-index: 6; }
+  .tap { position: absolute; width: 110px; height: 110px; margin: -55px 0 0 -55px; border-radius: 50%; background: rgba(255,255,255,.55); border: 5px solid rgba(11,61,145,.55); box-shadow: 0 8px 24px rgba(0,0,0,.25); z-index: 7; }
+  .ripple { position: absolute; width: 110px; height: 110px; margin: -55px 0 0 -55px; border-radius: 50%; border: 6px solid #ffc72c; z-index: 7; }
+
+  /* Headings above the phone */
+  .head { position: absolute; left: 0; top: 120px; width: 1080px; text-align: center; }
+  .head .step { display: inline-flex; align-items: center; justify-content: center; width: 78px; height: 78px; border-radius: 50%; background: #0b3d91; color: #ffc72c; font-weight: 800; font-size: 44px; margin-bottom: 18px; }
+  .head .t { font-weight: 800; font-size: 68px; line-height: 1.05; color: #0b3d91; letter-spacing: -0.02em; padding: 0 50px; }
+  .head .s { font-size: 38px; color: #334155; margin-top: 14px; }
+
+  /* Stickers */
+  .sticker { position: absolute; background: #fff; border-radius: 40px; padding: 30px 38px; box-shadow: 0 30px 70px rgba(11,30,70,.35); border: 4px solid #e2e8f0; }
+  .sticker .lb { font-size: 30px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #64748b; white-space: nowrap; }
+  .sticker .big { font-size: 112px; font-weight: 800; color: #0b3d91; letter-spacing: -0.03em; line-height: 1.02; white-space: nowrap; }
+  .sticker .sm { font-size: 34px; color: #334155; margin-top: 6px; white-space: nowrap; }
+  .badge { position: absolute; right: -24px; top: -34px; background: #dc2626; color: #fff; font-weight: 800; font-size: 44px; padding: 12px 24px; border-radius: 999px; box-shadow: 0 10px 24px rgba(220,38,38,.4); transform: rotate(8deg); }
+  .leg { position: absolute; left: 30px; width: 400px; display: flex; align-items: center; gap: 18px; background: #fff; border-radius: 30px; padding: 20px 26px; box-shadow: 0 20px 50px rgba(11,30,70,.3); font-size: 36px; font-weight: 700; color: #0f172a; }
+  .leg .ic { font-size: 52px; }
+  .leg .amt { margin-left: auto; color: #0b3d91; font-weight: 800; }
+  .stamp { position: absolute; border: 10px solid #dc2626; color: #dc2626; border-radius: 26px; padding: 14px 30px; font-weight: 900; font-size: 74px; background: rgba(255,255,255,.95); letter-spacing: .02em; white-space: nowrap; }
+
+  #jeep3d { position: absolute; left: 0; top: 0; width: 1080px; height: 1080px; }
+  .url { font-family: "DejaVu Sans Mono", monospace; font-weight: 700; font-size: 44px; color: #0b3d91; background: #fff; padding: 24px 44px; border-radius: 999px; box-shadow: 0 20px 50px rgba(0,0,0,.35); white-space: nowrap; }
+  .flash { position: absolute; inset: 0; background: #fff; pointer-events: none; opacity: 0; }
+  .chiprow { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
+  .chip { display: inline-block; padding: 8px 18px; border-radius: 999px; color: #fff; font-weight: 800; font-size: 30px; white-space: nowrap; }
+  .sticker .mid { font-size: 64px; font-weight: 800; color: #0b3d91; line-height: 1.05; white-space: nowrap; }
+  .brand { font-weight: 900; font-size: 190px; letter-spacing: -0.04em; color: #0b3d91; line-height: 1; }
+  #broll { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+  #brollShade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.35) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%); }
+  .cap { position: absolute; left: 60px; right: 60px; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 14px; }
+  .cap .w { display: inline-block; font-weight: 900; letter-spacing: -0.01em; padding: 2px 14px; border-radius: 14px; }
+  .cap.mid .w { font-size: 92px; color: #fff; -webkit-text-stroke: 3px #0b1220; paint-order: stroke fill; text-shadow: 0 8px 26px rgba(0,0,0,.6); }
+  .cap.mid .w.on { background: #ffc72c; color: #0b1220; -webkit-text-stroke: 0; text-shadow: none; }
+  .cap.top { left: 50px; right: 50px; padding: 18px 22px; border-radius: 34px; background: rgba(255,255,255,.95); box-shadow: 0 20px 50px rgba(11,30,70,.25); z-index: 5; }
+  .cap.top .w { font-size: 60px; color: #0b3d91; }
+  .cap.top .w.on { background: #ffc72c; color: #0b1220; }
+  .flashc { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: #000; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="fill" id="bgNavy"></div>
+  <div class="fill" id="bokeh"></div>
+
+  <!-- B-roll layer -->
+  <canvas id="broll" width="1080" height="1920"></canvas>
+  <div id="brollShade"></div>
+  <div id="tag1" class="tag abs" style="left:90px; top:640px">₱15?<span class="strike"></span></div>
+  <div id="tag2" class="tag abs" style="left:760px; top:560px">₱20?<span class="strike"></span></div>
+  <div id="tag3" class="tag abs" style="left:120px; top:1000px">₱25?<span class="strike"></span></div>
+  <div id="tag4" class="tag abs" style="left:770px; top:960px">₱18?<span class="strike"></span></div>
+
+  <!-- Brand -->
+  <div class="fill" id="bgYellow"></div>
+  <img id="b2logo" class="abs" src="logo.svg" style="left:390px; top:470px; width:300px; height:300px" />
+  <div id="b2name" class="abs h brand" style="top:820px">Bayad Po!</div>
+  <div id="b2tag" class="abs h navy" style="top:1040px; font-size:62px; font-weight:800">Ruta at tamang pamasahe,<br/>bawat sakay</div>
+  <div id="b2pill" class="abs" style="left:0; width:1080px; top:1270px; text-align:center"><span class="pill pill-navy">Batay sa LTFRB · Set 28, 2026</span></div>
+
+  <!-- Phone scenes -->
+  <div class="fill" id="bgLight"><div class="grid-lines"></div></div>
+  <div id="phone">
+    <div class="bezel"></div>
+    <div class="screen" id="screen"><div class="status"><span>9:41</span><span>5G ▮▮▮ 87%</span></div></div>
+    <div class="island"></div>
+    <div class="glare"></div>
+    <div class="tap" id="tap"></div>
+    <div class="ripple" id="ripple"></div>
+  </div>
+  <div id="stickers"></div>
+
+  <!-- End card -->
+  <div class="fill" id="bgEnd"></div>
+  <canvas id="jeep3dEnd" width="1080" height="1080" style="position:absolute; left:0; top:0"></canvas>
+  <img id="endLogo" class="abs" src="logo.svg" style="left:440px; top:140px; width:200px; height:200px" />
+  <div id="endTitle" class="abs h white shadow" style="top:370px; font-size:130px; font-weight:900">Bayad Po</div>
+  <div id="endSub" class="abs h" style="top:520px; font-size:44px; color:#c3d4f5">Ruta at pamasahe · Jeep · UV · Tren · Busway</div>
+  <div id="endPills" class="abs" style="left:0; width:1080px; top:1430px; text-align:center">
+    <span class="pill pill-yellow" id="p1">Libre</span>
+    <span class="pill pill-yellow" id="p2" style="margin-left:18px">Offline</span>
+    <span class="pill pill-yellow" id="p3" style="margin-left:18px">Walang ads</span>
+  </div>
+  <div id="endUrl" class="abs" style="left:0; width:1080px; top:1570px; text-align:center"><span class="url">bayad-po.vercel.app</span></div>
+  <div id="endCta" class="abs h white" style="top:1730px; font-size:50px; font-weight:700">I-save at i-share sa barkada! 🚌</div>
+
+  <div id="caps"></div>
+  <div class="flash" id="flash"></div>
+  <div class="flashc" id="dip"></div>
+</div>
+
+<script src="broll.js"></script>
+<script src="jeep3d.js"></script>
+<script>
+const $ = (id) => document.getElementById(id)
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v))
+const seg = (t, a, b) => clamp((t - a) / (b - a))
+const E = {
+  out: (x) => 1 - Math.pow(1 - x, 3),
+  inOut: (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
+  in: (x) => x * x * x,
+  back: (x) => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2) },
+}
+const tw = (t, a, b, from, to, ease = E.out) => from + (to - from) * ease(seg(t, a, b))
+const win = (t, a, b, c, d) => (t < a || t > d ? 0 : t < b ? E.out(seg(t, a, b)) : t <= c ? 1 : 1 - E.in(seg(t, c, d)))
+function set(el, { x = 0, y = 0, s = 1, r = 0, o = 1 } = {}) {
+  el.style.transform = `translate(${x}px, ${y}px) scale(${s}) rotate(${r}deg)`
+  el.style.opacity = o
+  el.style.visibility = o <= 0.001 ? 'hidden' : 'visible'
+}
+function pop(el, t, a, d, extra = {}) {
+  const o = win(t, a, a + 0.15, d - 0.2, d)
+  const s = t < d - 0.2 ? 0.4 + 0.6 * E.back(seg(t, a, a + 0.45)) : 1 - 0.15 * seg(t, d - 0.2, d)
+  set(el, { o, s, ...extra })
+}
+const peso = (v) => '₱' + v.toFixed(2)
+const q4 = (v) => Math.round(v * 4) / 4
+
+// Sound-effect cues: [time, sound, gain dB]
+const CUES = []
+const cue = (t, s, g = 0) => CUES.push({ t, s, g })
+
+// ---------- Bokeh ----------
+const rnd = (() => { let s = 7; return () => ((s = (s * 16807) % 2147483647) / 2147483647) })()
+const lights = Array.from({ length: 22 }, () => {
+  const el = document.createElement('div')
+  el.className = 'bokeh'
+  const size = 40 + rnd() * 140
+  el.style.width = el.style.height = size + 'px'
+  el.style.background = `hsla(${[48, 210, 0, 30][Math.floor(rnd() * 4)]}, 95%, 65%, ${0.18 + rnd() * 0.25})`
+  $('bokeh').appendChild(el)
+  return { el, x: rnd() * 1180 - 50, y: rnd() * 1920, v: 30 + rnd() * 90, ph: rnd() * 6 }
+})
+
+// ---------- B-roll shots: [start, end, shot, zoomFrom, zoomTo] ----------
+const BROLL = [
+  [0.0, 2.6, 'front', 1.0, 1.12],
+  [2.6, 4.7, 'track', 1.18, 1.0],
+  [20.8, 22.8, 'aerial', 1.0, 1.2],
+  [29.4, 31.2, 'wheel', 1.3, 1.0],
+  [38.4, 40.0, 'rear', 1.0, 1.15],
+  [53.6, 55.4, 'track', 1.15, 1.0],
+]
+for (const [a] of BROLL) cue(a, 'whoosh', -2)
+cue(0.0, 'engine', -8)
+cue(0.45, 'horn', -3)
+cue(20.8, 'engine', -12)
+cue(38.4, 'engine', -12)
+cue(53.6, 'horn', -6)
+
+// ---------- Phone screens ----------
+const PHONE_SEGS = [[4.7, 20.8], [22.8, 29.4], [31.2, 38.4], [40.0, 53.6]]
+const S = 600 / 390
+const screens = [
+  ['home', 7.6, 'cut'], ['plan-empty', 9.8, 'slide'], ['sheet-from', 11.0, 'slide'], ['sheet-quiapo', 11.9, 'cut'],
+  ['sheet-araneta', 13.1, 'slide'], ['plan-results', 14.4, 'slide'], ['plan-jeep-map', 17.6, 'cut'], ['plan-jeep-steps', 19.2, 'cut'],
+  ['plan-multi', 22.8, 'cut'], ['plan-multi-legend', 24.2, 'cut'], ['plan-pin', 26.6, 'slide'],
+  ['home-tiles', 31.2, 'cut'], ['jeep-empty', 32.4, 'slide'], ['jeep-1', 33.3, 'cut'], ['jeep-12', 33.6, 'cut'], ['jeep-12-disc', 36.25, 'cut'],
+  ['busway', 40.0, 'cut'], ['rail', 41.6, 'slide'], ['ride-ready', 43.2, 'slide'], ['ride-4', 44.2, 'cut'], ['ride-14', 45.2, 'cut'], ['ride-24', 46.2, 'cut'],
+  ['trip', 47.4, 'slide'], ['report', 50.8, 'slide'],
+].map(([name, at, kind]) => {
+  const img = document.createElement('img')
+  img.src = `shots/${name}.png`
+  $('screen').appendChild(img)
+  if (kind === 'slide') cue(at, 'whoosh', -6)
+  return { img, at, kind }
+})
+const taps = [
+  { t: 9.5, x: 195, y: 298 }, { t: 10.75, x: 92, y: 91 }, { t: 12.8, x: 169, y: 201 }, { t: 14.1, x: 169, y: 201 },
+  { t: 17.3, x: 195, y: 707 }, { t: 23.9, x: 48, y: 462 }, { t: 32.1, x: 102, y: 499 }, { t: 33.0, x: 178, y: 199 },
+  { t: 36.05, x: 44, y: 159 }, { t: 43.9, x: 195, y: 604 },
+]
+for (const tp of taps) cue(tp.t, 'click', -2)
+cue(11.3, 'typing', -4)
+cue(13.15, 'typing', -6)
+// Zoom on the phone: [start, end, scale, focus x, focus y] (CSS px on the app screen)
+const ZOOMS = [
+  [15.0, 17.2, 1.32, 195, 560], [19.4, 20.6, 1.18, 195, 520], [24.4, 26.4, 1.35, 120, 420],
+  [34.0, 36.0, 1.3, 120, 547], [36.4, 38.2, 1.3, 120, 547], [44.4, 47.0, 1.28, 110, 360], [48.6, 50.6, 1.22, 195, 150],
+]
+for (const [a] of ZOOMS) cue(a, 'riser', -12)
+
+// ---------- Captions: [start, end, text, 'mid' (over b-roll) | 'top' (above phone)] ----------
+const CAPS = [
+  [0.3, 2.6, 'Sumakay ka na ba ng jeep…', 'mid'],
+  [2.7, 4.6, 'tapos hindi sigurado kung tama ang singil?', 'mid'],
+  [7.6, 9.8, 'Bayad Po! Saan ka pupunta?', 'top'],
+  [9.8, 14.4, 'I-type kung saan ka sasakay at bababa', 'top'],
+  [14.4, 17.6, 'Lalabas ang ruta at ang pamasahe', 'top'],
+  [17.6, 20.8, 'May landmark kung saan sasakay at bababa', 'top'],
+  [20.9, 22.8, 'May ruta. May landmark. May pamasahe.', 'mid'],
+  [22.8, 26.6, 'May lipat? Iba-ibang kulay bawat sakay', 'top'],
+  [26.6, 29.4, 'I-pin o hilahin ang A at B', 'top'],
+  [29.5, 31.2, 'Pamasahe lang ang kailangan?', 'mid'],
+  [31.2, 36.2, 'Piliin ang sasakyan, i-type ang layo', 'top'],
+  [36.2, 38.4, 'Estudyante, senior, PWD? 20% off!', 'top'],
+  [38.5, 40.0, 'Busway at tren? Kasama!', 'mid'],
+  [40.0, 43.2, 'Piliin lang ang istasyon', 'top'],
+  [43.2, 47.4, 'I-track ang biyahe gamit ang GPS', 'top'],
+  [47.4, 50.8, 'Ilang sakay? Total agad', 'top'],
+  [50.8, 53.6, 'Sobra ang singil? I-report sa LTFRB', 'top'],
+  [53.7, 55.4, 'Libre. Offline. Walang ads.', 'mid'],
+].map(([a, b, text, pos]) => {
+  const el = document.createElement('div')
+  el.className = `cap ${pos}`
+  el.style.top = pos === 'mid' ? '1280px' : '150px'
+  const words = text.split(' ').map((w) => {
+    const s = document.createElement('span')
+    s.className = 'w'
+    s.textContent = w
+    el.appendChild(s)
+    return s
+  })
+  $('caps').appendChild(el)
+  const step = Math.min(0.22, 1.3 / words.length)
+  words.forEach((_, i) => i % 3 === 0 && cue(a + i * step, 'pop', pos === 'mid' ? -4 : -8))
+  return { el, a, b, words, step, pos }
+})
+
+// ---------- Stickers ----------
+const STICK = [
+  ['sPlan', 15.0, 17.6, 560, 1250, 480, '<div class="lb">🚆 LRT-2 · 29 min</div><div class="big">₱13.00</div><div class="sm">Quiapo → Cubao</div>', -2],
+  ['sMark', 19.5, 20.8, 520, 1240, 520, '<div class="lb">📍 Sumakay malapit sa</div><div class="mid">Quiapo Church</div><div class="sm">Bumaba: Gateway Mall</div>', -2],
+  ['sMulti', 24.5, 26.6, 520, 1250, 520, '<div class="lb">2 lipat · ≈ 61 min</div><div class="big">₱34.50</div><div class="chiprow"><span class="chip" style="background:#ea580c">Jeep</span><span class="chip" style="background:#db2777">UV</span><span class="chip" style="background:#2563eb">MRT-3</span></div>', 2],
+  ['sPin', 27.0, 29.4, 40, 1300, 460, '<div class="lb">📌 I-pin sa mapa</div><div class="mid">Igalaw lang</div><div class="sm">tapos "Itakda"</div>', -2],
+  ['sFare', 34.2, 38.4, 560, 1250, 480, '<div class="lb">Jeep · 12 km</div><div class="big" id="sFareNum">₱0.00</div><div class="sm" id="sFareSm">Regular na pamasahe</div><div class="badge" id="sFareBadge">−20%</div>', -2],
+  ['sBus', 40.4, 41.6, 540, 1240, 500, '<div class="lb">🚌 EDSA Busway</div><div class="big">₱58.25</div><div class="sm">Monumento → Ayala</div>', -2],
+  ['sRail', 42.0, 43.2, 40, 1260, 470, '<div class="lb">🚆 MRT-3</div><div class="big">₱12.00</div><div class="sm">North Ave → Ayala</div>', 2],
+  ['sRide', 44.3, 47.4, 560, 1220, 480, '<div class="lb">🛰️ GPS · live</div><div class="big" id="sRideKm">0.0 km</div><div class="sm" id="sRideSm">0:00 · ₱14.00</div>', -2],
+  ['sTotal', 48.8, 50.8, 560, 1500, 480, '<div class="lb" style="color:#c3d4f5">Kabuuan</div><div class="big" id="sTotalNum" style="color:#ffc72c">₱0.00</div>', 2],
+  ['sHot', 52.0, 53.6, 520, 1360, 0, '<span class="pill pill-navy" style="font-size:46px">📞 LTFRB 1342</span>', -2],
+]
+for (const [id, a, , left, top, width, html] of STICK) {
+  const el = document.createElement('div')
+  el.id = id
+  el.className = width ? 'sticker abs' : 'abs'
+  el.style.left = left + 'px'
+  el.style.top = top + 'px'
+  if (width) el.style.width = width + 'px'
+  el.innerHTML = html
+  $('stickers').appendChild(el)
+  cue(a, ['sPlan', 'sFare', 'sBus', 'sRail', 'sTotal', 'sMulti'].includes(id) ? 'kaching' : 'pop', -3)
+}
+$('sTotal').style.background = '#0b3d91'
+$('sTotal').style.borderColor = '#0b3d91'
+cue(36.35, 'ding', -2)
+const legs = [['🚙', 'Jeep', '₱30.00', 47.9], ['🚌', 'Busway', '₱58.25', 48.15], ['🚆', 'MRT-3', '₱12.00', 48.4]].map(([ic, name, amt, at], i) => {
+  const el = document.createElement('div')
+  el.className = 'leg abs'
+  el.style.top = 1080 + i * 130 + 'px'
+  el.innerHTML = `<span class="ic">${ic}</span>${name}<span class="amt">${amt}</span>`
+  $('stickers').appendChild(el)
+  cue(at, 'pop', -5)
+  return { el, at }
+})
+const stamp = document.createElement('div')
+stamp.className = 'stamp abs'
+stamp.style.left = '500px'
+stamp.style.top = '1180px'
+stamp.textContent = 'SOBRA ₱10.00'
+$('stickers').appendChild(stamp)
+const STAMP_AT = 51.4
+cue(STAMP_AT, 'stamp', 0)
+
+// Brand and end
+const BRAND = 4.7, END = 55.4
+cue(BRAND - 0.9, 'riser', -4)
+cue(BRAND + 0.35, 'boom', -1)
+cue(BRAND + 0.1, 'pop', -4)
+cue(BRAND + 0.7, 'pop', -6)
+cue(BRAND + 1.0, 'pop', -6)
+cue(2.95, 'whoosh', -8) // price tags struck
+for (let i = 0; i < 4; i++) cue(1.0 + i * 0.18, 'pop', -6)
+cue(END - 0.6, 'riser', -4)
+cue(END + 0.1, 'boom', -2)
+cue(END + 0.5, 'horn', -6)
+cue(END + 1.3, 'pop', -6); cue(END + 1.45, 'pop', -6); cue(END + 1.6, 'pop', -6)
+cue(END + 1.9, 'ding', -4)
+window.CUES = CUES.sort((a, b) => a.t - b.t)
+
+const broll = window.broll.mount($('broll'))
+const jEnd = window.jeep3d.mount($('jeep3dEnd'))
+const inPhone = (t) => PHONE_SEGS.some(([a, b]) => t >= a && t < b)
+
+window.seek = (t) => {
+  // ---- B-roll
+  const br = BROLL.find(([a, b]) => t >= a && t < b)
+  if (br) {
+    const [a, b, shot, z0, z1] = br
+    const local = seg(t, a, b)
+    broll.render(t, shot, local)
+    $('broll').style.visibility = 'visible'
+    $('brollShade').style.visibility = 'visible'
+    $('broll').style.transform = `scale(${z0 + (z1 - z0) * E.inOut(local)})`
+  } else {
+    $('broll').style.visibility = 'hidden'
+    $('brollShade').style.visibility = 'hidden'
+  }
+  // quick dip to black on every b-roll cut
+  $('dip').style.opacity = Math.max(0, ...BROLL.map(([a]) => (a > 0 ? 1 - Math.abs(t - a) / 0.12 : 0))) * 0.8
+
+  for (const l of lights) {
+    const x = ((l.x - t * l.v) % 1180 + 1180) % 1180 - 50
+    l.el.style.transform = `translate(${x}px, ${l.y + Math.sin(t * 0.8 + l.ph) * 30}px)`
+  }
+  $('bokeh').style.opacity = t > END ? seg(t, END, END + 0.6) : 0
+
+  // ---- price tags over the hook
+  ;['tag1', 'tag2', 'tag3', 'tag4'].forEach((id, i) => {
+    pop($(id), t, 1.0 + i * 0.18, 4.6, { r: Math.sin(t * 3 + i) * 4 + (i % 2 ? 6 : -6), y: Math.sin(t * 2 + i) * 10 })
+    $(id).querySelector('.strike').style.transform = `rotate(-12deg) scaleX(${E.out(seg(t, 2.95 + i * 0.08, 3.2 + i * 0.08))})`
+  })
+
+  // ---- Brand
+  $('bgYellow').style.clipPath = `circle(${t < BRAND - 0.05 || t > 7.7 ? 0 : tw(t, BRAND - 0.05, BRAND + 0.45, 0, 1400, E.inOut)}px at 540px 960px)`
+  pop($('b2logo'), t, BRAND + 0.1, 7.6, { r: tw(t, BRAND + 0.1, BRAND + 0.7, -20, 0) })
+  {
+    const o = win(t, BRAND + 0.35, BRAND + 0.4, 7.4, 7.6)
+    set($('b2name'), { o, s: t < BRAND + 0.35 ? 2.2 : 2.2 - 1.2 * E.out(seg(t, BRAND + 0.35, BRAND + 0.6)), r: -2, x: t > BRAND + 0.6 && t < BRAND + 0.9 ? Math.sin(t * 90) * 8 : 0 })
+  }
+  set($('b2tag'), { o: win(t, BRAND + 0.7, BRAND + 1.0, 7.4, 7.6), y: tw(t, BRAND + 0.7, BRAND + 1.1, 40, 0) })
+  set($('b2pill'), { o: win(t, BRAND + 1.0, BRAND + 1.3, 7.4, 7.6), y: tw(t, BRAND + 1.0, BRAND + 1.4, 40, 0) })
+
+  // ---- Phone scenes
+  const phoneOn = t >= 7.5 && inPhone(t)
+  $('bgLight').style.clipPath = `circle(${phoneOn ? (t < 8.1 ? tw(t, 7.5, 8.05, 0, 2000, E.inOut) : 2000) : 0}px at 540px 1300px)`
+  {
+    const segStart = PHONE_SEGS.find(([a, b]) => t >= a && t < b)?.[0] ?? 0
+    const enter = segStart === 4.7 ? 7.5 : segStart
+    let y = tw(t, enter, enter + 0.55, 1300, 0, E.out) + Math.sin(t * 1.3) * 6
+    // zoom with focus point
+    let zs = 1, fx = 318, fy = 820
+    for (const [a, b, s, x, yy] of ZOOMS) {
+      const w = win(t, a, a + 0.45, b - 0.35, b)
+      if (w > 0) { zs = 1 + (s - 1) * w; fx = 18 + x * S; fy = 78 + yy * S }
+    }
+    // punch-in when a segment starts after b-roll
+    const punch = segStart !== 4.7 ? 1 + 0.12 * (1 - E.out(seg(t, segStart, segStart + 0.5))) : 1
+    const ph = $('phone')
+    ph.style.transformOrigin = `${fx}px ${fy}px`
+    ph.style.transform = `perspective(2400px) translate(0px, ${y}px) rotateY(${Math.sin(t * 0.9) * 1.5}deg) scale(${zs * punch})`
+    // display, not visibility: children set their own visibility
+    ph.style.display = phoneOn ? 'block' : 'none'
+    $('stickers').style.display = phoneOn ? 'block' : 'none'
+  }
+  let cur = -1
+  screens.forEach((sc, i) => { if (t >= sc.at) cur = i })
+  screens.forEach((sc, i) => {
+    let o = 0, x = 0
+    if (i === cur) {
+      if (sc.kind === 'slide') { x = (1 - E.inOut(seg(t, sc.at, sc.at + 0.35))) * 600; o = 1 }
+      else o = i === 0 ? 1 : E.out(seg(t, sc.at, sc.at + 0.12))
+    } else if (i === cur - 1) {
+      const nx = screens[cur]
+      const p = seg(t, nx.at, nx.at + 0.35)
+      if (nx.kind === 'slide') { x = -E.inOut(p) * 200; o = p < 1 ? 1 : 0 }
+      else o = seg(t, nx.at, nx.at + 0.12) < 1 ? 1 : 0
+    }
+    sc.img.style.zIndex = i === cur ? 2 : 1
+    set(sc.img, { x, o })
+  })
+  let tapShown = false
+  for (const tp of taps) {
+    if (t > tp.t - 0.4 && t < tp.t + 0.45) {
+      tapShown = true
+      const px = 18 + tp.x * S, py = 78 + tp.y * S
+      const press = t < tp.t ? 1 - 0.18 * seg(t, tp.t - 0.12, tp.t) : 0.82 + 0.18 * seg(t, tp.t, tp.t + 0.15)
+      $('tap').style.left = px + 'px'; $('tap').style.top = py + 'px'
+      set($('tap'), { o: win(t, tp.t - 0.4, tp.t - 0.25, tp.t + 0.25, tp.t + 0.45), s: press })
+      const rp = seg(t, tp.t, tp.t + 0.45)
+      $('ripple').style.left = px + 'px'; $('ripple').style.top = py + 'px'
+      set($('ripple'), { o: t >= tp.t ? 1 - rp : 0, s: 0.6 + rp * 1.6 })
+    }
+  }
+  if (!tapShown) { set($('tap'), { o: 0 }); set($('ripple'), { o: 0 }) }
+
+  // Stickers
+  for (const [id, a, d, , , , , r] of STICK) pop($(id), t, a, d, { r })
+  if (t < 36.25) { $('sFareNum').textContent = peso(q4(30 * E.out(seg(t, 34.25, 34.85)))); $('sFareSm').textContent = 'Regular na pamasahe' }
+  else { $('sFareNum').textContent = peso(q4(30 - 6 * E.out(seg(t, 36.25, 36.7)))); $('sFareSm').textContent = 'Estudyante / Senior / PWD' }
+  pop($('sFareBadge'), t, 36.35, 38.4, { r: 8 })
+  { const p = seg(t, 44.3, 47.2); $('sRideKm').textContent = p.toFixed(1) + ' km'; $('sRideSm').textContent = `0:${String(Math.round(p * 28)).padStart(2, '0')} · ₱14.00` }
+  for (const l of legs) set(l.el, { o: win(t, l.at, l.at + 0.2, 50.5, 50.8), x: tw(t, l.at, l.at + 0.45, -500, 0, E.back), r: tw(t, l.at, l.at + 0.45, -8, 0) })
+  $('sTotalNum').textContent = peso(q4(100.25 * E.out(seg(t, 48.85, 49.6))))
+  {
+    const s = t < STAMP_AT ? 2.6 : 2.6 - 1.6 * E.out(seg(t, STAMP_AT, STAMP_AT + 0.18))
+    const shake = t > STAMP_AT + 0.18 && t < STAMP_AT + 0.45 ? Math.sin(t * 100) * 8 * (1 - seg(t, STAMP_AT + 0.18, STAMP_AT + 0.45)) : 0
+    set(stamp, { o: win(t, STAMP_AT, STAMP_AT + 0.05, 53.3, 53.6), s, r: -8, x: shake })
+  }
+
+  // Captions: words pop in one by one; the newest word is highlighted
+  for (const c of CAPS) {
+    const visible = t >= c.a && t < c.b
+    c.el.style.visibility = visible ? 'visible' : 'hidden'
+    if (!visible) continue
+    const out = 1 - E.in(seg(t, c.b - 0.2, c.b))
+    c.el.style.opacity = out
+    c.words.forEach((w, i) => {
+      const a = c.a + i * c.step
+      const s = t < a ? 0 : 0.5 + 0.5 * E.back(seg(t, a, a + 0.3))
+      w.style.transform = `scale(${s})`
+      w.style.opacity = t < a ? 0 : 1
+      const next = c.a + (i + 1) * c.step
+      w.classList.toggle('on', t >= a && (i === c.words.length - 1 ? t < a + 0.6 : t < next))
+    })
+  }
+
+  // ---- End card
+  $('bgEnd').style.clipPath = `circle(${tw(t, END - 0.05, END + 0.55, 0, 1400, E.inOut)}px at 540px 960px)`
+  if (t > END) {
+    const s = 0.6 + 0.4 * E.back(seg(t, END + 0.2, END + 1.0))
+    $('jeep3dEnd').style.transform = `translate(0px, ${tw(t, END + 0.1, END + 0.9, 1000, 400)}px) scale(${s})`
+    $('jeep3dEnd').style.visibility = 'visible'
+    jEnd.render(2.2 + (t - END) * 0.9, 15.5, 15)
+  } else $('jeep3dEnd').style.visibility = 'hidden'
+  pop($('endLogo'), t, END + 0.4, 99)
+  pop($('endTitle'), t, END + 0.55, 99)
+  set($('endSub'), { o: win(t, END + 0.8, END + 1.1, 99, 100), y: tw(t, END + 0.8, END + 1.2, 30, 0) })
+  pop($('p1'), t, END + 1.3, 99); pop($('p2'), t, END + 1.45, 99); pop($('p3'), t, END + 1.6, 99)
+  ;['p1', 'p2', 'p3'].forEach((id) => { $(id).style.display = 'inline-block' })
+  pop($('endUrl'), t, END + 1.9, 99)
+  set($('endCta'), { o: win(t, END + 2.3, END + 2.6, 99, 100), y: tw(t, END + 2.3, END + 2.7, 30, 0) + (t > END + 2.8 ? Math.sin(t * 6) * 4 : 0) })
+  $('flash').style.opacity = 0.55 * (win(t, BRAND + 0.3, BRAND + 0.36, BRAND + 0.36, BRAND + 0.6) + win(t, END + 0.05, END + 0.12, END + 0.12, END + 0.35))
+}
+window.seek(0)
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+[
+  {"id": "hook", "text": "Sumakay ka na ba ng jeep, tapos hindi mo alam kung tama ang singil sa'yo?"},
+  {"id": "brand", "text": "Bayad po! Ito na ang app para sa tamang pamasahe, bawat sakay."},
+  {"id": "search", "text": "I-type lang kung saan ka sasakay at bababa. Hahanapan ka agad ng ruta: jeep, UV, tren, o EDSA Busway."},
+  {"id": "results", "text": "Kasama na ang pamasahe ng bawat sakay, at may landmark pa kung saan ka sasakay at bababa."},
+  {"id": "colors", "text": "May lipat? Iba-iba ang kulay ng bawat sakay sa mapa, kaya hindi ka maliligaw."},
+  {"id": "fare", "text": "Pamasahe lang ang kailangan mo? Piliin ang sasakyan at ilagay ang layo. Lalabas agad ang opisyal na pamasahe ng LTFRB."},
+  {"id": "discount", "text": "Estudyante, senior, o PWD? Isang pindot lang para sa bente porsyentong diskwento."},
+  {"id": "gps", "text": "Nakasakay ka na? I-track ang biyahe gamit ang GPS ng phone mo."},
+  {"id": "report", "text": "At kapag sobra ang singil, handa na ang report para sa LTFRB."},
+  {"id": "end", "text": "Libre, gumagana kahit offline, at walang ads. Bayad Po. I-save mo na, at i-share sa barkada!"}
+]

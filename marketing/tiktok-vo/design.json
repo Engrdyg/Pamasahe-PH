@@ -1,0 +1,1 @@
+{"detail":{"type":"authorization_error","code":"feature_not_available","message":"Creating a voice through the API is only available on a paid plan.","status":"feature_unavailable","request_id":"8eae1fdfab4ed34458874d7d4b79fe2f"}}

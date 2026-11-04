@@ -1,0 +1,13 @@
+{
+  "whoosh": ["Fast cinematic whoosh transition, air swipe, clean, no music", 0.8],
+  "riser": ["Short reverse whoosh riser building into a hit, cinematic transition", 1.2],
+  "pop": ["Bubbly playful UI pop sound for text appearing on screen", 0.5],
+  "click": ["Crisp smartphone screen tap click, UI button press", 0.5],
+  "kaching": ["Cash register ka-ching with coins, bright and satisfying", 1.0],
+  "boom": ["Deep cinematic bass boom impact hit with short tail", 1.5],
+  "horn": ["Philippine jeepney horn honking twice, beep beep, loud street horn", 1.2],
+  "ding": ["Bright clean notification ding, positive chime", 0.6],
+  "stamp": ["Heavy rubber stamp slam on paper, punchy thud", 0.6],
+  "typing": ["Quick taps typing on a smartphone keyboard", 1.0],
+  "engine": ["Diesel jeepney engine rumbling as it drives past on a city street, light traffic ambience", 4.0]
+}

@@ -572,6 +572,7 @@ export function buildJeepney(): THREE.Group {
     for (const z of [WHEEL.z, -WHEEL.z]) {
       const w = wheel(mats)
       w.position.set(x, WHEEL.r, z)
+      w.userData.wheel = true // lets a driving scene spin it
       jeep.add(w)
     }
   }
