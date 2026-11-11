@@ -4,6 +4,8 @@
 
 Live at https://bayad-po.vercel.app (formerly magkano-pamasahe.vercel.app)
 
+A complete description of every screen, menu and feature (for people and AI agents) is in [docs/SITE-SPEC.md](docs/SITE-SPEC.md).
+
 Mobile-first PWA that shows the official LTFRB fare for a trip on any land-based
 public transport mode in the Philippines: jeepney, UV Express, city and
 provincial bus, EDSA Busway, taxi and TNVS. Fares are effective
