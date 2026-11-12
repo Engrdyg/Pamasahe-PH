@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { PROVIDERS } from '../lib/providers'
 import { useEffect, useRef } from 'react'
 import type { SlimItinerary } from '../lib/planner'
 import type { LatLng } from '../lib/routing'
@@ -43,13 +44,17 @@ export interface PlanMapProps {
   highlight?: number | null
   /** A ride line was tapped on the map. */
   onSelectRide?: (ride: number) => void
+  /** Map tiles failed to load (offline or provider down). */
+  onTilesFailed?: () => void
 }
 
 const pinIcon = (label: string, cls: string) =>
   L.divIcon({ className: '', html: `<span class="plan-pin ${cls}"><b>${label}</b></span>`, iconSize: [34, 44], iconAnchor: [17, 42] })
 
 /** Leaflet map for the route planner: draggable A/B pins, ride legs coloured by mode, dashed walks. */
-export default function PlanMap({ from, to, itinerary, colors = [], marks = [], onMove, pinMode = null, height = '380px', highlight = null, onSelectRide }: PlanMapProps) {
+export default function PlanMap({ from, to, itinerary, colors = [], marks = [], onMove, pinMode = null, height = '380px', highlight = null, onSelectRide, onTilesFailed }: PlanMapProps) {
+  const onTilesFailedRef = useRef(onTilesFailed)
+  onTilesFailedRef.current = onTilesFailed
   const onSelectRef = useRef(onSelectRide)
   onSelectRef.current = onSelectRide
   const ridePts = useRef<[number, number][][]>([])
@@ -69,10 +74,14 @@ export default function PlanMap({ from, to, itinerary, colors = [], marks = [], 
   useEffect(() => {
     if (!el.current || map.current) return
     const m = L.map(el.current, { zoomControl: true }).setView([METRO_MANILA.lat, METRO_MANILA.lng], 12)
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(m)
+    const tiles = L.tileLayer(PROVIDERS.tiles.url, { maxZoom: PROVIDERS.tiles.maxZoom, attribution: PROVIDERS.tiles.attribution }).addTo(m)
+    // Several failed tiles and none loaded: tell the screen the map is unavailable.
+    let loaded = 0
+    let failed = 0
+    tiles.on('tileload', () => loaded++)
+    tiles.on('tileerror', () => {
+      if (++failed === 6 && loaded === 0) onTilesFailedRef.current?.()
+    })
     m.on('moveend', () => {
       const c = m.getCenter()
       onCenterRef.current?.({ lat: c.lat, lng: c.lng })

@@ -1,5 +1,6 @@
 /** Place search (typeahead) via Photon, the OpenStreetMap-based geocoder by
  *  komoot. Free, no key; results are biased to the Philippines. */
+import { PROVIDERS, fetchWithTimeout } from './providers'
 import type { LatLng } from './routing'
 
 export interface Place extends LatLng {
@@ -7,7 +8,9 @@ export interface Place extends LatLng {
   detail?: string
 }
 
-export const PHOTON_BASE = 'https://photon.komoot.io/api/'
+export const PHOTON_BASE = PROVIDERS.photonSearch
+// Recent searches, so the same text is not requested twice (results are not personal data).
+const searchCache = new Map<string, Place[]>()
 // Philippines bounding box: minLon,minLat,maxLon,maxLat
 const PH_BBOX = '116.9,4.5,126.7,21.2'
 
@@ -52,7 +55,10 @@ export async function searchPlaces(
     params.set('lat', String(near.lat))
     params.set('lon', String(near.lng))
   }
-  const res = await fetchFn(`${PHOTON_BASE}?${params}`, { signal })
+  const cacheKey = fetchFn === globalThis.fetch ? params.toString() : null
+  const hit = cacheKey ? searchCache.get(cacheKey) : undefined
+  if (hit) return hit
+  const res = await fetchWithTimeout(`${PHOTON_BASE}?${params}`, { signal }, fetchFn)
   if (!res.ok) throw new Error(`Photon ${res.status}`)
   const data = (await res.json()) as { features?: PhotonFeature[] }
   const seen = new Set<string>()
@@ -65,10 +71,14 @@ export async function searchPlaces(
     seen.add(key)
     out.push(place)
   }
+  if (cacheKey) {
+    if (searchCache.size > 40) searchCache.delete(searchCache.keys().next().value!)
+    searchCache.set(cacheKey, out)
+  }
   return out
 }
 
-export const PHOTON_REVERSE = 'https://photon.komoot.io/reverse'
+export const PHOTON_REVERSE = PROVIDERS.photonReverse
 
 // Kinds of OSM objects that make good "get on at …" landmarks.
 const LANDMARK_KEYS = new Set(['amenity', 'shop', 'tourism', 'leisure', 'public_transport', 'railway', 'building', 'office', 'historic', 'healthcare'])
@@ -84,7 +94,7 @@ export function landmarkNear(p: LatLng, fetchFn: typeof fetch = fetch): Promise<
   const hit = landmarkCache.get(key)
   if (hit) return hit
   const params = new URLSearchParams({ lat: String(p.lat), lon: String(p.lng), limit: '8', radius: '0.15', lang: 'en' })
-  const job = fetchFn(`${PHOTON_REVERSE}?${params}`)
+  const job = fetchWithTimeout(`${PHOTON_REVERSE}?${params}`, {}, fetchFn)
     .then((res) => (res.ok ? (res.json() as Promise<{ features?: PhotonFeature[] }>) : { features: [] }))
     .then(({ features = [] }) => {
       const named = features.filter((f) => f.properties.name)

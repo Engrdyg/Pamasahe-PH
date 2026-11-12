@@ -17,7 +17,14 @@ export interface RideState {
   points: RidePoint[]
   /** metres over accepted points */
   meters: number
+  /** Straight-line metres across GPS gaps (no fixes for GAP_MS): not measured travel. */
+  gapMeters?: number
+  /** Number of such gaps (tab in background, tunnel, lost signal, reload). */
+  gaps?: number
 }
+
+/** No accepted fix for this long means the track has a gap. */
+export const GAP_MS = 30_000
 
 const EARTH_M = 6371008.8
 const toRad = (d: number) => (d * Math.PI) / 180
@@ -59,7 +66,16 @@ export function addFix(state: RideState, fix: RidePoint): RideState {
   }
   const d = stepMeters(prev, fix)
   if (d === 0) return state
+  // After a long silence the straight line between fixes was not measured:
+  // keep it apart so it is never shown as GPS-measured distance.
+  if (fix.t - prev.t > GAP_MS)
+    return { ...state, points: [...state.points, fix], gapMeters: (state.gapMeters ?? 0) + d, gaps: (state.gaps ?? 0) + 1 }
   return { ...state, points: [...state.points, fix], meters: state.meters + d }
+}
+
+/** Kilometres across GPS gaps (straight line). */
+export function gapKm(state: RideState): number {
+  return Math.round((state.gapMeters ?? 0) / 100) / 10
 }
 
 export function rideKm(state: RideState): number {

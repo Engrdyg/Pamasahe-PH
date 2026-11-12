@@ -11,6 +11,7 @@ import { KIND_COLOR, rideColors } from '../lib/planColors'
 import type { LineKind, SlimItinerary, SlimLeg } from '../lib/planner'
 import type { LatLng } from '../lib/routing'
 import { usePlanner } from '../lib/usePlanner'
+import { useOnline } from '../lib/useOnline'
 import { RouteFeedback } from '../components/RouteFeedback'
 import { findCommute, loadCommutes, saveCommute } from '../lib/commutes'
 import { setGuide } from '../lib/guide'
@@ -209,6 +210,8 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
   const [view, setView] = useState<'map' | 'list'>('map')
   const [panel, setPanel] = useState<'summary' | 'routes' | 'steps'>('routes')
   const [feedbackFor, setFeedbackFor] = useState<number | null>(null)
+  const [tilesFailed, setTilesFailed] = useState(false)
+  const online = useOnline()
   useEffect(() => {
     setPanel('routes')
     setHighlight(null)
@@ -309,7 +312,7 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
 
   const rankBar = (
     <div className="flex flex-col gap-1.5">
-      <p className="text-sm font-semibold text-ink" data-testid="plan-count">
+      <p className="text-sm font-semibold text-ink" aria-live="polite" data-testid="plan-count">
         {t('plan.found', { count: ranked?.length ?? 0 })}
       </p>
       <div className="flex items-center gap-2 overflow-x-auto pb-0.5">
@@ -646,6 +649,7 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
             pinMode={pinFor ? { start: (pinFor === 'from' ? from : to) ?? from ?? to, onCenter: setPinAt } : null}
             height={mapHeight}
             highlight={highlight}
+            onTilesFailed={() => setTilesFailed(true)}
             onSelectRide={(k) => {
               setHighlight(k)
               if (!wide) setPanel('steps')
@@ -653,6 +657,11 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
             }}
           />
         </Suspense>
+        {tilesFailed && !listView && (
+          <p role="status" className="pointer-events-none absolute inset-x-12 top-3 z-[450] rounded-xl bg-surface/95 px-3 py-2 text-center text-xs text-ink shadow" data-testid="map-unavailable">
+            {t('plan.mapUnavailable')}
+          </p>
+        )}
         {it && rides.length > 0 && !pinFor && !listView && (
           <div className="absolute bottom-6 left-2 z-[500] max-w-[70%] rounded-xl bg-surface/95 p-2 text-xs text-ink shadow-lg" data-testid="map-legend">
             <button type="button" onClick={() => setLegendOpen((v) => !v)} aria-expanded={legendOpen} className="flex w-full items-center justify-between gap-2 font-semibold">
@@ -706,7 +715,7 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
               {t('plan.loadingData')}
             </p>
           )}
-          {planner.status === 'error' && <ErrorNote>{t('plan.dataError')}</ErrorNote>}
+          {planner.status === 'error' && <ErrorNote>{t(online ? 'plan.dataError' : 'plan.dataOffline')}</ErrorNote>}
           {busy && (
             <p role="status" className="text-sm text-muted">
               {t('plan.searching')}

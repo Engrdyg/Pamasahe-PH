@@ -133,7 +133,8 @@
     "km": "km",
     "min": "min",
     "m": "m",
-    "pending": "Awaiting official data"
+    "pending": "Awaiting official data",
+    "loading": "Loading…"
   },
   "install": {
     "title": "Download the app",
@@ -390,7 +391,9 @@
     "entranceUnverified": "Station location is approximate; entrances are not verified.",
     "showOnMap": "Show ride {{n}} on the map",
     "method": "How routes and times are worked out",
-    "methodText": "Routes come from LTFRB-authorised NCR jeep and UV routes plus the rail lines and EDSA Busway, searched on your phone with up to two transfers. Shown time = ride time at average speeds (jeep 14, UV 19, Busway 23, rail 30 km/h) + walking at 4.5 km/h + a fixed wait for each ride (4–7 min). When choosing routes, each transfer also counts as 3 extra minutes, but that is not added to the time shown. Walks are straight lines plus 25%. Fares use the official LTFRB/DOTr rules; road ride distance is the length along the route line."
+    "methodText": "Routes come from LTFRB-authorised NCR jeep and UV routes plus the rail lines and EDSA Busway, searched on your phone with up to two transfers. Shown time = ride time at average speeds (jeep 14, UV 19, Busway 23, rail 30 km/h) + walking at 4.5 km/h + a fixed wait for each ride (4–7 min). When choosing routes, each transfer also counts as 3 extra minutes, but that is not added to the time shown. Walks are straight lines plus 25%. Fares use the official LTFRB/DOTr rules; road ride distance is the length along the route line.",
+    "mapUnavailable": "Map tiles could not load. The route steps and fares below still work.",
+    "dataOffline": "Route data is not on this phone yet and you are offline. Connect once to download it; fare calculators work offline."
   },
   "rate": {
     "addOn": "{{base}} for the first {{km}} km, +{{per}} per succeeding km",
@@ -519,5 +522,8 @@
     "change": "Change: {{amount}}",
     "short": "Short by {{amount}}",
     "estimated": "Based on an estimated fare; the driver's fare may differ."
+  },
+  "offline": {
+    "banner": "You are offline. Fare calculators, tables and your trip still work (fare data {{version}}, effective {{date}}). Place search, maps and new route data need internet."
   }
 }

@@ -133,7 +133,8 @@
     "km": "km",
     "min": "min",
     "m": "m",
-    "pending": "Hinihintay ang opisyal na datos"
+    "pending": "Hinihintay ang opisyal na datos",
+    "loading": "Naglo-load…"
   },
   "install": {
     "title": "I-download ang app",
@@ -390,7 +391,9 @@
     "entranceUnverified": "Tantiya ang lokasyon ng istasyon; hindi beripikado ang mga pasukan.",
     "showOnMap": "Ipakita ang sakay {{n}} sa mapa",
     "method": "Paano kinukuwenta ang ruta at oras",
-    "methodText": "Galing ang mga ruta sa LTFRB-authorised na ruta ng jeep at UV sa NCR, pati mga tren at EDSA Busway, at hinahanap sa phone mo nang hanggang dalawang lipat. Ipinapakitang oras = oras ng sakay sa karaniwang bilis (jeep 14, UV 19, Busway 23, tren 30 km/h) + lakad sa 4.5 km/h + takdang paghihintay kada sakay (4–7 min). Sa pagpili ng ruta, may dagdag na 3 minuto kada lipat, pero hindi ito idinadagdag sa ipinapakitang oras. Tuwid na linya plus 25% ang lakad. Opisyal na LTFRB/DOTr na patakaran ang pamasahe; ang layo ng sakay sa kalsada ay haba sa linya ng ruta."
+    "methodText": "Galing ang mga ruta sa LTFRB-authorised na ruta ng jeep at UV sa NCR, pati mga tren at EDSA Busway, at hinahanap sa phone mo nang hanggang dalawang lipat. Ipinapakitang oras = oras ng sakay sa karaniwang bilis (jeep 14, UV 19, Busway 23, tren 30 km/h) + lakad sa 4.5 km/h + takdang paghihintay kada sakay (4–7 min). Sa pagpili ng ruta, may dagdag na 3 minuto kada lipat, pero hindi ito idinadagdag sa ipinapakitang oras. Tuwid na linya plus 25% ang lakad. Opisyal na LTFRB/DOTr na patakaran ang pamasahe; ang layo ng sakay sa kalsada ay haba sa linya ng ruta.",
+    "mapUnavailable": "Hindi ma-load ang mapa. Gumagana pa rin ang mga hakbang at pamasahe sa ibaba.",
+    "dataOffline": "Wala pa sa phone mo ang route data at offline ka. Kumonekta nang isang beses para ma-download ito; gumagana offline ang fare calculator."
   },
   "rate": {
     "addOn": "{{base}} sa unang {{km}} km, +{{per}} bawat susunod na km",
@@ -519,5 +522,8 @@
     "change": "Sukli: {{amount}}",
     "short": "Kulang ng {{amount}}",
     "estimated": "Batay sa tantiyang pamasahe; maaaring iba ang singil ng driver."
+  },
+  "offline": {
+    "banner": "Offline ka. Gumagana pa rin ang fare calculator, talaan at biyahe mo (fare data {{version}}, simula {{date}}). Kailangan ng internet ang paghahanap ng lugar, mapa at bagong route data."
   }
 }

@@ -1,5 +1,6 @@
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
+import { PROVIDERS } from '../lib/providers'
 import { useEffect, useRef } from 'react'
 import { DEFAULT_CENTER, type LatLng, type RouteResult } from '../lib/routing'
 
@@ -24,10 +25,7 @@ export default function RouteMap({ from, to, route, onPick }: RouteMapProps) {
       [DEFAULT_CENTER.lat, DEFAULT_CENTER.lng],
       12,
     )
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(m)
+    L.tileLayer(PROVIDERS.tiles.url, { maxZoom: PROVIDERS.tiles.maxZoom, attribution: PROVIDERS.tiles.attribution }).addTo(m)
     m.on('click', (e: L.LeafletMouseEvent) => onPickRef.current({ lat: e.latlng.lat, lng: e.latlng.lng }))
     layer.current = L.layerGroup().addTo(m)
     map.current = m

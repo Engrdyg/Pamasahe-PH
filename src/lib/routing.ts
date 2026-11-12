@@ -10,7 +10,9 @@ export interface RouteResult {
   geometry: [number, number][]
 }
 
-export const OSRM_BASE = 'https://router.project-osrm.org/route/v1/driving'
+import { PROVIDERS, fetchWithTimeout } from './providers'
+
+export const OSRM_BASE = PROVIDERS.osrm
 
 interface OsrmResponse {
   code: string
@@ -19,7 +21,7 @@ interface OsrmResponse {
 
 export async function fetchRoute(a: LatLng, b: LatLng, fetchFn: typeof fetch = fetch): Promise<RouteResult> {
   const url = `${OSRM_BASE}/${a.lng},${a.lat};${b.lng},${b.lat}?overview=full&geometries=geojson`
-  const res = await fetchFn(url)
+  const res = await fetchWithTimeout(url, {}, fetchFn)
   if (!res.ok) throw new Error(`OSRM ${res.status}`)
   const data = (await res.json()) as OsrmResponse
   const r = data.routes?.[0]

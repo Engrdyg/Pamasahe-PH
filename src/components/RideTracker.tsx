@@ -1,6 +1,6 @@
 import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { addFix, loadRide, rideKm, rideMinutes, saveRide, startRide, type RideState } from '../lib/ride'
+import { addFix, gapKm, loadRide, rideKm, rideMinutes, saveRide, startRide, type RideState } from '../lib/ride'
 import { Card, ErrorNote } from './ui'
 
 const RouteMap = lazy(() => import('./RouteMap'))
@@ -112,7 +112,12 @@ export function RideTracker({
   }, [tracking])
 
   // Apply live distance/time to the calculator.
-  const km = ride ? rideKm(ride) : 0
+  // Gaps are shown apart; the rider decides whether their straight-line
+  // distance counts towards the fare.
+  const [withGaps, setWithGaps] = useState(true)
+  const measured = ride ? rideKm(ride) : 0
+  const gap = ride ? gapKm(ride) : 0
+  const km = Math.round((measured + (withGaps ? gap : 0)) * 10) / 10
   const minutes = ride ? rideMinutes(ride, now) : 0
   useEffect(() => {
     if (!ride || km <= 0) return
@@ -198,6 +203,15 @@ export function RideTracker({
             ? t('ride.waiting')
             : t('ride.points', { n: ride!.points.length, acc: lastAcc ?? '–' })}
         </p>
+      )}
+      {ride && (ride.gaps ?? 0) > 0 && (
+        <div className="flex flex-col gap-1 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:bg-amber-900/30 dark:text-amber-200" data-testid="ride-gaps">
+          <span>{t('ride.gaps', { count: ride.gaps, km: gap, measured })}</span>
+          <label className="flex min-h-9 items-center gap-2 font-medium">
+            <input type="checkbox" checked={withGaps} onChange={(e) => setWithGaps(e.target.checked)} className="h-4 w-4" />
+            {t('ride.includeGaps')}
+          </label>
+        </div>
       )}
       {note && <div className="text-sm text-ink-2">{note}</div>}
       {ride?.endedAt && <p className="text-sm text-ink-2">{t('ride.done')}</p>}

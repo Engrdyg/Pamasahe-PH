@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react'
 import { useTranslation } from 'react-i18next'
 import { BottomNav, TopBar, navSection } from './components/Nav'
 import { Sidebar } from './components/Sidebar'
@@ -9,18 +10,33 @@ import { About } from './screens/About'
 import { Calculator } from './screens/Calculator'
 import { Compare } from './screens/Compare'
 import { Fares } from './screens/Fares'
-import { Guide } from './screens/Guide'
 import { Home } from './screens/Home'
 import { More } from './screens/More'
-import { Plan } from './screens/Plan'
 import { Privacy } from './screens/Privacy'
 import { Support } from './screens/Support'
 import { Trip } from './screens/Trip'
 import { Tables } from './screens/Tables'
 import { getDraft, planHref } from './lib/places'
 import { useApp } from './state'
+import { useOnline } from './lib/useOnline'
+
+// The planner and guided trip load on demand (their chunks are precached for offline use).
+const Plan = lazy(() => import('./screens/Plan').then((m) => ({ default: m.Plan })))
+const Guide = lazy(() => import('./screens/Guide').then((m) => ({ default: m.Guide })))
 
 const CATEGORIES: Category[] = ['jeepney', 'uv', 'bus-city', 'bus-provincial', 'busway', 'rail', 'taxi', 'tnvs']
+
+/** Says what still works while offline, with the age of the fare data. */
+function OfflineBanner() {
+  const { t } = useTranslation()
+  const { manifest, lang } = useApp()
+  if (useOnline()) return null
+  return (
+    <div role="status" className="bg-ink px-4 py-2 text-xs text-canvas" data-testid="offline-banner">
+      {t('offline.banner', { version: manifest.version, date: formatEffective(manifest.effective, lang) })}
+    </div>
+  )
+}
 
 function UpdateBanner() {
   const { t } = useTranslation()
@@ -91,12 +107,14 @@ export default function App() {
   } else {
     screen = <Home />
   }
+  screen = <Suspense fallback={<p className="px-4 py-6 text-sm text-muted">{t('common.loading')}</p>}>{screen}</Suspense>
 
   if (wide) {
     return (
       <div className="flex min-h-dvh bg-canvas text-ink">
         <Sidebar active={active} section={section ?? ''} />
         <div className="min-w-0 flex-1">
+          <OfflineBanner />
           <UpdateBanner />
           {title && (
             <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-8 pt-8">
@@ -117,6 +135,7 @@ export default function App() {
   return (
     <div className="min-h-dvh bg-canvas pb-[calc(4.5rem+env(safe-area-inset-bottom))] text-ink">
       <TopBar title={title} back={back} />
+      <OfflineBanner />
       <UpdateBanner />
       {screen}
       <BottomNav active={active} />

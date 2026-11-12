@@ -6,6 +6,9 @@ import { DEFAULT_CENTER, type LatLng } from '../lib/routing'
 
 type Tab = 'suggestions' | 'saved' | 'recent'
 
+// Text typed per field, restored if the sheet is closed without a pick (memory only).
+const lastQuery = new Map<string, string>()
+
 export type SheetPick = { kind: 'place'; place: SavedPlace } | { kind: 'here' } | { kind: 'pin' }
 
 /**
@@ -30,7 +33,15 @@ export function PlaceSheet({
   onClose: () => void
 }) {
   const { t } = useTranslation()
-  const [q, setQ] = useState('')
+  const [q, setQState] = useState(() => lastQuery.get(title) ?? '')
+  const setQ = (v: string) => {
+    lastQuery.set(title, v)
+    setQState(v)
+  }
+  const pick = (p: SheetPick) => {
+    lastQuery.delete(title)
+    onPick(p)
+  }
   const [tab, setTab] = useState<Tab>('suggestions')
   const [results, setResults] = useState<SavedPlace[]>([])
   const [busy, setBusy] = useState(false)
@@ -40,7 +51,13 @@ export function PlaceSheet({
   const [stored, setStored] = useState(() => loadPlaces())
   const input = useRef<HTMLInputElement>(null)
 
-  useEffect(() => input.current?.focus(), [])
+  // Focus the search box; give focus back to whatever opened the sheet on close.
+  useEffect(() => {
+    const opener = document.activeElement as HTMLElement | null
+    input.current?.focus()
+    input.current?.select()
+    return () => opener?.focus?.()
+  }, [])
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', onKey)
@@ -80,7 +97,7 @@ export function PlaceSheet({
 
   const choose = (p: SavedPlace) => {
     setStored(addRecent(p))
-    onPick({ kind: 'place', place: p })
+    pick({ kind: 'place', place: p })
   }
 
   const row = (p: SavedPlace, key: string, icon = '📍') => (
@@ -168,7 +185,7 @@ export function PlaceSheet({
             {query.length < 3 && (
               <>
                 <li className="border-b border-line">
-                  <button type="button" onClick={() => onPick({ kind: 'here' })} className="flex min-h-16 w-full items-center gap-4 py-2 text-left" data-testid="sheet-here">
+                  <button type="button" onClick={() => pick({ kind: 'here' })} className="flex min-h-16 w-full items-center gap-4 py-2 text-left" data-testid="sheet-here">
                     <span aria-hidden="true" className="text-2xl text-green-600">
                       ◎
                     </span>
@@ -179,7 +196,7 @@ export function PlaceSheet({
                   </button>
                 </li>
                 {allowPin && <li className="border-b border-line">
-                  <button type="button" onClick={() => onPick({ kind: 'pin' })} className="flex min-h-16 w-full items-center gap-4 py-2 text-left" data-testid="sheet-pin">
+                  <button type="button" onClick={() => pick({ kind: 'pin' })} className="flex min-h-16 w-full items-center gap-4 py-2 text-left" data-testid="sheet-pin">
                     <span aria-hidden="true" className="text-2xl">
                       📌
                     </span>

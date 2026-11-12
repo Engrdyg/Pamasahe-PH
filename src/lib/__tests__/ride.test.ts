@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest'
-import { addFix, haversineMeters, loadRide, rideKm, rideMinutes, saveRide, startRide, type RidePoint } from '../ride'
+import { addFix, gapKm, haversineMeters, loadRide, rideKm, rideMinutes, saveRide, startRide, type RidePoint } from '../ride'
 
 const fix = (lat: number, lng: number, t: number, acc = 10): RidePoint => ({ lat, lng, t, acc })
 
@@ -38,8 +38,8 @@ describe('ride tracking', () => {
 
   it('reports km to one decimal and minutes from the clock', () => {
     let s = startRide(0)
-    s = addFix(s, fix(14.6566, 121.0303, 0))
-    s = addFix(s, fix(14.6456, 121.0303, 120000)) // ~1.22 km
+    // ~1.22 km in 2 minutes, a fix every 20 s
+    for (let i = 0; i <= 6; i++) s = addFix(s, fix(14.6566 - (0.011 * i) / 6, 121.0303, i * 20000))
     expect(rideKm(s)).toBe(1.2)
     expect(rideMinutes(s, 150000)).toBe(2.5)
     expect(rideMinutes({ ...s, endedAt: 60000 })).toBe(1)
@@ -51,5 +51,20 @@ describe('ride tracking', () => {
     expect(loadRide()).toEqual(s)
     saveRide(null)
     expect(loadRide()).toBeNull()
+  })
+})
+
+describe('GPS gaps', () => {
+  it('keeps distance across a long silence apart from measured distance', () => {
+    const p = (lat: number, t: number): RidePoint => ({ lat, lng: 121.03, t, acc: 10 })
+    let r = startRide(0)
+    r = addFix(r, p(14.6, 0))
+    r = addFix(r, p(14.601, 10_000)) // ~111 m in 10 s: measured
+    r = addFix(r, p(14.611, 120_000)) // ~1.1 km after 110 s without fixes: gap
+    expect(Math.round(r.meters)).toBe(111)
+    expect(r.gaps).toBe(1)
+    expect(Math.round(r.gapMeters!)).toBe(1112)
+    expect(rideKm(r)).toBe(0.1)
+    expect(gapKm(r)).toBe(1.1)
   })
 })
