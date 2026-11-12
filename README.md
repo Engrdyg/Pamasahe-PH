@@ -4,7 +4,7 @@
 
 Live at https://bayad-po.vercel.app (formerly magkano-pamasahe.vercel.app)
 
-A complete description of every screen, menu and feature (for people and AI agents) is in [docs/SITE-SPEC.md](docs/SITE-SPEC.md).
+A complete description of every screen, menu and feature (for people and AI agents) is in [docs/SITE-SPEC.md](docs/SITE-SPEC.md). What is implemented from the upgrade specification, and what still needs data or field work, is in [docs/IMPLEMENTATION-STATUS.md](docs/IMPLEMENTATION-STATUS.md).
 
 Mobile-first PWA that shows the official LTFRB fare for a trip on any land-based
 public transport mode in the Philippines: jeepney, UV Express, city and

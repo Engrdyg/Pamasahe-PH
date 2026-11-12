@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Card, Chips, PassengerPicker } from '../components/ui'
+import { clearCommutes, loadCommutes } from '../lib/commutes'
 import { clearPlaces, loadPlaces } from '../lib/places'
 import type { Theme } from '../lib/theme'
 import { useApp } from '../state'
@@ -19,11 +20,13 @@ export function More() {
   const { lang, setLang, theme, setTheme, trip, clearTrip } = useApp()
   const [places, setPlaces] = useState(() => loadPlaces())
   const [done, setDone] = useState<string | null>(null)
-  const nPlaces = places.saved.length + places.recent.length
+  const [nCommutes, setNCommutes] = useState(() => loadCommutes().length)
+  const nPlaces = places.saved.length + places.recent.length + nCommutes
 
   const wipePlaces = () => {
     if (!window.confirm(t('more.confirmPlaces'))) return
     setPlaces(clearPlaces())
+    setNCommutes(clearCommutes().length)
     setDone(t('more.placesCleared'))
   }
   const wipeTrip = () => {

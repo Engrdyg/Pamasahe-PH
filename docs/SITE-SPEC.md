@@ -23,7 +23,7 @@ the Philippines. It answers two questions:
    Metro Manila: jeepney, UV Express, rail and Busway combinations with up to
    two transfers and the official fare of each ride.
 
-Supporting features: Student/Senior/PWD 20% discount toggle, comparison of
+Supporting features: passenger types (Regular, Student, Senior, PWD; 20% discount), comparison of
 modes, published fare tables, a GPS **ride tracker**, a **multi-leg trip**
 total, an **overcharge report** helper (LTFRB hotline 1342), a donation page
 (GCash), privacy policy, offline use, installable app, light/dark theme,
@@ -71,6 +71,7 @@ All routes are hash routes, so any URL works offline from the cached shell.
 | `#/fares` | Fares hub (vehicle tiles) | "Fares" / "Pamasahe" | — | Fares |
 | `#/calc/<category>` | Fare calculator for a category | category name | Fares | Fares |
 | `#/trip` | My trip (multi-leg total) | "My trip" | — | My Trip |
+| `#/guide` | Guided trip for the route picked in the planner | "Guided trip" / "Gabay sa biyahe" | planner | Routes |
 | `#/more` | More (secondary screens, settings, data) | "More" / "Iba pa" | — | More |
 | `#/compare` | Compare modes | "Compare modes" | More | More |
 | `#/tables` | Fare tables | "Fare tables" | More | More |
@@ -156,7 +157,9 @@ Categories for `#/calc/<category>`: `jeepney`, `uv`, `bus-city`,
      (drag to spin; still under reduced motion). Yellow price tag "JEEP,
      MINIMUM ₱14.00" (follows the discount).
 2. **"Fares by vehicle"** heading with an "All fares ›" link to `#/fares`.
-3. **Discount toggle** (phone).
+3. **Passenger chips** (phone, compact).
+   Saved commutes (★ "Home → Work", one tap re-plans, ✕ removes) appear in
+   the hero above the saved/recent chips.
 4. **Compact vehicle tiles** (same as the Fares hub, without hints).
 5. **Install card** when the browser offers installation.
 
@@ -165,7 +168,7 @@ without scrolling.
 
 ### 5.1a Fares hub (`#/fares`)
 
-Intro "Pick a vehicle to compute its fare.", discount toggle (phone), and the
+Intro "Pick a vehicle to compute its fare.", passenger chips (phone), and the
 eight category tiles (Jeepney, Train, EDSA Busway, UV Express, City Bus,
 Provincial Bus, Taxi, TNVS). Each tile: icon, name, hint, a **basis label**
 ("Minimum fare", "Per-km rate", "Flag-down", "Station matrix") and the amount
@@ -176,7 +179,7 @@ amounts, not trip totals. Links to Fare tables and Compare.
 ### 5.1b More (`#/more`)
 
 List rows (icon, name, hint, ›): Compare, Fare tables, Support, About, Privacy
-policy. **Settings** card: passenger type (discount toggle), Appearance,
+policy. **Settings** card: passenger type chips, Appearance,
 Language. **Data on this device** card: "Clear saved and recent places (n)"
 and "Clear trip (n legs)", each with a confirmation. LTFRB hotline 1342.
 
@@ -190,9 +193,15 @@ Layout on phones (top to bottom; the header is sticky under the top bar):
 - **Second row**: "🚍 All modes ▾" (FIL "Lahat ng mode") and "Clear"
   (Burahin). Opening it shows toggle chips **Jeep, UV Express, Train, Busway**
   in their colours; turning one off re-plans without it ("2 of 4 modes").
+- **Map / List switch** (phones, once there are results): **Map** shows the
+  map with a sheet below it; **List** hides the map entirely (map-free use).
 - **Map** (Leaflet + OSM): before results it fills the screen down to the
-  bottom nav (measured); with results ≈ 55% of that. Opens on Metro Manila.
-- **Results** below the map, then **Steps**, then data notes.
+  bottom nav (measured). With results its height follows the sheet tab:
+  Summary ≈ all but 200 px, Routes ≈ 50 %, Steps ≈ 42 %.
+- **Sheet tabs** (tap, no dragging): **Summary** (the selected option + "See
+  the steps"), **Routes (N)** (sort bar + every option), **Steps** (the
+  instructions card). On desktop and in List view the sort bar, all options
+  and the steps are shown in one column.
 
 Desktop: header and results in a 400 px left column, map sticky on the right.
 
@@ -215,10 +224,21 @@ Recent (max 10).
   field after the nearest landmark and re-plans without moving the map.
 - Tapping the map does nothing (no accidental pins).
 
-**Result options** (cards, up to 5, fastest first, plus "Walk" for short trips):
-big fare (e.g. **₱13.00**, follows the discount toggle), "≈ 33 min", a row of
-coloured ride chips ("🚆 LRT-2", "🚐 CUBAO - BUENDIA" …), and "Direct · 900 m
-walk" or "2 transfers · 750 m walk". The selected option has a blue ring.
+**Sort bar**: "17 routes found" (announced to screen readers) and radio chips
+**Lower fare / Shorter est. time / Fewer transfers / Less walking** (FIL "Mas
+mura / Mas mabilis na estimate / Kaunting lipat / Kaunting lakad"),
+remembered on the device. The same options are re-ordered; nothing is
+removed.
+
+**Result options** (all reasonable routes, up to 30, within 2× the fastest
++ 20 min; plus "Walk" for short trips): fare and passenger type ("₱13.00 ·
+Regular"), "≈ 33 min · estimated", **why badges** (one winner per measure:
+"★ Lowest fare", "★ Shortest est. time", "★ Fewest transfers", "★ Least
+walking"), numbered coloured ride chips ("1. 🚆 LRT-2"), "Direct · 900 m walk"
+or "2 transfers · 750 m walk", and an uncertainty line ("≈ fare from route
+length (estimate)" or "✓ official station fares", plus "↺ return direction
+inferred" when a ride goes against the drawn route). The selected option has
+a blue ring.
 
 **Map for the selected option**:
 - Each ride in its own colour: LRT-1 green, LRT-2 purple, MRT-3 blue, Busway
@@ -233,35 +253,63 @@ walk" or "2 transfers · 750 m walk". The selected option has a blue ring.
 
 **Steps card** ("Steps" / "Mga hakbang"):
 - 🚶 "Walk 550 m (about 7 min) to Recto station" / "… to the stop near Quiapo
-  Church" / "… to {destination}".
-- Ride rows with a coloured left border: icon, mode name and route name
-  ("Traditional Jeepney: Cubao - Vito Cruz via E. Rodriguez"), "▸ Get on near
-  …", "▸ Get off near …", distance or stations ("Recto → Araneta
-  Center-Cubao"), "≈ 21 min", the LTFRB memorandum circular (e.g. "MC
-  2020-041"), the ride's fare on the right, and the modern-jeep alternative
-  fare when the route allows both.
-- An amber **assumptions note**: route lines are authorised LTFRB routes, not
-  proof a vehicle runs there now; the return direction is assumed to use the
-  same roads; get-on, get-off and transfer points are approximate; ask the
-  driver or barker.
-- Total (Regular or Student/Senior/PWD) and **"+ Add all rides to trip"**
-  (legs keep their mode, basis and route distance as a snapshot).
+  Church" / "… to {destination}", with "Approximate: straight-line distance
+  plus 25%; crossings and footbridges are not checked."
+- Ride rows with a coloured left border and a numbered colour badge (tap it to
+  highlight and zoom to that ride on the map; tapping a ride line on the map
+  opens Steps and scrolls to it): icon, mode and route name.
+  - Jeep/UV: "▸ Signboard: Cubao - Vito Cruz via E. Rodriguez", "▸ Get on near
+    …", "▸ Get off near …", "Not verified: ask the driver if it passes …", and
+    "↺ You ride this route opposite to how LTFRB drew it… not verified" when
+    the reverse is only inferred. A "Report a route problem" link.
+  - Rail/Busway: "▸ Board at Recto station", "▸ Platform: towards Antipolo",
+    "▸ Get off at … station", "Station location is approximate; entrances are
+    not verified."
+  - Distance or stations, "≈ 21 min", the memorandum circular, passenger type
+    and fare basis, the modern-jeep alternative fare, and the ride's fare.
+- An amber **assumptions note** (authorised routes ≠ running now; return
+  direction assumed; points approximate; ask the driver or barker) and an
+  expandable **"How routes and times are worked out"** that matches the
+  engine.
+- Total for the passenger type, then **"▶ Start trip"** (guided trip), **"+ Add
+  all rides to trip"** (legs keep a snapshot) and **"☆ Save this commute"**.
 
-Option-card times ("≈ 38 min") are estimates that include ride time at
-average speeds, walking, a fixed wait per ride and a transfer allowance (no
-live traffic); the tooltip says so.
+**Report a route problem** dialog: what is wrong (boarding/alighting point,
+landmark or street, route line, not running / service changed, other),
+details, an optional tick to include the get-on spot rounded to ~100 m, and
+"Open on GitHub ↗", which opens a prefilled public issue (label
+`route-feedback`). Nothing is sent from the app.
+
+Shown times ("≈ 38 min") include ride time at average speeds, walking and a
+fixed wait for each ride; no live traffic. The tooltip and method text say so.
 
 **No route found**: "No route found in the available route data within a short
 walk…", a coverage note (a route missing from this data may still exist),
 "Include all modes" when some modes are switched off, and "Check fares by
 vehicle". Place search failures keep the typed text and show "Try again"
-(or an offline message); stations and saved places still work.
+(or an offline message); stations and saved places still work. Typed text is
+restored if the sheet is closed without a pick. If map tiles fail, a notice
+says the steps and fares below still work. Offline without route data, the
+planner says to connect once to download it.
 
 **Notes** (shown with results): drag hint; route data credit (LTFRB NCR
 jeepney and UV Express route data, 579 routes, per LTFRB memorandum circulars,
 plus LRT-1, LRT-2, MRT-3, EDSA Busway); return direction assumed (not
 verified); how times are estimated; landmarks from OpenStreetMap; not
 affiliated with LTFRB.
+
+### 5.2a Guided trip (`#/guide`)
+
+Started from "▶ Start trip". Shows "from → destination", "Step 2 of 5" and
+one card at a time: a walk ("🚶 Walk about 550 m to where you get on: Recto
+station") or a ride (numbered colour badge, route or line, signboard or
+platform, "Get on at …", **"■ Get off at …"**, fare for the passenger type and
+a change calculator). Below it "Next: transfer at …". Buttons "‹ Back" and
+"Next step ›" / "✓ Arrived". An optional checkbox "Show my distance to the
+next stop (GPS)" shows the straight-line distance and GPS accuracy, and within
+~250 m of the get-off point a yellow alert "Your get-off point is near. Get
+ready to say “Para po!”" (vibrates once). A note explains GPS only works with
+the page open and does not track the vehicle. Kept for the browser session.
 
 ### 5.3 Fare calculator (`#/calc/<category>`)
 
@@ -277,7 +325,11 @@ Common parts, top to bottom:
    300 m, +₱4.00 per 2 min"; "Flag-down ₱55.00 to ₱165.00 depending on the
    vehicle…"; "Minimum fare ₱18.00; depends on the stations". Uses the
    discounted rates when the discount is on (metered: "(20% off the total…)").
-3. **Discount toggle** (compact).
+3. **Passenger chips** (phones): Regular / Student / Senior citizen / PWD
+   (FIL Regular / Estudyante / Senior citizen / PWD); a discounted type shows
+   "20% discount with a valid ID. The fare guides publish one discounted fare
+   for students, seniors and PWD." The choice is remembered; an old on/off
+   discount setting becomes "Student".
 4. Inputs (by method) and the **Fare card**.
 
 Input variants:
@@ -315,9 +367,11 @@ Input variants:
   Total), old-versus-new fare, the source document and effective date (e.g.
   "LTFRB · Traditional PUJ.pdf · effective Sep 28, 2026"), and a limitation
   note for that basis.
-- Buttons: **"+ Add to trip"**, **"Share"**, **"⚠ Check a fare charged"**.
+- Buttons: **"+ Add to trip"**, **"Share"**, **"🪙 Change"** (cash handed over,
+  ₱20/₱50/₱100 shortcuts → "Change: ₱x" or "Short by ₱y"; labelled when the
+  fare is an estimate), **"⚠ Review fare difference" (FIL "Suriin ang diperensya sa pamasahe")**.
 
-**Fare report panel** (inline, red-tinted; "Prepare a fare report"): says it
+**Fare report panel** (inline, red-tinted; "Draft report" / "Burador ng ulat"): says it
 only prepares a draft and nothing is sent until the person copies, shares or
 calls; shows the official fare and its basis; fields "How much were you
 charged? (₱)", plate/body number, place, notes. Result: **"Possible fare
@@ -333,7 +387,11 @@ and "Time" (m:ss), "Tracking · n GPS fixes · ±x m", a small map of the path,
 "End ride" (red) and "Discard". Distance and time feed the fare live. Keeps
 the screen awake (Wake Lock), survives reloads, filters bad fixes (accuracy
 > 60 m, jitter, > 150 km/h jumps). Messages for waiting for GPS, weak signal,
-no permission, and "keep the app open".
+no permission, and "keep the app open". If no fix arrives for more than 30 s
+(app in the background, tunnel, reload), the straight-line distance across
+that gap is kept apart from measured distance and shown in an amber note
+("n GPS gaps: x km not measured…") with a ticked "Include gap distance in
+the fare" checkbox.
 
 ### 5.4 Compare (`#/compare`)
 
@@ -354,8 +412,9 @@ For station modes: pick a from-station and see fares to every other station
 
 Big "TOTAL FARE · REGULAR ₱100.25", the other passenger total, note "Each leg
 is paid separately…". Numbered legs: mode, trip label, basis, source, fare
-data version, fare; ↑ / ↓ buttons to reorder; "Remove" with an **Undo** bar
-(also after "Clear trip"). Each leg stores a snapshot (mode id, basis,
+data version, fare; ↑ / ↓ buttons to reorder; "Edit distance" for
+distance-based legs (re-priced with current data); "Duplicate"; "Remove" with
+an **Undo** bar (also after "Clear trip"). Each leg stores a snapshot (mode id, basis,
 distance and its source, passenger type, fare-data version, effective date,
 time saved). When newer fare data changes a leg's mode, an amber note shows
 the saved amount, the recalculated current fare (distance legs) and "Use the
@@ -433,13 +492,23 @@ and announced by the update banner.
   and simplified polylines. Rail and Busway lines come from the fare data's
   station coordinates (rail coordinates are approximate).
 - Search (`src/lib/planner.ts`, run in a Web Worker): lines resampled every
-  100 m; RAPTOR-style rounds (up to 3 rides = 2 transfers); walk 4.5 km/h, up
-  to 700 m to the first stop and from the last, up to 300 m between lines;
-  speeds jeep 13.8 km/h, UV 19 km/h, Busway 23 km/h, rail 30 km/h plus waits
-  (4/7/5/5 min) and a 3-minute transfer penalty; rides shorter than 700 m
-  (jeep) or 1 km (UV) are not offered; options that are much slower, or add
-  rides without saving 5 minutes, are dropped. Jeep/UV routes may be ridden
-  either way; the Busway is one-way per direction.
+  100 m; RAPTOR-style rounds (up to 3 rides = 2 transfers); walk 4.5 km/h on
+  straight lines × 1.25, up to 700 m (straight) to the first stop and from the
+  last, up to 300 m between lines; speeds jeep 13.8, UV 19, Busway 23, rail
+  30 km/h plus a fixed wait per ride (4/7/5/5 min); a 3-minute penalty per
+  transfer is used only to choose routes (not added to the shown time); rides
+  shorter than 700 m (jeep) or 1 km (UV) are not offered. Transfers are
+  explored up to 1.3× the best time + 10 min; for every line reaching the
+  destination the best way to it is kept, plus every direct line; routes are
+  listed up to 2× the fastest + 20 min (max 30), dropping only options that
+  add a ride to a shorter one with the same vehicles and repeats of the same
+  vehicle sequence.
+- Direction model: each route may carry `reverse` (`source`, `field`,
+  `inferred` = default, `none` = one-way) and `dir` (`outbound`, `return`,
+  `loop`) from `scripts/route-directions.json`. The LTFRB file has one
+  geometry per route, so today every reverse is inferred and rides against
+  the drawn direction are flagged (`against`). Busway lines are one-way;
+  rail legs carry the platform direction (`towards`).
 - Fares per ride come from the fare engine (distance along the route; station
   matrices for rail and Busway). Takes ≈ 0.2–0.5 s on a phone.
 - Landmark names: Photon reverse geocoding near each stop, cached.
@@ -449,19 +518,30 @@ and announced by the update banner.
 ## 8. Storage, network and privacy
 
 On-device storage (`localStorage`): `pamasahe-ph:prefs` (language, theme,
-discount, last mode/category, dismissed banners), `pamasahe-ph:fares` (newer
-fare data), `pamasahe-ph:trip` (trip legs), `pamasahe-ph:ride` (ride in
-progress), `pamasahe-ph:places` (saved and recent places). No accounts, no
+passenger type, route sort, last mode/category, dismissed banners),
+`pamasahe-ph:fares` (newer fare data, validated as a whole set) and
+`pamasahe-ph:fares-prev` (the set it replaced), `pamasahe-ph:trip` (trip legs
+with snapshots), `pamasahe-ph:ride` (ride in progress, including GPS gaps),
+`pamasahe-ph:places` (saved and recent places), `pamasahe-ph:commutes` (saved
+commutes); `sessionStorage` `pamasahe-ph:guide` and `pamasahe-ph:guide-step`
+(guided trip). No accounts, no
 cookies, no server of its own.
 
-External requests: `tile.openstreetmap.org` (map tiles), `photon.komoot.io`
+External requests (endpoints in `src/lib/providers.ts`, overridable with
+`VITE_TILE_URL`, `VITE_PHOTON_URL`, `VITE_PHOTON_REVERSE_URL`, `VITE_OSRM_URL`;
+8-second timeouts): `tile.openstreetmap.org` (map tiles), `photon.komoot.io`
 (place search text; stop coordinates for landmark names),
 `router.project-osrm.org` (start/end coordinates, calculator trip planner
 only), Vercel (hosting, cookieless page-view analytics with hash routes
 reported as paths such as `/calc/[category]`; route-planner links are always
 reported as `/plan`, and the event URL is rewritten the same way, so
 coordinates never reach analytics). GCash app/store only when the
-user taps "Open GCash".
+user taps "Open GCash". Route-problem feedback opens github.com in the
+browser; the app itself sends nothing.
+
+Offline: a dark banner says the calculators, tables and trip still work and
+gives the fare data version and date; place search, maps and new route data
+need internet.
 
 Offline: the app shell, code, icons and fare data are precached; the HTML is
 fetched network-first and cached from the first visit; route data and map
@@ -473,7 +553,7 @@ tiles are cached on first use.
 
 - Bilingual UI (EN/FIL) switchable anytime; `<html lang>` follows it.
 - Respects `prefers-reduced-motion` (3D still frame, no pin bobbing).
-- Labels on all inputs; `role="switch"` discount toggle; `aria-current` in
+- Labels on all inputs; radio-group passenger and sort chips; focus returns to the opener when sheets and dialogs close; non-drag alternatives for pins (search), sheets (tabs) and trip legs (↑/↓); `aria-current` in
   navigation; `aria-pressed` on option cards and chips; dialogs for the place
   sheet; status regions for loading/results.
 - Works as an installed app (standalone display, theme colour `#0b3d91`).
@@ -489,11 +569,13 @@ src/components/Sidebar.tsx  desktop sidebar
 src/components/Hero3D.tsx   Home hero frame (static JeepStill SVG, 3D jeep, price tag)
 src/components/FareTiles.tsx vehicle tiles with basis labels (Home, Fares)
 src/hero3d/                 three.js scene and the procedural patok jeepney
-src/screens/                Home, Plan, Fares, More, Calculator, Compare, Tables, Trip, Support, About, Privacy
+src/screens/                Home, Plan (lazy), Guide (lazy), Fares, More, Calculator, Compare, Tables, Trip, Support, About, Privacy
 src/components/             FareCard, ReportOvercharge, RideTracker, RoutePicker, RouteMap,
-                            PlanMap, PlaceSheet, PlaceSearch, RouteStrip, InstallCard, JeepStill, ui
+                            PlanMap, PlaceSheet, PlaceSearch, RouteStrip, InstallCard, JeepStill, ChangeCalc,
+                            RouteFeedback, ui (Chips, PassengerPicker, …)
 src/engine/                 fare engine (pure, tested)
-src/lib/                    planner(+worker), rates, places (+plan draft), stationPlaces, trip (snapshots), ride, report, geocode, routing,
+src/lib/                    planner(+worker), planRank, rates, places (+plan draft), stationPlaces, commutes, guide,
+                            feedback, providers, useOnline, trip (snapshots), ride (gaps), report, geocode, routing,
                             stations, prefs, theme, updater, router, share
 src/content/privacy.ts      privacy policy text
 src/i18n/{en,fil}.json      every UI string

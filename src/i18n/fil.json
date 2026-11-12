@@ -219,7 +219,10 @@
     "keepOn": "Panatilihing bukas ang screen at ang app habang bumibiyahe; humihinto ang GPS kapag nasa background ang app. Estimate ang distansyang mula sa GPS.",
     "weak": "Mahina ang GPS signal. Lumapit sa bintana o lumabas; tuloy ang tracking.",
     "nearest": "Pinakamalapit na istasyon: {{name}} · {{m}} m",
-    "stationHint": "Simulan ang biyahe sa sakayan mong istasyon. Kusang pipiliin ang pinakamalapit na stop, at susunod ang pamasahe habang dumadaan ang bus sa mga istasyon."
+    "stationHint": "Simulan ang biyahe sa sakayan mong istasyon. Kusang pipiliin ang pinakamalapit na stop, at susunod ang pamasahe habang dumadaan ang bus sa mga istasyon.",
+    "gaps_one": "{{count}} GPS gap: hindi nasukat ang {{km}} km na tuwid na layo (nasukat {{measured}} km).",
+    "gaps_other": "{{count}} GPS gap: hindi nasukat ang {{km}} km na tuwid na layo (nasukat {{measured}} km).",
+    "includeGaps": "Isama sa pamasahe ang layo sa gap"
   },
   "trip": {
     "add": "Idagdag sa biyahe",
@@ -252,8 +255,8 @@
     "save": "I-save"
   },
   "report": {
-    "open": "Suriin ang siningil",
-    "title": "Gumawa ng ulat sa pamasahe",
+    "open": "Suriin ang diperensya sa pamasahe",
+    "title": "Burador ng ulat",
     "charged": "Magkano ang siningil sa'yo? (₱)",
     "plate": "Plate o body number",
     "place": "Saan / ruta (opsyonal)",
@@ -425,11 +428,11 @@
     "passenger": "Uri ng pasahero",
     "data": "Data sa device na ito",
     "dataNote": "Nasa phone mo lang ang mga naka-save na lugar, mga huling hinanap at ang biyahe mo. Walang ipinapadala sa server.",
-    "clearPlaces": "Burahin ang saved at recent na lugar ({{n}})",
+    "clearPlaces": "Burahin ang saved at recent na lugar at mga commute ({{n}})",
     "clearTrip": "Burahin ang biyahe ({{n}} leg)",
-    "confirmPlaces": "Burahin lahat ng saved at recent na lugar sa device na ito?",
+    "confirmPlaces": "Burahin lahat ng saved at recent na lugar at saved commute sa device na ito?",
     "confirmTrip": "Burahin lahat ng leg ng biyahe mo?",
-    "placesCleared": "Nabura na ang saved at recent na lugar.",
+    "placesCleared": "Nabura na ang saved at recent na lugar at mga commute.",
     "tripCleared": "Nabura na ang biyahe.",
     "compareHint": "Parehong layo, lahat ng sasakyan",
     "tablesHint": "Mga fare guide, kada km",

@@ -4,7 +4,7 @@
  *  src/components/Analytics.tsx. */
 import type { Lang } from '../engine/types'
 
-export const PRIVACY_EFFECTIVE = '2026-10-27'
+export const PRIVACY_EFFECTIVE = '2026-11-12'
 export const PRIVACY_CONTACT = 'https://github.com/Engrdyg/Pamasahe-PH/issues'
 
 export interface PrivacySection {
@@ -20,16 +20,16 @@ export const privacy: Record<Lang, { intro: string; sections: PrivacySection[] }
       {
         title: 'What stays on your device',
         body: [
-          'Your settings (language, appearance, the Student / Senior / PWD toggle, last mode used) and fare data are saved in your browser storage so the app works offline.',
-          'Trips you build with "Add to trip", a ride in progress in the ride tracker, and the places you save or recently picked in the route planner are also saved in your browser storage.',
-          'This data never leaves your device unless you share it yourself. Clearing the site data in your browser, or "Clear trip", "Discard" and More → "Clear saved and recent places" in the app, deletes it.',
+          'Your settings (language, appearance, passenger type, route sorting, last mode used) and fare data (plus the previous fare data set after an update) are saved in your browser storage so the app works offline.',
+          'Trips you build with "Add to trip", a ride in progress in the ride tracker, the places you save or recently picked, and saved commutes are also saved in your browser storage. A guided trip in progress is kept only for the current browser session.',
+          'This data never leaves your device unless you share it yourself. Clearing the site data in your browser, or "Clear trip", "Discard", the ✕ on a saved commute and More → "Clear saved and recent places" in the app, deletes it.',
         ],
       },
       {
         title: 'Location',
         body: [
-          'The app asks for your location only when you tap "Use my location" in the trip planner or start the ride tracker. You can refuse; typing a distance or picking stations still works.',
-          'Ride tracker: GPS positions are processed on your device to measure distance and pick the nearest station. They are not sent to us.',
+          'The app asks for your location only when you choose your current location as a start or end, start the ride tracker, or turn on GPS in a guided trip. You can refuse; typing a distance or picking stations still works.',
+          'Ride tracker and guided trip: GPS positions are processed on your device to measure distance, pick the nearest station or show the distance to your stop. They are not sent to us.',
           'Trip planner: to estimate road distance and time, the start and end coordinates you choose are sent to the OSRM routing service (router.project-osrm.org).',
         ],
       },
@@ -43,9 +43,15 @@ export const privacy: Record<Lang, { intro: string; sections: PrivacySection[] }
         ],
       },
       {
+        title: 'Route-problem feedback',
+        body: [
+          '"Report a route problem" opens a prefilled issue on the project\'s public GitHub page in your browser. Nothing is sent unless you submit it there, and what you submit is public. Your approximate get-on spot (rounded to about 100 m) is included only if you tick that option. Reports are reviewed before any route data changes.',
+        ],
+      },
+      {
         title: 'Overcharge reports and sharing',
         body: [
-          'An overcharge report, a shared fare or a shared trip is created on your device. It is sent only where you choose (a call to the LTFRB 1342 hotline, a message app, email). Plate numbers and notes you type are not stored by the app.',
+          'A fare report draft, a shared fare or a shared trip is created on your device. It is sent only where you choose (a call to the LTFRB 1342 hotline, a message app, email). Plate numbers and notes you type are not stored by the app.',
         ],
       },
       {
@@ -80,15 +86,15 @@ export const privacy: Record<Lang, { intro: string; sections: PrivacySection[] }
       {
         title: 'Ano ang naiiwan sa device mo',
         body: [
-          'Ang settings mo (wika, itsura, Estudyante / Senior / PWD toggle, huling mode) at ang fare data ay naka-save sa browser storage para gumana ang app kahit offline.',
-          'Ang mga biyahe sa "Idagdag sa biyahe", ang tumatakbong ride sa ride tracker, at ang mga lugar na sinave mo o kamakailang pinili sa route planner ay naka-save din sa browser storage.',
+          'Ang settings mo (wika, itsura, uri ng pasahero, pag-ayos ng ruta, huling mode) at ang fare data (pati ang naunang fare data pagkatapos ng update) ay naka-save sa browser storage para gumana ang app kahit offline.',
+          'Ang mga biyahe sa "Idagdag sa biyahe", ang tumatakbong ride sa ride tracker, ang mga lugar na sinave mo o kamakailang pinili, at ang mga saved commute ay naka-save din sa browser storage. Ang guided trip na ginagamit ay nasa kasalukuyang browser session lang.',
           'Hindi ito lumalabas sa device mo maliban kung ikaw mismo ang mag-share. Mabubura ito kapag nilinis mo ang site data sa browser, o sa "Burahin ang biyahe", "Burahin" at Iba pa → "Burahin ang saved at recent na lugar" sa app.',
         ],
       },
       {
         title: 'Lokasyon',
         body: [
-          'Hihingi lang ang app ng lokasyon kapag pinindot mo ang "Gamitin ang lokasyon ko" sa trip planner o sinimulan ang ride tracker. Pwede kang tumanggi; gumagana pa rin ang pag-type ng distansya o pagpili ng istasyon.',
+          'Hihingi lang ang app ng lokasyon kapag pinili mo ang kasalukuyang lokasyon bilang simula o dulo, sinimulan ang ride tracker, o binuksan ang GPS sa guided trip. Pwede kang tumanggi; gumagana pa rin ang pag-type ng distansya o pagpili ng istasyon.',
           'Ride tracker: sa device mo pinoproseso ang GPS para sukatin ang distansya at piliin ang pinakamalapit na istasyon. Hindi ito ipinapadala sa amin.',
           'Trip planner: para matantiya ang distansya at oras sa kalsada, ipinapadala ang napili mong simula at dulo sa OSRM routing service (router.project-osrm.org).',
         ],
@@ -100,6 +106,12 @@ export const privacy: Record<Lang, { intro: string; sections: PrivacySection[] }
           'Mapa: kinukuha ang mga larawan ng mapa mula sa OpenStreetMap (tile.openstreetmap.org), kaya malalaman ng server na iyon kung anong lugar ang tinitingnan mo.',
           'Hosting at analytics: naka-host ang app sa Vercel. Binibilang ng Vercel Web Analytics ang page views bawat screen (hal. "/calc/jeepney") nang walang cookies at hindi ka kinikilala. "/plan" lang ang binibilang sa route planner: hindi kailanman ipinapadala sa analytics ang mga lugar at coordinates na hinahanap mo. Gaya ng ibang website host, natatanggap ng Vercel ang karaniwang request data tulad ng IP address mo.',
           'May sariling privacy policy ang mga serbisyong ito. Hindi namin ibinebenta o ibinabahagi ang datos sa iba.',
+        ],
+      },
+      {
+        title: 'Feedback sa ruta',
+        body: [
+          'Ang "I-report ang problema sa ruta" ay nagbubukas ng naka-fill na issue sa public GitHub page ng proyekto sa browser mo. Walang ipapadala hangga\'t hindi mo sinusumite doon, at public ang isusumite mo. Kasama lang ang tantiyang sakayan (mga 100 m) kung lalagyan mo ng check. Sinusuri ang mga report bago baguhin ang route data.',
         ],
       },
       {

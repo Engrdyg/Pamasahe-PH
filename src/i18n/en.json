@@ -219,7 +219,10 @@
     "keepOn": "Keep the screen on and this app open while riding; GPS pauses when the app is in the background. Distance is from GPS and is an estimate.",
     "weak": "Weak GPS signal. Move near a window or outdoors; tracking continues.",
     "nearest": "Nearest station: {{name}} · {{m}} m",
-    "stationHint": "Start the ride at your boarding station. The nearest stop is picked for you, and the fare follows as the bus passes stations."
+    "stationHint": "Start the ride at your boarding station. The nearest stop is picked for you, and the fare follows as the bus passes stations.",
+    "gaps_one": "{{count}} GPS gap: {{km}} km in a straight line was not measured (measured {{measured}} km).",
+    "gaps_other": "{{count}} GPS gaps: {{km}} km in a straight line was not measured (measured {{measured}} km).",
+    "includeGaps": "Include gap distance in the fare"
   },
   "trip": {
     "add": "Add to trip",
@@ -252,8 +255,8 @@
     "save": "Save"
   },
   "report": {
-    "open": "Check a fare charged",
-    "title": "Prepare a fare report",
+    "open": "Review fare difference",
+    "title": "Draft report",
     "charged": "How much were you charged? (₱)",
     "plate": "Plate or body number",
     "place": "Where / route (optional)",
@@ -425,11 +428,11 @@
     "passenger": "Passenger type",
     "data": "Data on this device",
     "dataNote": "Saved places, recent searches and your trip stay on this phone. Nothing is sent to a server.",
-    "clearPlaces": "Clear saved and recent places ({{n}})",
+    "clearPlaces": "Clear saved places, recent places and commutes ({{n}})",
     "clearTrip": "Clear trip ({{n}} legs)",
-    "confirmPlaces": "Delete all saved and recent places on this device?",
+    "confirmPlaces": "Delete all saved places, recent places and saved commutes on this device?",
     "confirmTrip": "Delete all legs of your trip?",
-    "placesCleared": "Saved and recent places deleted.",
+    "placesCleared": "Saved places, recent places and commutes deleted.",
     "tripCleared": "Trip cleared.",
     "compareHint": "Same distance, every mode",
     "tablesHint": "Published fare guides, km by km",
