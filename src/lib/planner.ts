@@ -7,8 +7,14 @@
  * stations). A RAPTOR-style search runs one round per ride: in each round, the
  * best cost (minutes) to board at every sample is swept along its line to get
  * the best cost to alight at every other sample, then short walks to other
- * lines seed the next round. Jeepney and UV lines can be ridden in either
- * direction (the data has one direction per route); Busway lines are one-way.
+ * lines seed the next round. Each route records how its reverse direction is
+ * known (`reverse`): the LTFRB data draws one geometry per route, so unless a
+ * route says otherwise the return trip is *inferred* to use the same roads and
+ * legs that ride against the drawn direction are flagged. Routes marked
+ * `reverse: 'none'` (one-way loops, distinct return paths stored as their own
+ * route) are only ridden in the drawn direction. Busway lines are one-way.
+ * Walking is a straight line times a detour factor; there is no pedestrian
+ * network, so walks and transfers are approximate.
  * Fares come from the fare engine, not from the search.
  */
 import { distanceFare, matrixFare, type Centavos, type DistanceMode, type MatrixMode, type Mode } from '../engine'
@@ -26,8 +32,18 @@ export interface RouteFile {
     mc?: string
     remarks?: string
     lines: [number, number][][]
+    /**
+     * How the opposite direction is known: 'source' (in the source data),
+     * 'field' (field-checked), 'inferred' (assumed same roads; default) or
+     * 'none' (one-way: no service against the drawn direction).
+     */
+    reverse?: ReverseStatus
+    /** Direction of this geometry when a route stores each direction separately. */
+    dir?: 'outbound' | 'return' | 'loop'
   }[]
 }
+
+export type ReverseStatus = 'source' | 'field' | 'inferred' | 'none'
 
 export type LineKind = 'jeep' | 'uv' | 'rail' | 'busway'
 
@@ -39,6 +55,8 @@ export interface Line {
   altModeId?: string
   mc?: string
   oneWay: boolean
+  /** How riding against the drawn direction is known (road routes). */
+  reverse?: ReverseStatus
   /** Matrix direction key (rail ticket type or Busway direction). */
   direction?: string
   /** Station names for rail / Busway samples. */
@@ -69,6 +87,8 @@ const ROUNDS = 3 // rides (so up to 2 transfers)
 const SPEED: Record<LineKind, number> = { jeep: 230, uv: 320, rail: 500, busway: 380 } // m per minute
 const WAIT: Record<LineKind, number> = { jeep: 4, uv: 7, rail: 5, busway: 5 }
 const TRANSFER_PENALTY = 3
+/** Straight-line walks are stretched by this much for streets and crossings. */
+export const DETOUR = 1.25
 // Routes up to SLACK × the fastest time + SLACK_MIN minutes are offered as alternatives.
 const SLACK = 2
 const SLACK_MIN = 20
@@ -134,7 +154,8 @@ export function buildNetwork(file: RouteFile, modesById: Record<string, Mode>): 
     const kind: LineKind = r.mode.startsWith('uv') ? 'uv' : 'jeep'
     for (const pts of r.lines) {
       if (pts.length < 2) continue
-      lines.push({ name: r.name, kind, modeId: r.mode, altModeId: r.altMode, mc: r.mc, oneWay: false, ...resample(pts) })
+      const reverse = r.reverse ?? 'inferred'
+      lines.push({ name: r.name, kind, modeId: r.mode, altModeId: r.altMode, mc: r.mc, oneWay: reverse === 'none', reverse, ...resample(pts) })
     }
   }
   for (const id of ['lrt-1', 'lrt-2', 'mrt-3']) {
@@ -208,6 +229,10 @@ export interface RideLeg {
   fromStation?: string
   toStation?: string
   path: LatLng[]
+  /** Rides against the drawn route geometry (only meaningful for road routes). */
+  against: boolean
+  /** Rail / Busway: the end station in the direction of travel (platform sign). */
+  towards?: string
   regular: Centavos | null
   discounted: Centavos | null
   /** e.g. modern jeep fare when the route allows both */
@@ -277,7 +302,7 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
   let seeds = new Map<number, { cost: number; prev: number; walk: number }>()
   near(net, ax, ay, MAX_ACCESS, (g, d) => {
     if (!allowed(g)) return
-    const cost = d / WALK + WAIT[net.lines[net.sLine[g]].kind]
+    const cost = (d * DETOUR) / WALK + WAIT[net.lines[net.sLine[g]].kind]
     const cur = seeds.get(g)
     if (!cur || cost < cur.cost) seeds.set(g, { cost, prev: -1, walk: d })
   })
@@ -340,7 +365,7 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
       return R.rideFrom[g] >= 0 && Math.abs(l.s[g - f0] - l.s[R.rideFrom[g] - f0]) >= MIN_RIDE[l.kind]
     }
     for (const [g, d] of egress) {
-      const total = R.ride[g] + d / WALK
+      const total = R.ride[g] + (d * DETOUR) / WALK
       if (!(total < Infinity) || !longEnough(g)) continue
       const cur = byLine.get(net.sLine[g])
       if (!cur || total < cur.total) byLine.set(net.sLine[g], { g, total })
@@ -362,7 +387,7 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
           if (R.rideFrom[g] >= 0 && Math.abs(l.s[g - f0] - l.s[R.rideFrom[g] - f0]) < MIN_RIDE[l.kind]) continue
           near(net, net.sx[g], net.sy[g], MAX_TRANSFER, (h, d) => {
             if (net.sLine[h] === li || !allowed(h)) return
-            const cost = c + d / WALK + WAIT[net.lines[net.sLine[h]].kind] + TRANSFER_PENALTY
+            const cost = c + (d * DETOUR) / WALK + WAIT[net.lines[net.sLine[h]].kind] + TRANSFER_PENALTY
             if (cost >= limit()) return
             const cur = next.get(h)
             if (!cur || cost < cur.cost) next.set(h, { cost, prev: g, walk: d })
@@ -377,7 +402,7 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
   const directByLine = new Map<number, { g: number; total: number }>()
   if (rounds[0]) {
     for (const [g, d] of egress) {
-      const total = rounds[0].ride[g] + d / WALK
+      const total = rounds[0].ride[g] + (d * DETOUR) / WALK
       if (!(total < Infinity)) continue
       const li = net.sLine[g]
       const cur = directByLine.get(li)
@@ -401,7 +426,7 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
       for (let x = i; x !== j + Math.sign(j - i); x += Math.sign(j - i) || 1) path.push(pt(line, x))
       const end = pt(line, j)
       const toLast = Math.hypot(px(last.lng) - px(end.lng), py(last.lat) - py(end.lat))
-      if (toLast > 15) legs.unshift({ type: 'walk', meters: toLast, minutes: toLast / WALK, from: end, to: last })
+      if (toLast > 15) legs.unshift({ type: 'walk', meters: toLast * DETOUR, minutes: (toLast * DETOUR) / WALK, from: end, to: last })
       legs.unshift({
         type: 'ride',
         line,
@@ -410,6 +435,8 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
         meters,
         minutes: meters / SPEED[line.kind] + WAIT[line.kind],
         path,
+        against: j < i && !line.stations,
+        towards: line.stations ? line.stations[j > i ? line.stations.length - 1 : 0] : undefined,
         ...legFare(line, i, j, meters, modesById),
       })
       last = pt(line, i)
@@ -418,7 +445,7 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
       cur = prev
     }
     const start = Math.hypot(px(last.lng) - ax, py(last.lat) - ay)
-    if (start > 15) legs.unshift({ type: 'walk', meters: start, minutes: start / WALK, from: a, to: last })
+    if (start > 15) legs.unshift({ type: 'walk', meters: start * DETOUR, minutes: (start * DETOUR) / WALK, from: a, to: last })
     let regular = 0, discounted = 0, incomplete = false, walkMeters = 0, minutes = 0
     for (const l of legs) {
       minutes += l.minutes
@@ -460,7 +487,7 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
 }
 
 /** Line metadata without the sample arrays (what the UI needs). */
-export type LineMeta = Pick<Line, 'name' | 'kind' | 'modeId' | 'altModeId' | 'mc' | 'direction'>
+export type LineMeta = Pick<Line, 'name' | 'kind' | 'modeId' | 'altModeId' | 'mc' | 'direction' | 'reverse'>
 export type SlimLeg = WalkLeg | (Omit<RideLeg, 'line'> & { line: LineMeta })
 export type SlimItinerary = Omit<Itinerary, 'legs'> & { legs: SlimLeg[] }
 
@@ -470,7 +497,7 @@ export function slim(it: Itinerary): SlimItinerary {
     legs: it.legs.map((l) =>
       l.type === 'walk'
         ? l
-        : { ...l, line: { name: l.line.name, kind: l.line.kind, modeId: l.line.modeId, altModeId: l.line.altModeId, mc: l.line.mc, direction: l.line.direction } },
+        : { ...l, line: { name: l.line.name, kind: l.line.kind, modeId: l.line.modeId, altModeId: l.line.altModeId, mc: l.line.mc, direction: l.line.direction, reverse: l.line.reverse } },
     ),
   }
 }

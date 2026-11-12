@@ -23,7 +23,7 @@ import { FareCard } from '../components/FareCard'
 import { RideTracker, type FixPhase } from '../components/RideTracker'
 import { RoutePicker } from '../components/RoutePicker'
 import { RouteStrip } from '../components/RouteStrip'
-import { Card, Chips, DiscountToggle, ErrorNote, NumberField, Select } from '../components/ui'
+import { Card, Chips, PassengerPicker, ErrorNote, NumberField, Select } from '../components/ui'
 import { fmtKm, formatEffective, localized } from '../lib/format'
 import { getPref, setPref } from '../lib/prefs'
 import { nearestStation, stationPoints } from '../lib/stations'
@@ -95,7 +95,7 @@ export function Calculator({ category }: { category: Category }) {
         </p>
       )}
       <div className="md:hidden">
-        <DiscountToggle compact />
+        <PassengerPicker compact />
       </div>
       {mode.status === 'pending_data' ? (
         <ErrorNote>{t('common.pending')}</ErrorNote>

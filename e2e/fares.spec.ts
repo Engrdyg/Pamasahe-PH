@@ -34,11 +34,11 @@ test('taxi breakdown: regular taxi 10 km, 20 min', async ({ page }) => {
   await expect(b).toContainText('₱240.00')
 })
 
-test('discount toggle is remembered across reloads', async ({ page }) => {
+test('passenger type is remembered across reloads', async ({ page }) => {
   await page.goto('/')
-  await page.getByRole('switch').click()
+  await page.getByRole('radio', { name: 'PWD' }).click()
   await page.reload()
-  await expect(page.getByRole('switch')).toHaveAttribute('aria-checked', 'true')
+  await expect(page.getByRole('radio', { name: 'PWD' })).toHaveAttribute('aria-checked', 'true')
 })
 
 test('offline reload: app and fare data work without network', async ({ page, context }) => {
@@ -209,17 +209,42 @@ test.describe('route planner (NCR)', () => {
     await page.goto('/#/plan/14.5987,120.9837/14.6197,121.0537')
     const options = page.getByTestId('plan-option')
     await expect(options.first()).toBeVisible({ timeout: 15000 })
-    expect(await options.count()).toBeGreaterThan(1)
+    expect(await options.count()).toBeGreaterThan(5)
+    // Ranking: the same options re-ordered, the preference is shown.
+    await page.getByTestId('plan-rank-fare').click()
+    await expect(page.getByTestId('plan-rank-fare')).toHaveAttribute('aria-checked', 'true')
+    await expect(options.first().getByTestId('plan-reason')).toContainText('Lowest fare')
+    await page.getByTestId('plan-rank-time').click()
+    await expect(options.first()).toContainText('LRT-2')
+    // Steps panel: platform direction, walk to the station
+    await page.getByTestId('plan-panel-steps').click()
     await expect(page.getByTestId('plan-steps')).toContainText('LRT-2')
+    await expect(page.getByTestId('plan-platform')).toContainText('Platform: towards')
     await expect(page.getByTestId('plan-total')).toHaveText(/₱\d+\.\d\d/)
-    // Walking directions name the station / landmark
     await expect(page.getByTestId('plan-walk').first()).toContainText('Recto station')
-    await page.getByTestId('plan-option').nth(1).click()
+    // A jeep option names the signboard and the landmark to get on at
+    await page.getByTestId('plan-panel-routes').click()
+    await page.getByTestId('plan-rank-fare').click()
+    await options.filter({ hasNotText: 'LRT' }).first().click()
+    await page.getByTestId('plan-panel-steps').click()
+    await expect(page.getByTestId('plan-signboard').first()).toContainText('Signboard:')
     await expect(page.getByTestId('plan-board').first()).toContainText('Quiapo Church (Plaza Miranda)')
     await expect(page.locator('.leaflet-tooltip.plan-mark').first()).toContainText('Quiapo Church')
+    // Selecting a ride highlights it; feedback opens a prefilled GitHub issue
+    await page.getByRole('button', { name: 'Show ride 1 on the map' }).click()
+    await expect(page.getByRole('button', { name: 'Show ride 1 on the map' })).toHaveAttribute('aria-pressed', 'true')
+    await page.getByTestId('plan-feedback').first().click()
+    await expect(page.getByTestId('feedback-open')).toHaveAttribute('href', /github\.com\/Engrdyg\/Pamasahe-PH\/issues\/new\?title=/)
+    await page.getByRole('button', { name: 'Close' }).click()
     await expect(page.getByTestId('plan-assumptions')).toBeVisible()
     await page.getByTestId('plan-add').click()
     await expect(page.getByTestId('trip-badge')).toBeVisible()
+    // List view works without the map
+    await page.getByTestId('plan-view-list').click()
+    await expect(page.getByTestId('plan-map')).toHaveCSS('height', '0px')
+    await expect(page.getByTestId('plan-steps')).toBeVisible()
+    await page.getByTestId('plan-view-map').click()
+    await page.getByTestId('plan-panel-steps').click()
     // The from/to fields stay under the top bar while the results scroll
     await page.mouse.wheel(0, 1500)
     await page.waitForTimeout(300)
@@ -336,5 +361,29 @@ test.describe('Home search carries both ends to the planner', () => {
     // Back on Home, both picks are still there.
     await page.getByTestId('nav-home').click()
     await expect(page.getByTestId('home-to')).toContainText('Cubao')
+  })
+})
+
+test.describe('guided trip and saved commute', () => {
+  test.use({ serviceWorkers: 'block' })
+  test('start a trip from the planner, step through it, and save the commute', async ({ page }) => {
+    await page.route('https://tile.openstreetmap.org/**', (r) => r.fulfill({ status: 204, body: '' }))
+    await page.route('https://photon.komoot.io/**', (r) => r.fulfill({ json: { features: [] } }))
+    await page.goto('/#/plan/14.5987,120.9837/14.6197,121.0537')
+    await expect(page.getByTestId('plan-option').first()).toBeVisible({ timeout: 15000 })
+    await page.getByTestId('plan-panel-steps').click()
+    await page.getByTestId('plan-save-commute').click()
+    await expect(page.getByTestId('plan-save-commute')).toContainText('Saved commute')
+    await page.getByTestId('plan-guide').click()
+    await expect(page.getByTestId('guide-screen')).toBeVisible()
+    await expect(page.getByTestId('guide-progress')).toContainText('Step 1 of')
+    await page.getByTestId('guide-next-step').click()
+    await expect(page.getByTestId('guide-alight')).toContainText('Get off at')
+    await page.getByTestId('change-cash').fill('50')
+    await expect(page.getByTestId('change-result')).toContainText('Change: ₱')
+    await page.getByTestId('nav-home').click()
+    await expect(page.getByTestId('home-commute')).toHaveCount(1)
+    await page.getByTestId('home-commute').click()
+    await expect(page.getByTestId('plan-option').first()).toBeVisible({ timeout: 15000 })
   })
 })

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { distanceFare, formatPesos, type DistanceMode } from '../engine'
-import { Card, DiscountToggle, NumberField } from '../components/ui'
+import { Card, PassengerPicker, NumberField } from '../components/ui'
 import { localized } from '../lib/format'
 import { useApp } from '../state'
 
@@ -25,7 +25,7 @@ export function Compare() {
     <main className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-4 md:max-w-6xl md:px-8 md:py-6">
       <p className="text-sm text-ink-2">{t('compare.intro')}</p>
       <div className="md:hidden">
-        <DiscountToggle compact />
+        <PassengerPicker compact />
       </div>
       <Card>
         <NumberField label={t('input.distance')} value={km} onChange={setKm} min={1} max={100} step={1} slider unit={t('common.km')} />

@@ -14,6 +14,8 @@ export const NAV_ITEMS = [
 /** Which primary destination a route belongs to. */
 export function navSection(section: string | undefined): string {
   switch (section) {
+    case 'guide':
+      return 'plan'
     case 'plan':
     case 'trip':
     case 'fares':

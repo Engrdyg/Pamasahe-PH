@@ -1,0 +1,3 @@
+{
+  "_doc": "Per-route direction evidence merged by scripts/import-routes.py. Key: route id in public/routes/ncr.json. reverse: none (one-way, no service against the drawn direction) | source (reverse in source data) | field (field-checked) | inferred (default: assumed same roads). Add a record only with a dated source or field check."
+}

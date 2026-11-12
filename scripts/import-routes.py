@@ -17,6 +17,11 @@ import shapefile
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / 'sources/ncr-routes/All Routes'
 OUT = ROOT / 'public/routes/ncr.json'
+# Direction records kept in version control: {"<route id>": {"reverse": "none" |
+# "source" | "field" | "inferred", "dir": "outbound" | "return" | "loop",
+# "checked": "YYYY-MM-DD", "note": "..."}}. Routes without a record keep the
+# default "inferred" reverse direction. Only add a record with evidence.
+DIRECTIONS = ROOT / 'scripts/route-directions.json'
 
 MODES = {
     'TPUJ': ('puj-traditional', None),
@@ -104,6 +109,8 @@ def chain(parts):
 
 
 def main():
+    directions = json.loads(DIRECTIONS.read_text()) if DIRECTIONS.exists() else {}
+    directions.pop('_doc', None)
     r = shapefile.Reader(str(SRC), encoding='utf-8')
     routes, skipped = [], {}
     seen = set()
@@ -147,6 +154,9 @@ def main():
             out['mc'] = rec['MC'].strip()
         if remarks:
             out['remarks'] = remarks
+        d = directions.get(str(out['id']))
+        if d:
+            out.update({k: d[k] for k in ('reverse', 'dir') if k in d})
         routes.append(out)
     data = {
         'source': 'LTFRB — NCR PUJ / UV Express route shapefile (routes per LTFRB memorandum circulars)',

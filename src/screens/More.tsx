@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Card, Chips, DiscountToggle } from '../components/ui'
+import { Card, Chips, PassengerPicker } from '../components/ui'
 import { clearPlaces, loadPlaces } from '../lib/places'
 import type { Theme } from '../lib/theme'
 import { useApp } from '../state'
@@ -57,7 +57,7 @@ export function More() {
         <h2 className="text-sm font-semibold text-ink">{t('more.settings')}</h2>
         <div>
           <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted">{t('more.passenger')}</p>
-          <DiscountToggle compact />
+          <PassengerPicker compact />
         </div>
         <div>
           <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted">{t('theme.title')}</p>

@@ -6,6 +6,7 @@ import { rateSummary } from '../lib/rates'
 import { shareText } from '../lib/share'
 import type { FareBasis, InputSource } from '../lib/trip'
 import { useApp } from '../state'
+import { ChangeCalc } from './ChangeCalc'
 import { ReportOvercharge } from './ReportOvercharge'
 import { Card } from './ui'
 
@@ -35,10 +36,11 @@ export interface FareCardProps {
 
 export function FareCard(p: FareCardProps) {
   const { t } = useTranslation()
-  const { discount, manifest, lang, addLeg } = useApp()
+  const { discount, passenger, manifest, lang, addLeg } = useApp()
   const [copied, setCopied] = useState<string | null>(null)
   const [added, setAdded] = useState(false)
   const [reporting, setReporting] = useState(false)
+  const [changeOpen, setChangeOpen] = useState(false)
   const [open, setOpen] = useState(false)
   const effective = p.mode?.effective ?? manifest.effective
   const authority = p.mode?.source ?? manifest.source
@@ -49,7 +51,7 @@ export function FareCard(p: FareCardProps) {
 
   const primary = discount ? p.discounted : p.regular
   const secondary = discount ? p.regular : p.discounted
-  const primaryLabel = discount ? t('fare.discounted') : t('fare.regular')
+  const primaryLabel = t(`passenger.${passenger}`)
   const secondaryLabel = discount ? t('fare.regular') : t('fare.discounted')
   const prev = p.previous ? (discount ? p.previous.discounted : p.previous.regular) : undefined
   const inc = prev != null ? increase(primary, prev) : undefined
@@ -201,6 +203,15 @@ export function FareCard(p: FareCardProps) {
         >
           {t('fare.share')}
         </button>
+        <button
+          type="button"
+          onClick={() => setChangeOpen((v) => !v)}
+          aria-expanded={changeOpen}
+          className="min-h-11 rounded-full border border-line-strong px-4 text-sm font-medium text-ink hover:bg-canvas"
+          data-testid="change-open"
+        >
+          🪙 {t('change.open')}
+        </button>
         {!reporting && (
           <button
             type="button"
@@ -217,6 +228,7 @@ export function FareCard(p: FareCardProps) {
           </span>
         )}
       </div>
+      {changeOpen && <ChangeCalc fare={primary} estimated={estimated} />}
       {reporting && (
         <ReportOvercharge
           modeName={p.modeName}

@@ -245,7 +245,10 @@
     "useCurrent": "Gamitin ang kasalukuyang pamasahe",
     "moveUp": "Itaas ang leg {{n}}",
     "moveDown": "Ibaba ang leg {{n}}",
-    "shareBasis": "Mga halaga ayon sa naka-save sa Bayad Po; hiwalay ang bayad sa bawat leg."
+    "shareBasis": "Mga halaga ayon sa naka-save sa Bayad Po; hiwalay ang bayad sa bawat leg.",
+    "edit": "Palitan ang layo",
+    "duplicate": "Doblehin",
+    "save": "I-save"
   },
   "report": {
     "open": "Suriin ang siningil",
@@ -296,7 +299,7 @@
     "altFare": "{{mode}}: {{fare}}",
     "addAll": "Idagdag lahat sa biyahe",
     "sourceShort": "LTFRB fares · LTFRB NCR routes",
-    "note": "Mga ruta: LTFRB NCR route data ng jeep at UV Express ({{n}} ruta, ayon sa LTFRB memorandum circulars), at LRT-1, LRT-2, MRT-3 at EDSA Busway. Ipinapalagay na pareho ang kalsada pabalik (hindi beripikado). Tantiya ang oras: oras ng sakay sa karaniwang bilis, paglalakad, takdang paghihintay kada sakay at palugit sa paglipat; walang live na traffic o schedule. Opisyal na LTFRB/DOTr na pamasahe ang bawat sakay. Hindi kaanib ng LTFRB.",
+    "note": "Mga ruta: LTFRB NCR route data ng jeep at UV Express ({{n}} ruta, ayon sa LTFRB memorandum circulars), at LRT-1, LRT-2, MRT-3 at EDSA Busway. Ipinapalagay na pareho ang kalsada pabalik (hindi beripikado). Tantiya ang oras: oras ng sakay sa karaniwang bilis, paglalakad, takdang paghihintay kada sakay; walang live na traffic o schedule. Opisyal na LTFRB/DOTr na pamasahe ang bawat sakay. Hindi kaanib ng LTFRB.",
     "walkTo": "Maglakad nang {{m}} m (mga {{min}} min) papunta sa {{place}}",
     "walkToStop": "Maglakad nang {{m}} m (mga {{min}} min) papunta sa sakayan malapit sa {{place}}",
     "walkToStation": "Maglakad nang {{m}} m (mga {{min}} min) papunta sa {{station}} station",
@@ -349,9 +352,45 @@
     "allModesRetry": "Isama lahat ng sasakyan",
     "checkFares": "Tingnan ang pamasahe kada sasakyan",
     "assumptions": "Mga ruta na awtorisado ng LTFRB ang mga linya, hindi patunay na may bumibiyahe ngayon. Ipinapalagay na pareho ang kalsada pabalik, at tantiya lang ang sakayan, babaan at lipatan. Magtanong sa driver o barker.",
-    "timeIncludes": "Tantiya: oras ng sakay sa karaniwang bilis, paglalakad, takdang paghihintay kada sakay at palugit sa paglipat. Walang live na traffic.",
-    "found_one": "{{count}} rutang nakita · pinakamabilis muna",
-    "found_other": "{{count}} rutang nakita · pinakamabilis muna"
+    "timeIncludes": "Tantiya: oras ng sakay sa karaniwang bilis, paglalakad at takdang paghihintay kada sakay. Walang live na traffic.",
+    "found_one": "{{count}} rutang nakita",
+    "found_other": "{{count}} rutang nakita",
+    "view": "View",
+    "viewMap": "Mapa",
+    "viewList": "Listahan",
+    "sheet": "Detalye ng ruta",
+    "panel_summary": "Buod",
+    "panelRoutes": "Mga ruta ({{n}})",
+    "panel_steps": "Mga hakbang",
+    "seeSteps": "Tingnan ang mga hakbang",
+    "sortBy": "Ayusin ayon sa",
+    "rank": {
+      "fare": "Mas mura",
+      "time": "Mas mabilis na estimate",
+      "transfers": "Kaunting lipat",
+      "walk": "Kaunting lakad"
+    },
+    "why": {
+      "fare": "Pinakamura",
+      "time": "Pinakamabilis (tantiya)",
+      "transfers": "Pinakakaunting lipat",
+      "walk": "Pinakakaunting lakad"
+    },
+    "estTime": "tantiya",
+    "fareEst": "pamasahe batay sa haba ng ruta (tantiya)",
+    "fareOfficial": "opisyal na pamasahe kada istasyon",
+    "dirInferred": "hinuha ang pabalik",
+    "dirInferredLong": "Kabaligtaran ng iginuhit ng LTFRB ang direksyon mo. Ipinapalagay na pareho ang kalsada pabalik; hindi beripikado.",
+    "walkApprox": "Tantiya: tuwid na layo plus 25%; hindi nasuri ang tawiran at footbridge.",
+    "signboard": "Signboard: {{name}}",
+    "askDriver": "Hindi beripikado: itanong sa driver kung dadaan sa {{place}}.",
+    "boardStation": "Sumakay sa {{station}} station",
+    "alightStation": "Bumaba sa {{station}} station",
+    "platform": "Platform: papuntang {{towards}}",
+    "entranceUnverified": "Tantiya ang lokasyon ng istasyon; hindi beripikado ang mga pasukan.",
+    "showOnMap": "Ipakita ang sakay {{n}} sa mapa",
+    "method": "Paano kinukuwenta ang ruta at oras",
+    "methodText": "Galing ang mga ruta sa LTFRB-authorised na ruta ng jeep at UV sa NCR, pati mga tren at EDSA Busway, at hinahanap sa phone mo nang hanggang dalawang lipat. Ipinapakitang oras = oras ng sakay sa karaniwang bilis (jeep 14, UV 19, Busway 23, tren 30 km/h) + lakad sa 4.5 km/h + takdang paghihintay kada sakay (4–7 min). Sa pagpili ng ruta, may dagdag na 3 minuto kada lipat, pero hindi ito idinadagdag sa ipinapakitang oras. Tuwid na linya plus 25% ang lakad. Opisyal na LTFRB/DOTr na patakaran ang pamasahe; ang layo ng sakay sa kalsada ay haba sa linya ng ruta."
   },
   "rate": {
     "addOn": "{{base}} sa unang {{km}} km, +{{per}} bawat susunod na km",
@@ -422,5 +461,63 @@
       "metered": "Kinompyut mula sa LTFRB rate gamit ang layo at oras na inilagay. Maaaring iba ang metro ng taxi o ang quote ng TNVS app (traffic, surge, toll).",
       "planner": "Sinukat ang layo ng sakay sa linya ng ruta sa mapa, kaya tantiya lang."
     }
+  },
+  "passenger": {
+    "title": "Pasahero",
+    "regular": "Regular",
+    "student": "Estudyante",
+    "senior": "Senior citizen",
+    "pwd": "PWD",
+    "note": "20% diskwento kapag may valid ID. Iisang discounted na pamasahe ang nasa fare guide para sa estudyante, senior at PWD."
+  },
+  "feedback": {
+    "open": "I-report ang problema sa ruta",
+    "title": "I-report ang problema sa ruta",
+    "what": "Ano ang mali?",
+    "details": "Detalye (ano ang nakita mo, saan)",
+    "includePlace": "Isama ang tantiyang sakayan (mga 100 m)",
+    "note": "Magbubukas ito ng naka-fill na issue sa public GitHub page ng proyekto. Walang ipapadala hangga't hindi mo sinusumite doon. Sinusuri ang mga report bago baguhin ang route data.",
+    "openGithub": "Buksan sa GitHub",
+    "kind": {
+      "boarding": "Sakayan o babaan",
+      "landmark": "Landmark o pangalan ng kalye",
+      "geometry": "Mali ang linya ng ruta",
+      "service": "Hindi na bumibiyahe / nagbago ang serbisyo",
+      "other": "Iba pa"
+    }
+  },
+  "commute": {
+    "save": "I-save ang commute",
+    "saved": "Naka-save na commute",
+    "title": "Mga commute mo",
+    "remove": "Alisin ang commute {{name}}",
+    "note": "Binubuksan ang planner gamit ang kasalukuyang route data. Hindi ito nagrereserba ng sakay o nagkukumpirma ng serbisyo."
+  },
+  "guide": {
+    "title": "Gabay sa biyahe",
+    "start": "Simulan ang biyahe",
+    "none": "Wala pang biyaheng gagabayan. Magplano ng ruta at pindutin ang “Simulan ang biyahe”.",
+    "step": "Hakbang {{n}} ng {{total}}",
+    "walk": "Maglakad nang mga {{m}} m",
+    "walkToBoard": "papunta sa sakayan: {{place}}",
+    "walkToDest": "papunta sa pupuntahan mo: {{place}}",
+    "boardAt": "Sumakay sa {{place}}",
+    "alightAt": "Bumaba sa {{place}}",
+    "next": "Susunod: lipat sa {{place}}",
+    "prev": "Bumalik",
+    "nextStep": "Susunod na hakbang",
+    "done": "Nakarating na",
+    "gps": "Ipakita ang layo ko sa susunod na hinto (GPS, opsyonal)",
+    "distance": "Mga {{m}} m pa sa babaan, tuwid na layo (GPS ±{{acc}} m)",
+    "nearAlight": "Malapit na ang babaan mo. Maghanda nang magsabi ng “Para po!”",
+    "nearTarget": "Malapit ka na sa susunod na punto.",
+    "gpsNote": "Gumagana lang ang GPS habang bukas ang page na ito at maaaring mali nang ilang sampung metro; hindi nito sinusundan ang sasakyan. Tumingin din sa mga karatula at magtanong sa driver."
+  },
+  "change": {
+    "open": "Sukli",
+    "cash": "Perang iaabot mo",
+    "change": "Sukli: {{amount}}",
+    "short": "Kulang ng {{amount}}",
+    "estimated": "Batay sa tantiyang pamasahe; maaaring iba ang singil ng driver."
   }
 }

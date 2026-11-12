@@ -4,12 +4,12 @@ import { Card } from '../components/ui'
 import { formatPesos } from '../engine'
 import { formatEffective } from '../lib/format'
 import { shareText } from '../lib/share'
-import { isStale, recalcLeg, tripTotals, type TripLeg } from '../lib/trip'
+import { editLegKm, isStale, newLegId, recalcLeg, tripTotals, type TripLeg } from '../lib/trip'
 import { useApp } from '../state'
 
 export function Trip() {
   const { t } = useTranslation()
-  const { trip, removeLeg, clearTrip, setTripLegs, updateLeg, discount, manifest, modesById, lang } = useApp()
+  const { trip, removeLeg, clearTrip, setTripLegs, updateLeg, discount, passenger, manifest, modesById, lang } = useApp()
   const [copied, setCopied] = useState(false)
   // Last removal or clear, so it can be undone.
   const [undo, setUndo] = useState<{ legs: TripLeg[]; text: string } | null>(null)
@@ -36,6 +36,20 @@ export function Trip() {
   const clear = () => {
     setUndo({ legs: trip, text: t('trip.cleared') })
     clearTrip()
+  }
+  // Editing the distance of a distance-based leg re-prices it with current data.
+  const [editing, setEditing] = useState<{ id: string; km: string } | null>(null)
+  const saveEdit = (l: TripLeg) => {
+    if (!editing) return
+    const patch = editLegKm(l, Number(editing.km), modesById)
+    if (!patch) return
+    updateLeg(l.id, { ...patch, fareVersion: manifest.version })
+    setEditing(null)
+  }
+  const duplicate = (i: number) => {
+    const next = [...trip]
+    next.splice(i + 1, 0, { ...trip[i], id: newLegId(), addedAt: Date.now() })
+    setTripLegs(next)
   }
   const move = (i: number, d: -1 | 1) => {
     const j = i + d
@@ -80,7 +94,7 @@ export function Trip() {
         <>
           <Card className="flex flex-col gap-2">
             <p className="text-xs font-medium uppercase tracking-wide text-muted">
-              {t('trip.total')} · {discount ? t('fare.discounted') : t('fare.regular')}
+              {t('trip.total')} · {t(`passenger.${passenger}`)}
             </p>
             <p className="font-bold tabular-nums text-ink" style={{ fontSize: 'clamp(2rem, 11vw, 3rem)' }} data-testid="trip-total">
               {formatPesos(primary)}
@@ -137,10 +151,47 @@ export function Trip() {
                     <button type="button" onClick={() => move(i, 1)} disabled={i === trip.length - 1} aria-label={t('trip.moveDown', { n: i + 1 })} className="min-h-9 min-w-9 rounded-full border border-line text-ink-2 disabled:opacity-40">
                       ↓
                     </button>
+                    {l.basis === 'distance' && l.km != null && (
+                      <button type="button" onClick={() => setEditing({ id: l.id, km: String(l.km) })} className="min-h-9 px-2 text-brand underline" data-testid="trip-edit">
+                        {t('trip.edit')}
+                      </button>
+                    )}
+                    <button type="button" onClick={() => duplicate(i)} className="min-h-9 px-2 text-brand underline" data-testid="trip-duplicate">
+                      {t('trip.duplicate')}
+                    </button>
                     <button type="button" onClick={() => remove(l)} className="ml-auto min-h-9 px-2 text-muted underline" data-testid="trip-remove">
                       {t('trip.remove')}
                     </button>
                   </div>
+                  {editing?.id === l.id && (
+                    <form
+                      className="flex flex-wrap items-end gap-2"
+                      onSubmit={(e) => {
+                        e.preventDefault()
+                        saveEdit(l)
+                      }}
+                    >
+                      <label className="flex flex-col text-xs text-ink-2">
+                        {t('input.distance')}
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          min={0.1}
+                          step={0.1}
+                          value={editing.km}
+                          onChange={(e) => setEditing({ id: l.id, km: e.target.value })}
+                          className="min-h-11 w-28 rounded-xl border border-line-strong bg-surface px-3 text-base text-ink"
+                          data-testid="trip-edit-km"
+                        />
+                      </label>
+                      <button type="submit" className="min-h-11 rounded-full bg-brand px-4 text-sm font-semibold text-white" data-testid="trip-edit-save">
+                        {t('trip.save')}
+                      </button>
+                      <button type="button" onClick={() => setEditing(null)} className="min-h-11 px-2 text-sm text-muted underline">
+                        {t('plan.cancel')}
+                      </button>
+                    </form>
+                  )}
                 </li>
               )
             })}

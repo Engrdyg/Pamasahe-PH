@@ -24,6 +24,19 @@ describe('planner (synthetic network)', () => {
     expect(rides[0].line.name).toBe('West - East')
     expect(rides[0].meters).toBeGreaterThan(3000)
     expect(formatPesos(best.regular)).toBe('₱14.00') // first 4 km
+    // East → west rides against the drawn geometry: the reverse is only inferred.
+    expect(rides[0].against).toBe(true)
+    expect(rides[0].line.reverse).toBe('inferred')
+  })
+
+  it('follows one-way routes only in their drawn direction', () => {
+    const oneWay = buildNetwork({ ...file, routes: file.routes.map((r) => ({ ...r, reverse: 'none' as const })) }, modesById)
+    const west = plan(oneWay, modesById, { lat: 14.6003, lng: 121.015 }, { lat: 14.6003, lng: 120.985 })
+    // (LRT-2 runs nearby in the real data, so only the jeep route is checked)
+    expect(west.some((i) => i.legs.some((l) => l.type === 'ride' && l.line.name === 'West - East'))).toBe(false)
+    const [east] = plan(oneWay, modesById, { lat: 14.6003, lng: 120.985 }, { lat: 14.6003, lng: 121.015 })
+    const ride = east.legs.find((l): l is RideLeg => l.type === 'ride')!
+    expect(ride.against).toBe(false)
   })
 
   it('transfers where the routes cross', () => {

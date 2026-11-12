@@ -39,13 +39,20 @@ export interface PlanMapProps {
   pinMode?: { start: LatLng | null; onCenter: (p: LatLng) => void } | null
   /** CSS height of the map (it fills the screen until there are results). */
   height?: string
+  /** Ride (0-based, among rides) to emphasise; the others are dimmed. */
+  highlight?: number | null
+  /** A ride line was tapped on the map. */
+  onSelectRide?: (ride: number) => void
 }
 
 const pinIcon = (label: string, cls: string) =>
   L.divIcon({ className: '', html: `<span class="plan-pin ${cls}"><b>${label}</b></span>`, iconSize: [34, 44], iconAnchor: [17, 42] })
 
 /** Leaflet map for the route planner: draggable A/B pins, ride legs coloured by mode, dashed walks. */
-export default function PlanMap({ from, to, itinerary, colors = [], marks = [], onMove, pinMode = null, height = '380px' }: PlanMapProps) {
+export default function PlanMap({ from, to, itinerary, colors = [], marks = [], onMove, pinMode = null, height = '380px', highlight = null, onSelectRide }: PlanMapProps) {
+  const onSelectRef = useRef(onSelectRide)
+  onSelectRef.current = onSelectRide
+  const ridePts = useRef<[number, number][][]>([])
   const el = useRef<HTMLDivElement>(null)
   const map = useRef<L.Map | null>(null)
   const layer = useRef<L.LayerGroup | null>(null)
@@ -95,16 +102,24 @@ export default function PlanMap({ from, to, itinerary, colors = [], marks = [], 
     if (!m || !g) return
     g.clearLayers()
     const bounds: L.LatLngExpression[] = []
+    ridePts.current = []
     if (itinerary) {
       let ride = 0
       for (const leg of itinerary.legs) {
         if (leg.type === 'walk') {
           L.polyline([[leg.from.lat, leg.from.lng], [leg.to.lat, leg.to.lng]], { color: '#475569', weight: 4, dashArray: '2 8', lineCap: 'round' }).addTo(g)
         } else {
-          const color = colors[ride++] ?? '#0b3d91'
+          const k = ride++
+          const color = colors[k] ?? '#0b3d91'
           const pts = leg.path.map((p) => [p.lat, p.lng] as [number, number])
-          L.polyline(pts, { color: '#fff', weight: 10, opacity: 0.95 }).addTo(g)
-          L.polyline(pts, { color, weight: 6 }).addTo(g)
+          ridePts.current.push(pts)
+          const dim = highlight != null && highlight !== k
+          L.polyline(pts, { color: '#fff', weight: highlight === k ? 13 : 10, opacity: dim ? 0.5 : 0.95 }).addTo(g)
+          const line = L.polyline(pts, { color, weight: highlight === k ? 8 : 6, opacity: dim ? 0.35 : 1 }).addTo(g)
+          // Tapping a ride on the map selects its instruction (and a wide invisible line makes it easy to hit).
+          const hit = L.polyline(pts, { color: '#000', weight: 22, opacity: 0 }).addTo(g)
+          for (const x of [line, hit]) x.on('click', () => onSelectRef.current?.(k))
+          line.bindTooltip(`${k + 1}`, { permanent: false, direction: 'top' })
           // Stations / stops passed on the way (rail and Busway)
           if (leg.fromStation) for (const p of pts.slice(1, -1)) L.circleMarker(p, { radius: 4, color, weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(g)
           bounds.push(...pts)
@@ -148,7 +163,14 @@ export default function PlanMap({ from, to, itinerary, colors = [], marks = [], 
       }
       else if (from) m.panTo([from.lat, from.lng])
     }
-  }, [from, to, itinerary, marksKey, pinning])
+  }, [from, to, itinerary, marksKey, pinning, highlight])
+
+  // Zoom to the ride whose instruction was selected.
+  useEffect(() => {
+    const m = map.current
+    const pts = highlight != null ? ridePts.current[highlight] : null
+    if (m && pts && pts.length > 1) m.fitBounds(L.latLngBounds(pts), { padding: [48, 48], maxZoom: 17 })
+  }, [highlight])
 
   // Leaflet needs to re-measure when the container is resized.
   // Refit afterwards: the map shrinks when results appear, right after it was fitted.

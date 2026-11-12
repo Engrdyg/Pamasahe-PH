@@ -245,7 +245,10 @@
     "useCurrent": "Use the current fare",
     "moveUp": "Move leg {{n}} up",
     "moveDown": "Move leg {{n}} down",
-    "shareBasis": "Amounts as saved in Bayad Po; each leg is paid separately."
+    "shareBasis": "Amounts as saved in Bayad Po; each leg is paid separately.",
+    "edit": "Edit distance",
+    "duplicate": "Duplicate",
+    "save": "Save"
   },
   "report": {
     "open": "Check a fare charged",
@@ -296,7 +299,7 @@
     "altFare": "{{mode}}: {{fare}}",
     "addAll": "Add all rides to trip",
     "sourceShort": "LTFRB fares · LTFRB NCR routes",
-    "note": "Routes: LTFRB NCR jeepney and UV Express route data ({{n}} routes, per LTFRB memorandum circulars), plus LRT-1, LRT-2, MRT-3 and the EDSA Busway. The return direction is assumed to use the same roads (not verified). Times are estimates: ride time at average speeds plus walking, a fixed wait for each ride and a transfer allowance; no live traffic or schedules. Fares are official LTFRB/DOTr fares for each ride. Not affiliated with LTFRB.",
+    "note": "Routes: LTFRB NCR jeepney and UV Express route data ({{n}} routes, per LTFRB memorandum circulars), plus LRT-1, LRT-2, MRT-3 and the EDSA Busway. The return direction is assumed to use the same roads (not verified). Times are estimates: ride time at average speeds plus walking and a fixed wait for each ride; no live traffic or schedules. Fares are official LTFRB/DOTr fares for each ride. Not affiliated with LTFRB.",
     "walkTo": "Walk {{m}} m (about {{min}} min) to {{place}}",
     "walkToStop": "Walk {{m}} m (about {{min}} min) to the stop near {{place}}",
     "walkToStation": "Walk {{m}} m (about {{min}} min) to {{station}} station",
@@ -349,9 +352,45 @@
     "allModesRetry": "Include all modes",
     "checkFares": "Check fares by vehicle",
     "assumptions": "Route lines are authorised LTFRB routes, not proof a vehicle runs there now. The return direction is assumed to use the same roads, and get-on, get-off and transfer points are approximate. Check with the driver or barker.",
-    "timeIncludes": "Estimate: ride time at average speeds, walking, a fixed wait per ride and a transfer allowance. No live traffic.",
-    "found_one": "{{count}} route found · fastest first",
-    "found_other": "{{count}} routes found · fastest first"
+    "timeIncludes": "Estimate: ride time at average speeds, walking and a fixed wait for each ride. No live traffic.",
+    "found_one": "{{count}} route found",
+    "found_other": "{{count}} routes found",
+    "view": "View",
+    "viewMap": "Map",
+    "viewList": "List",
+    "sheet": "Route details",
+    "panel_summary": "Summary",
+    "panelRoutes": "Routes ({{n}})",
+    "panel_steps": "Steps",
+    "seeSteps": "See the steps",
+    "sortBy": "Sort by",
+    "rank": {
+      "fare": "Lower fare",
+      "time": "Shorter est. time",
+      "transfers": "Fewer transfers",
+      "walk": "Less walking"
+    },
+    "why": {
+      "fare": "Lowest fare",
+      "time": "Shortest est. time",
+      "transfers": "Fewest transfers",
+      "walk": "Least walking"
+    },
+    "estTime": "estimated",
+    "fareEst": "fare from route length (estimate)",
+    "fareOfficial": "official station fares",
+    "dirInferred": "return direction inferred",
+    "dirInferredLong": "You ride this route opposite to how LTFRB drew it. The return trip is assumed to use the same roads; not verified.",
+    "walkApprox": "Approximate: straight-line distance plus 25%; crossings and footbridges are not checked.",
+    "signboard": "Signboard: {{name}}",
+    "askDriver": "Not verified: ask the driver if it passes {{place}}.",
+    "boardStation": "Board at {{station}} station",
+    "alightStation": "Get off at {{station}} station",
+    "platform": "Platform: towards {{towards}}",
+    "entranceUnverified": "Station location is approximate; entrances are not verified.",
+    "showOnMap": "Show ride {{n}} on the map",
+    "method": "How routes and times are worked out",
+    "methodText": "Routes come from LTFRB-authorised NCR jeep and UV routes plus the rail lines and EDSA Busway, searched on your phone with up to two transfers. Shown time = ride time at average speeds (jeep 14, UV 19, Busway 23, rail 30 km/h) + walking at 4.5 km/h + a fixed wait for each ride (4–7 min). When choosing routes, each transfer also counts as 3 extra minutes, but that is not added to the time shown. Walks are straight lines plus 25%. Fares use the official LTFRB/DOTr rules; road ride distance is the length along the route line."
   },
   "rate": {
     "addOn": "{{base}} for the first {{km}} km, +{{per}} per succeeding km",
@@ -422,5 +461,63 @@
       "metered": "Modeled from the LTFRB rate with the distance and time entered. The taxi meter or the TNVS booking quote may be different (traffic, surge, tolls).",
       "planner": "Ride distance is measured along the mapped route line and is an estimate."
     }
+  },
+  "passenger": {
+    "title": "Passenger",
+    "regular": "Regular",
+    "student": "Student",
+    "senior": "Senior citizen",
+    "pwd": "PWD",
+    "note": "20% discount with a valid ID. The fare guides publish one discounted fare for students, seniors and PWD."
+  },
+  "feedback": {
+    "open": "Report a route problem",
+    "title": "Report a route problem",
+    "what": "What is wrong?",
+    "details": "Details (what you saw, where)",
+    "includePlace": "Include the approximate get-on spot (about 100 m)",
+    "note": "This opens a prefilled issue on the project's public GitHub page. Nothing is sent until you submit it there. Reports are reviewed before any route data changes.",
+    "openGithub": "Open on GitHub",
+    "kind": {
+      "boarding": "Boarding or alighting point",
+      "landmark": "Landmark or street name",
+      "geometry": "Route line is wrong",
+      "service": "Route not running / service changed",
+      "other": "Something else"
+    }
+  },
+  "commute": {
+    "save": "Save this commute",
+    "saved": "Saved commute",
+    "title": "Your commutes",
+    "remove": "Remove commute {{name}}",
+    "note": "Opens the planner with today's route data. Saving does not reserve a ride or confirm service."
+  },
+  "guide": {
+    "title": "Guided trip",
+    "start": "Start trip",
+    "none": "No trip to guide yet. Plan a route and tap “Start trip”.",
+    "step": "Step {{n}} of {{total}}",
+    "walk": "Walk about {{m}} m",
+    "walkToBoard": "to where you get on: {{place}}",
+    "walkToDest": "to your destination: {{place}}",
+    "boardAt": "Get on at {{place}}",
+    "alightAt": "Get off at {{place}}",
+    "next": "Next: transfer at {{place}}",
+    "prev": "Back",
+    "nextStep": "Next step",
+    "done": "Arrived",
+    "gps": "Show my distance to the next stop (GPS, optional)",
+    "distance": "About {{m}} m to the get-off point in a straight line (GPS ±{{acc}} m)",
+    "nearAlight": "Your get-off point is near. Get ready to say “Para po!”",
+    "nearTarget": "You are near the next point.",
+    "gpsNote": "GPS works only while this page is open and can be off by tens of metres; it does not track the vehicle. Watch the road signs and ask the driver too."
+  },
+  "change": {
+    "open": "Change",
+    "cash": "Cash you hand over",
+    "change": "Change: {{amount}}",
+    "short": "Short by {{amount}}",
+    "estimated": "Based on an estimated fare; the driver's fare may differ."
   }
 }

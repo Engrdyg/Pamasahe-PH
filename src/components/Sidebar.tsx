@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import type { Theme } from '../lib/theme'
 import { useApp } from '../state'
 import { NAV_ITEMS, TripBadge } from './Nav'
-import { Chips, DiscountToggle, EffectiveBadge } from './ui'
+import { Chips, PassengerPicker, EffectiveBadge } from './ui'
 
 const secondary = [
   { id: 'compare', key: 'nav.compare', icon: '⇄' },
@@ -48,7 +48,7 @@ export function Sidebar({ active, section }: { active: string; section: string }
           <ul className="flex flex-col gap-1">{secondary.map((it) => link(it.id, t(it.key), it.icon, section === it.id))}</ul>
         </div>
       </nav>
-      <DiscountToggle compact />
+      <PassengerPicker compact />
       <div className="mt-auto flex flex-col gap-3">
         <div>
           <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted">{t('theme.title')}</p>

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import i18n from './i18n'
 import type { Lang, Manifest, Mode } from './engine/types'
-import { getPref, setPref } from './lib/prefs'
+import { getPref, setPref, type Passenger } from './lib/prefs'
 import { applyTheme, watchSystemTheme, type Theme } from './lib/theme'
 import { loadTrip, newLegId, saveTrip, type TripLeg } from './lib/trip'
 import { checkForUpdate, loadFareData } from './lib/updater'
@@ -10,8 +10,11 @@ interface AppState {
   modes: Mode[]
   modesById: Record<string, Mode>
   manifest: Manifest
+  /** true for every discounted passenger type */
   discount: boolean
   setDiscount: (v: boolean) => void
+  passenger: Passenger
+  setPassenger: (p: Passenger) => void
   lang: Lang
   setLang: (l: Lang) => void
   theme: Theme
@@ -31,7 +34,9 @@ const Ctx = createContext<AppState | null>(null)
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState(() => loadFareData())
-  const [discount, setDiscountState] = useState(() => getPref('discount'))
+  // Older versions stored only an on/off discount switch.
+  const [passenger, setPassengerState] = useState<Passenger>(() => getPref('passenger') ?? (getPref('discount') ? 'student' : 'regular'))
+  const discount = passenger !== 'regular'
   const [lang, setLangState] = useState<Lang>(() => getPref('lang'))
   const [theme, setThemeState] = useState<Theme>(() => getPref('theme'))
   const [updated, setUpdated] = useState<Manifest | null>(null)
@@ -63,14 +68,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const version = data.manifest.version
   const addLeg = useCallback(
     (leg: Omit<TripLeg, 'id' | 'addedAt'>) =>
-      setTrip((t) => [...t, { fareVersion: version, passenger: discount ? 'discounted' : 'regular', ...leg, id: newLegId(), addedAt: Date.now() }]),
-    [version, discount],
+      setTrip((t) => [...t, { fareVersion: version, passenger, ...leg, id: newLegId(), addedAt: Date.now() }]),
+    [version, passenger],
   )
 
-  const setDiscount = useCallback((v: boolean) => {
-    setDiscountState(v)
-    setPref('discount', v)
+  const setPassenger = useCallback((p: Passenger) => {
+    setPassengerState(p)
+    setPref('passenger', p)
+    setPref('discount', p !== 'regular')
   }, [])
+  const setDiscount = useCallback((v: boolean) => setPassenger(v ? 'student' : 'regular'), [setPassenger])
   const setLang = useCallback((l: Lang) => {
     setLangState(l)
     setPref('lang', l)
@@ -93,6 +100,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       manifest: data.manifest,
       discount,
       setDiscount,
+      passenger,
+      setPassenger,
       lang,
       setLang,
       theme,
@@ -106,7 +115,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       clearTrip,
       setTripLegs,
     }),
-    [data, discount, setDiscount, lang, setLang, theme, setTheme, updated, dismissUpdate, trip, addLeg, removeLeg, updateLeg, clearTrip, setTripLegs],
+    [data, discount, setDiscount, passenger, setPassenger, lang, setLang, theme, setTheme, updated, dismissUpdate, trip, addLeg, removeLeg, updateLeg, clearTrip, setTripLegs],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

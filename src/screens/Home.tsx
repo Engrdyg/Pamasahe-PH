@@ -4,8 +4,9 @@ import { FareTiles } from '../components/FareTiles'
 import { Hero3D } from '../components/Hero3D'
 import { InstallCard } from '../components/InstallCard'
 import { PlaceSheet, type SheetPick } from '../components/PlaceSheet'
-import { DiscountToggle } from '../components/ui'
+import { PassengerPicker } from '../components/ui'
 import { getDraft, loadPlaces, planHref, setDraft, type PlanDraft, type SavedPlace } from '../lib/places'
+import { loadCommutes, removeCommute } from '../lib/commutes'
 import { stationPlaces } from '../lib/stationPlaces'
 import { useWide } from '../lib/useMediaQuery'
 import { useApp } from '../state'
@@ -25,6 +26,7 @@ export function Home() {
   const [geoError, setGeoError] = useState(false)
   const [locating, setLocating] = useState<Field | null>(null)
   const [stored] = useState(() => loadPlaces())
+  const [commutes, setCommutes] = useState(() => loadCommutes())
   const shortcuts = [...stored.saved.map((p) => ({ p, saved: true })), ...stored.recent.map((p) => ({ p, saved: false }))]
     .filter((x, i, a) => a.findIndex((y) => y.p.label === x.p.label) === i)
     .slice(0, 4)
@@ -98,6 +100,36 @@ export function Home() {
               {t('home.geoDenied')}
             </p>
           )}
+          {commutes.length > 0 && (
+            <div className="flex flex-col gap-1.5" data-testid="home-commutes">
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted">{t('commute.title')}</span>
+              <ul className="flex flex-col gap-1.5">
+                {commutes.map((c) => (
+                  <li key={c.id} className="flex items-center gap-1 rounded-xl border border-line bg-surface">
+                    <a
+                      href={planHref(c.from, c.to)}
+                      onClick={() => setDraft({ from: c.from, to: c.to })}
+                      className="flex min-h-11 min-w-0 flex-1 items-center gap-2 px-3 text-sm text-ink"
+                      data-testid="home-commute"
+                    >
+                      <span aria-hidden="true">★</span>
+                      <span className="truncate">
+                        {c.from.label} → <span className="font-semibold">{c.to.label}</span>
+                      </span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setCommutes(removeCommute(c.id))}
+                      aria-label={t('commute.remove', { name: `${c.from.label} → ${c.to.label}` })}
+                      className="flex min-h-11 min-w-11 items-center justify-center text-muted"
+                    >
+                      ✕
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {shortcuts.length > 0 && (
             <div className="flex flex-wrap gap-2" aria-label={t('home.shortcuts')} data-testid="home-shortcuts">
               {shortcuts.map(({ p, saved }) => (
@@ -124,7 +156,7 @@ export function Home() {
             {t('home.allFares')} ›
           </a>
         </div>
-        {!wide && <DiscountToggle />}
+        {!wide && <PassengerPicker compact />}
         <FareTiles compact />
         <InstallCard />
       </div>

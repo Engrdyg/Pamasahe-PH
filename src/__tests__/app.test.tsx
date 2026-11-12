@@ -53,17 +53,23 @@ describe('Jeepney calculator', () => {
     expect(screen.getByTestId('fare-old')).toHaveTextContent('+₱2.50 (+9.1%)')
   })
 
-  it('user story 2: discount toggle sticks and shows discounted fare first', async () => {
+  it('user story 2: passenger type sticks and shows the discounted fare first', async () => {
     const user = userEvent.setup()
     const { unmount } = renderApp('#/calc/jeepney')
-    await user.click(screen.getByRole('switch'))
+    await user.click(screen.getByRole('radio', { name: 'Senior citizen' }))
     const km = screen.getByLabelText('Distance (km)')
     await user.clear(km)
     await user.type(km, '12')
     expect(screen.getByTestId('fare-primary')).toHaveTextContent('₱24.00')
+    expect(screen.getByTestId('fare-passenger')).toHaveTextContent('Senior citizen')
     unmount()
+    const again = renderApp('#/calc/jeepney')
+    expect(screen.getByRole('radio', { name: 'Senior citizen' })).toHaveAttribute('aria-checked', 'true')
+    // Older installs stored only the on/off switch; they keep a discount.
+    again.unmount()
+    localStorage.setItem('pamasahe-ph:prefs', JSON.stringify({ discount: true }))
     renderApp('#/calc/jeepney')
-    expect(screen.getByRole('switch')).toHaveAttribute('aria-checked', 'true')
+    expect(screen.getByRole('radio', { name: 'Student' })).toHaveAttribute('aria-checked', 'true')
   })
 
   it('switches to modern jeep and flags distances beyond the table', async () => {
@@ -342,6 +348,15 @@ describe('Multi-leg trip', () => {
     expect(screen.getByTestId('trip-total')).toHaveTextContent('₱16.00')
     await user.click(screen.getByRole('button', { name: 'Undo' }))
     expect(screen.getByTestId('trip-total')).toHaveTextContent('₱28.00')
+    // Edit the jeep leg's distance (re-priced) and duplicate it.
+    await user.click(screen.getByTestId('trip-edit'))
+    await user.clear(screen.getByTestId('trip-edit-km'))
+    await user.type(screen.getByTestId('trip-edit-km'), '12')
+    await user.click(screen.getByTestId('trip-edit-save'))
+    expect(screen.getByTestId('trip-total')).toHaveTextContent('₱42.00')
+    await user.click(screen.getAllByTestId('trip-duplicate')[1])
+    expect(screen.getAllByTestId('trip-leg')).toHaveLength(3)
+    expect(screen.getByTestId('trip-total')).toHaveTextContent('₱72.00')
   })
 })
 

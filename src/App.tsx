@@ -9,6 +9,7 @@ import { About } from './screens/About'
 import { Calculator } from './screens/Calculator'
 import { Compare } from './screens/Compare'
 import { Fares } from './screens/Fares'
+import { Guide } from './screens/Guide'
 import { Home } from './screens/Home'
 import { More } from './screens/More'
 import { Plan } from './screens/Plan'
@@ -16,6 +17,7 @@ import { Privacy } from './screens/Privacy'
 import { Support } from './screens/Support'
 import { Trip } from './screens/Trip'
 import { Tables } from './screens/Tables'
+import { getDraft, planHref } from './lib/places'
 import { useApp } from './state'
 
 const CATEGORIES: Category[] = ['jeepney', 'uv', 'bus-city', 'bus-provincial', 'busway', 'rail', 'taxi', 'tnvs']
@@ -67,6 +69,10 @@ export default function App() {
     const [, fromArg, toArg] = route
     screen = <Plan key={`${fromArg}/${toArg}`} fromArg={fromArg} toArg={toArg} />
     title = t('plan.title')
+  } else if (section === 'guide') {
+    screen = <Guide />
+    title = t('guide.title')
+    back = planHref(getDraft().from, getDraft().to).slice(2)
   } else if (section === 'privacy') {
     screen = <Privacy />
     title = t('privacy.title')

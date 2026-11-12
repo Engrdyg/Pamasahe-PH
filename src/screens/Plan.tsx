@@ -11,6 +11,11 @@ import { KIND_COLOR, rideColors } from '../lib/planColors'
 import type { LineKind, SlimItinerary, SlimLeg } from '../lib/planner'
 import type { LatLng } from '../lib/routing'
 import { usePlanner } from '../lib/usePlanner'
+import { RouteFeedback } from '../components/RouteFeedback'
+import { findCommute, loadCommutes, saveCommute } from '../lib/commutes'
+import { setGuide } from '../lib/guide'
+import { getPref, setPref } from '../lib/prefs'
+import { RANKS, rankItineraries, reasons, type Rank } from '../lib/planRank'
 import { useWide } from '../lib/useMediaQuery'
 import { useApp } from '../state'
 
@@ -37,7 +42,7 @@ const mins = (n: number) => Math.max(1, Math.round(n))
  */
 export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
   const { t } = useTranslation()
-  const { modesById, discount, lang, addLeg } = useApp()
+  const { modesById, discount, passenger, lang, addLeg } = useApp()
   const planner = usePlanner(modesById)
   const [from, setFrom] = useState<LatLng | null>(() => parsePoint(fromArg))
   const [to, setTo] = useState<LatLng | null>(() => parsePoint(toArg))
@@ -189,7 +194,25 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
 
   const modeName = (id: string) => modesById[id]?.name[lang] ?? id
   const fare = (r: number | null, d: number | null) => (r == null || d == null ? '—' : formatPesos(discount ? d : r))
-  const it = results?.[selected] ?? null
+  // Ranking preference: the same valid options, re-ordered.
+  const [rank, setRankState] = useState<Rank>(() => (RANKS.includes(getPref('planRank') as Rank) ? (getPref('planRank') as Rank) : 'time'))
+  const [highlight, setHighlight] = useState<number | null>(null)
+  const setRank = (r: Rank) => {
+    setRankState(r)
+    setPref('planRank', r)
+    setSelected(0)
+    setHighlight(null)
+  }
+  const ranked = useMemo(() => (results ? rankItineraries(results, rank, discount) : null), [results, rank, discount])
+  const it = ranked?.[selected] ?? null
+  // Phone: Map view (map + sheet with summary / routes / steps) or a map-free List view.
+  const [view, setView] = useState<'map' | 'list'>('map')
+  const [panel, setPanel] = useState<'summary' | 'routes' | 'steps'>('routes')
+  const [feedbackFor, setFeedbackFor] = useState<number | null>(null)
+  useEffect(() => {
+    setPanel('routes')
+    setHighlight(null)
+  }, [results])
 
   // Landmark / street names for where to get on and off (Photon reverse
   // geocoding, looked up only for the itinerary being shown).
@@ -264,7 +287,9 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
   // Phone: before results the map fills the space between the fields and the
   // bottom nav (measured); with results it takes about 55% of that.
   const mapPx = Math.max(320, avail)
-  const mapHeight = wide ? 'calc(100vh - 120px)' : `${Math.round(results?.length ? Math.max(300, mapPx * 0.55) : mapPx)}px`
+  const share = panel === 'summary' ? Math.max(260, mapPx - 200) : Math.max(260, mapPx * (panel === 'steps' ? 0.42 : 0.5))
+  const listView = !wide && view === 'list' && !!results?.length && !pinFor
+  const mapHeight = wide ? 'calc(100vh - 120px)' : listView ? '0px' : `${Math.round(results?.length ? share : mapPx)}px`
   const field = (f: Field) => {
     const text = f === 'from' ? fromText : toText
     return (
@@ -281,6 +306,230 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
     )
   }
 
+
+  const rankBar = (
+    <div className="flex flex-col gap-1.5">
+      <p className="text-sm font-semibold text-ink" data-testid="plan-count">
+        {t('plan.found', { count: ranked?.length ?? 0 })}
+      </p>
+      <div className="flex items-center gap-2 overflow-x-auto pb-0.5">
+        <span className="shrink-0 text-xs text-muted">{t('plan.sortBy')}</span>
+        <div role="radiogroup" aria-label={t('plan.sortBy')} className="flex gap-1.5" data-testid="plan-rank">
+          {RANKS.map((r) => (
+            <button
+              key={r}
+              type="button"
+              role="radio"
+              aria-checked={rank === r}
+              onClick={() => setRank(r)}
+              className={`min-h-9 shrink-0 rounded-full border px-3 text-xs font-semibold ${rank === r ? 'border-brand bg-brand text-white' : 'border-line-strong text-ink-2'}`}
+              data-testid={`plan-rank-${r}`}
+            >
+              {t(`plan.rank.${r}`)}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+
+  const routeCard = (r: SlimItinerary, i: number) => {
+    const optRides = r.legs.filter((l): l is RideStep => l.type === 'ride')
+    const optColors = rideColors(optRides.map((l) => l.line))
+    const on = i === selected
+    const why = ranked ? reasons(r, ranked, discount) : []
+    const roadFare = optRides.some((l) => !l.fromStation)
+    const inferred = optRides.some((l) => l.against && l.line.reverse === 'inferred')
+    return (
+      <button
+        key={i}
+        type="button"
+        onClick={() => {
+          setSelected(i)
+          setHighlight(null)
+        }}
+        aria-pressed={on}
+        className={`flex flex-col gap-2 rounded-2xl border bg-surface p-4 text-left shadow-sm ${on ? 'border-brand ring-2 ring-brand/30' : 'border-line'}`}
+        data-testid="plan-option"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <span>
+            <span className="block text-2xl font-bold tabular-nums leading-tight text-ink" data-testid="plan-fare">
+              {r.rides === 0 ? t('plan.walkOnly') : formatPesos(discount ? r.discounted : r.regular)}
+              {r.fareIncomplete && '+'}
+            </span>
+            {r.rides > 0 && <span className="text-[11px] text-muted">{t(`passenger.${passenger}`)}</span>}
+          </span>
+          <span className="text-right" title={t('plan.timeIncludes')}>
+            <span className="block text-sm font-semibold tabular-nums text-ink">≈ {t('plan.minutes', { n: mins(r.minutes) })}</span>
+            <span className="text-[11px] text-muted">{t('plan.estTime')}</span>
+          </span>
+        </div>
+        {why.length > 0 && (
+          <span className="flex flex-wrap gap-1" data-testid="plan-reason">
+            {why.map((w) => (
+              <span key={w} className="rounded-full bg-accent/25 px-2 py-0.5 text-[11px] font-semibold text-ink">
+                ★ {t(`plan.why.${w}`)}
+              </span>
+            ))}
+          </span>
+        )}
+        <div className="flex flex-wrap items-center gap-1 text-xs">
+          {optRides.map((l, k) => (
+            <span key={k} className="inline-flex items-center gap-1">
+              {k > 0 && <span className="text-muted">›</span>}
+              <span className="rounded-full px-2 py-0.5 font-semibold text-white" style={{ background: optColors[k] }}>
+                {k + 1}. {ICON[l.line.kind]} {short(l.line)}
+              </span>
+            </span>
+          ))}
+        </div>
+        <span className="text-xs text-ink-2">
+          {r.rides <= 1 ? t('plan.direct') : t('plan.transfers', { count: r.rides - 1, n: r.rides - 1 })} · {t('plan.walk', { m: Math.round(r.walkMeters / 10) * 10 })}
+        </span>
+        {r.rides > 0 && (
+          <span className="text-[11px] text-muted" data-testid="plan-uncertainty">
+            {roadFare ? `≈ ${t('plan.fareEst')}` : `✓ ${t('plan.fareOfficial')}`}
+            {inferred && ` · ↺ ${t('plan.dirInferred')}`}
+          </span>
+        )}
+      </button>
+    )
+  }
+
+  const startGuide = () => {
+    if (!it) return
+    setGuide({
+      itinerary: it,
+      fromLabel: fromText || t('map.pinned'),
+      toLabel: typedDest ?? (to ? place(to) : ''),
+      board: rides.map((l) => (l.fromStation ? `${l.fromStation} station` : place(l.path[0]))),
+      alight: rides.map((l) => (l.toStation ? `${l.toStation} station` : place(l.path[l.path.length - 1]))),
+      passenger: t(`passenger.${passenger}`),
+      colors,
+    })
+    window.location.hash = '#/guide'
+  }
+  const [commuteSaved, setCommuteSaved] = useState(false)
+  const isCommute = !!(from && to && findCommute(loadCommutes(), { label: '', ...from }, { label: '', ...to }))
+  const onSaveCommute = () => {
+    if (!from || !to) return
+    saveCommute({ label: fromText || t('map.pinned'), ...from }, { label: toText || t('map.pinned'), ...to })
+    setCommuteSaved(true)
+  }
+
+  const stepsCard = it && it.rides > 0 && (
+    <Card className="flex flex-col gap-3" data-testid="plan-steps">
+      <h2 className="text-sm font-semibold text-ink">{t('plan.steps')}</h2>
+      <ol className="flex flex-col gap-3">
+        {it.legs.map((l, i) => {
+          if (l.type === 'walk')
+            return (
+              <li key={i} className="flex gap-3 text-sm text-ink-2">
+                <span aria-hidden="true">🚶</span>
+                <span>
+                  <span data-testid="plan-walk">{walkText(i, l.meters, l.minutes)}</span>
+                  <span className="block text-[11px] text-muted">{t('plan.walkApprox')}</span>
+                </span>
+              </li>
+            )
+          const k = rides.indexOf(l)
+          const lit = highlight === k
+          return (
+            <li
+              key={i}
+              id={`plan-ride-${k}`}
+              className={`flex gap-3 rounded-r-xl border-l-4 py-1 pl-2 ${lit ? 'bg-brand/10' : ''}`}
+              style={{ borderColor: colors[k] }}
+              data-testid="plan-ride"
+            >
+              <button
+                type="button"
+                onClick={() => setHighlight(lit ? null : k)}
+                aria-pressed={lit}
+                aria-label={t('plan.showOnMap', { n: k + 1 })}
+                className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-bold text-white"
+                style={{ background: colors[k] }}
+              >
+                {k + 1}
+              </button>
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="text-sm font-semibold text-ink">
+                  <span aria-hidden="true">{ICON[l.line.kind]} </span>
+                  {modeName(l.line.modeId)}
+                  {(l.line.kind === 'jeep' || l.line.kind === 'uv') && <span className="font-normal text-ink-2">: {l.line.name}</span>}
+                </span>
+                {l.fromStation ? (
+                  <span className="flex flex-col text-xs text-ink">
+                    <span>▸ {t('plan.boardStation', { station: l.fromStation })}</span>
+                    {l.towards && <span data-testid="plan-platform">▸ {t('plan.platform', { towards: l.towards })}</span>}
+                    <span>▸ {t('plan.alightStation', { station: l.toStation })}</span>
+                    <span className="text-[11px] text-muted">{t('plan.entranceUnverified')}</span>
+                  </span>
+                ) : (
+                  <span className="flex flex-col text-xs text-ink" data-testid="plan-board">
+                    <span data-testid="plan-signboard">▸ {t('plan.signboard', { name: l.line.name })}</span>
+                    <span>▸ {t('plan.board', { place: place(l.path[0]) })}</span>
+                    <span>▸ {t('plan.alight', { place: place(l.path[l.path.length - 1]) })}</span>
+                    <span className="text-[11px] text-muted">{t('plan.askDriver', { place: place(l.path[l.path.length - 1]) })}</span>
+                    {l.against && l.line.reverse === 'inferred' && (
+                      <span className="text-[11px] text-amber-800 dark:text-amber-300" data-testid="plan-dir-inferred">
+                        ↺ {t('plan.dirInferredLong')}
+                      </span>
+                    )}
+                  </span>
+                )}
+                <span className="text-xs text-ink-2">
+                  {legLabel(l)} · ≈ {t('plan.minutes', { n: mins(l.minutes) })}
+                  {l.line.mc && <span className="text-muted"> · {l.line.mc}</span>}
+                </span>
+                <span className="text-[11px] text-muted">
+                  {t(`passenger.${passenger}`)} · {t(l.fromStation ? 'basis.matrix' : 'basis.planner')}
+                  {l.alt && ` · ${t('plan.altFare', { mode: modeName(l.alt.modeId), fare: formatPesos(discount ? l.alt.discounted : l.alt.regular) })}`}
+                </span>
+                {!l.fromStation && (
+                  <button type="button" onClick={() => setFeedbackFor(k)} className="self-start text-[11px] text-muted underline" data-testid="plan-feedback">
+                    {t('feedback.open')}
+                  </button>
+                )}
+              </div>
+              <span className="text-sm font-bold tabular-nums text-ink">{fare(l.regular, l.discounted)}</span>
+            </li>
+          )
+        })}
+      </ol>
+      <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:bg-amber-900/30 dark:text-amber-200" data-testid="plan-assumptions">
+        ⚠ {t('plan.assumptions')}
+      </p>
+      <details className="text-xs text-ink-2">
+        <summary className="min-h-9 cursor-pointer font-medium text-brand">{t('plan.method')}</summary>
+        <p className="mt-1">{t('plan.methodText')}</p>
+      </details>
+      <div className="flex items-center justify-between border-t border-line pt-3">
+        <span className="text-sm text-ink-2">{t(`passenger.${passenger}`)}</span>
+        <span className="text-xl font-bold tabular-nums text-ink" data-testid="plan-total">
+          {formatPesos(discount ? it.discounted : it.regular)}
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <button type="button" onClick={startGuide} className="min-h-11 rounded-full bg-brand px-4 text-sm font-semibold text-white" data-testid="plan-guide">
+          ▶ {t('guide.start')}
+        </button>
+        <button type="button" onClick={addAll} className="min-h-11 rounded-full border border-line-strong px-4 text-sm font-semibold text-ink" data-testid="plan-add">
+          {added ? t('trip.added') : `+ ${t('plan.addAll')}`}
+        </button>
+        <button
+          type="button"
+          onClick={onSaveCommute}
+          disabled={commuteSaved || isCommute}
+          className="min-h-11 rounded-full border border-line-strong px-4 text-sm text-ink disabled:opacity-60"
+          data-testid="plan-save-commute"
+        >
+          {commuteSaved || isCommute ? `★ ${t('commute.saved')}` : `☆ ${t('commute.save')}`}
+        </button>
+      </div>
+    </Card>
+  )
 
   return (
     <main className="flex w-full flex-col md:mx-auto md:grid md:max-w-6xl md:grid-cols-[400px_1fr] md:items-start md:gap-6 md:px-8 md:py-6" data-testid="plan">
@@ -336,6 +585,23 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
             })}
           </div>
         )}
+        {!wide && !!results?.length && (
+          <div role="radiogroup" aria-label={t('plan.view')} className="mb-1.5 grid grid-cols-2 rounded-xl bg-canvas-2 p-0.5 text-sm font-medium">
+            {(['map', 'list'] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                role="radio"
+                aria-checked={view === v}
+                onClick={() => setView(v)}
+                className={`min-h-10 rounded-lg ${view === v ? 'bg-surface text-ink shadow-sm' : 'text-muted'}`}
+                data-testid={`plan-view-${v}`}
+              >
+                {v === 'map' ? `🗺 ${t('plan.viewMap')}` : `☰ ${t('plan.viewList')}`}
+              </button>
+            ))}
+          </div>
+        )}
       </section>
 
       <div ref={mapWrap} className="relative isolate z-0 md:sticky md:top-6 md:col-start-2 md:row-span-2 md:row-start-1 md:overflow-hidden md:rounded-2xl">
@@ -379,9 +645,15 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
             onMove={onMove}
             pinMode={pinFor ? { start: (pinFor === 'from' ? from : to) ?? from ?? to, onCenter: setPinAt } : null}
             height={mapHeight}
+            highlight={highlight}
+            onSelectRide={(k) => {
+              setHighlight(k)
+              if (!wide) setPanel('steps')
+              window.setTimeout(() => document.getElementById(`plan-ride-${k}`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 50)
+            }}
           />
         </Suspense>
-        {it && rides.length > 0 && !pinFor && (
+        {it && rides.length > 0 && !pinFor && !listView && (
           <div className="absolute bottom-6 left-2 z-[500] max-w-[70%] rounded-xl bg-surface/95 p-2 text-xs text-ink shadow-lg" data-testid="map-legend">
             <button type="button" onClick={() => setLegendOpen((v) => !v)} aria-expanded={legendOpen} className="flex w-full items-center justify-between gap-2 font-semibold">
               {t('plan.legend')} <span aria-hidden="true">{legendOpen ? '▾' : '▸'}</span>
@@ -460,113 +732,62 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
             </Card>
           )}
 
-          {results && results.length > 1 && (
-            <p className="text-sm font-semibold text-ink" data-testid="plan-count">
-              {t('plan.found', { count: results.length })}
-            </p>
-          )}
-          {results?.map((r, i) => {
-            const optRides = r.legs.filter((l): l is Exclude<SlimLeg, { type: 'walk' }> => l.type === 'ride')
-            const optColors = rideColors(optRides.map((l) => l.line))
-            const on = i === selected
-            return (
-              <button
-                key={i}
-                type="button"
-                onClick={() => setSelected(i)}
-                aria-pressed={on}
-                className={`flex flex-col gap-2 rounded-2xl border bg-surface p-4 text-left shadow-sm ${on ? 'border-brand ring-2 ring-brand/30' : 'border-line'}`}
-                data-testid="plan-option"
-              >
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-2xl font-bold tabular-nums text-ink" data-testid="plan-fare">
-                    {r.rides === 0 ? t('plan.walkOnly') : formatPesos(discount ? r.discounted : r.regular)}
-                    {r.fareIncomplete && '+'}
-                  </span>
-                  <span className="text-sm font-medium tabular-nums text-ink-2" title={t('plan.timeIncludes')}>
-                    ≈ {t('plan.minutes', { n: mins(r.minutes) })}
-                  </span>
-                </div>
-                <div className="flex flex-wrap items-center gap-1 text-xs">
-                  {optRides.map((l, k) => (
-                    <span key={k} className="inline-flex items-center gap-1">
-                      {k > 0 && <span className="text-muted">›</span>}
-                      <span className="rounded-full px-2 py-0.5 font-semibold text-white" style={{ background: optColors[k] }}>
-                        {ICON[l.line.kind]} {l.line.kind === 'rail' ? l.line.name : l.line.kind === 'busway' ? 'Busway' : l.line.name}
-                      </span>
-                    </span>
-                  ))}
-                </div>
-                <span className="text-xs text-muted">
-                  {r.rides <= 1 ? t('plan.direct') : t('plan.transfers', { count: r.rides - 1, n: r.rides - 1 })} · {t('plan.walk', { m: Math.round(r.walkMeters / 10) * 10 })}
-                </span>
-              </button>
-            )
-          })}
-
-          {it && it.rides > 0 && (
-            <Card className="flex flex-col gap-3" data-testid="plan-steps">
-              <h2 className="text-sm font-semibold text-ink">{t('plan.steps')}</h2>
-              <ol className="flex flex-col gap-3">
-                {it.legs.map((l, i) =>
-                  l.type === 'walk' ? (
-                    <li key={i} className="flex gap-3 text-sm text-ink-2">
-                      <span aria-hidden="true">🚶</span>
-                      <span data-testid="plan-walk">{walkText(i, l.meters, l.minutes)}</span>
-                    </li>
-                  ) : (
-                    <li key={i} className="flex gap-3 border-l-4 pl-2" style={{ borderColor: colors[rides.indexOf(l)] }}>
-                      <span aria-hidden="true" className="text-lg">
-                        {ICON[l.line.kind]}
-                      </span>
-                      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <span className="text-sm font-semibold text-ink">
-                          {modeName(l.line.modeId)}
-                          {(l.line.kind === 'jeep' || l.line.kind === 'uv') && <span className="font-normal text-ink-2">: {l.line.name}</span>}
-                        </span>
-                        {!l.fromStation && (
-                          <span className="flex flex-col text-xs text-ink" data-testid="plan-board">
-                            <span>▸ {t('plan.board', { place: place(l.path[0]) })}</span>
-                            <span>▸ {t('plan.alight', { place: place(l.path[l.path.length - 1]) })}</span>
-                          </span>
-                        )}
-                        <span className="text-xs text-ink-2">
-                          {legLabel(l)} · ≈ {t('plan.minutes', { n: mins(l.minutes) })}
-                          {l.line.mc && <span className="text-muted"> · {l.line.mc}</span>}
-                        </span>
-                        {l.alt && (
-                          <span className="text-xs text-muted">
-                            {t('plan.altFare', { mode: modeName(l.alt.modeId), fare: formatPesos(discount ? l.alt.discounted : l.alt.regular) })}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-sm font-bold tabular-nums text-ink">{fare(l.regular, l.discounted)}</span>
-                    </li>
-                  ),
-                )}
-              </ol>
-              <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:bg-amber-900/30 dark:text-amber-200" data-testid="plan-assumptions">
-                ⚠ {t('plan.assumptions')}
-              </p>
-              <div className="flex items-center justify-between border-t border-line pt-3">
-                <span className="text-sm text-ink-2">{discount ? t('fare.discounted') : t('fare.regular')}</span>
-                <span className="text-xl font-bold tabular-nums text-ink" data-testid="plan-total">
-                  {formatPesos(discount ? it.discounted : it.regular)}
-                </span>
+          {ranked && ranked.length > 0 && (wide || listView ? (
+            <>
+              {rankBar}
+              {ranked.map(routeCard)}
+              {stepsCard}
+            </>
+          ) : (
+            <>
+              <div role="tablist" aria-label={t('plan.sheet')} className="grid grid-cols-3 rounded-xl bg-canvas-2 p-0.5 text-xs font-semibold">
+                {(['summary', 'routes', 'steps'] as const).map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    role="tab"
+                    aria-selected={panel === p}
+                    onClick={() => setPanel(p)}
+                    className={`min-h-10 rounded-lg ${panel === p ? 'bg-surface text-ink shadow-sm' : 'text-muted'}`}
+                    data-testid={`plan-panel-${p}`}
+                  >
+                    {p === 'routes' ? t('plan.panelRoutes', { n: ranked.length }) : t(`plan.panel_${p}`)}
+                  </button>
+                ))}
               </div>
-              <button type="button" onClick={addAll} className="min-h-11 self-start rounded-full bg-brand px-4 text-sm font-semibold text-white" data-testid="plan-add">
-                {added ? t('trip.added') : `+ ${t('plan.addAll')}`}
-              </button>
-            </Card>
-          )}
+              {panel === 'summary' && it && (
+                <>
+                  {routeCard(it, selected)}
+                  <button type="button" onClick={() => setPanel('steps')} className="min-h-11 self-start rounded-full border border-line-strong px-4 text-sm font-medium text-ink">
+                    {t('plan.seeSteps')} ›
+                  </button>
+                </>
+              )}
+              {panel === 'routes' && (
+                <>
+                  {rankBar}
+                  {ranked.map(routeCard)}
+                </>
+              )}
+              {panel === 'steps' && stepsCard}
+            </>
+          ))}
           {(results || wide) && (
             <p className="text-[11px] leading-snug text-muted">
-              {(from || to) && `${t('plan.dragHint')} `}
+              {(from || to) && !listView && `${t('plan.dragHint')} `}
               {t('plan.note', { n: planner.routes || '…' })} {t('plan.landmarkNote')}
             </p>
           )}
       </div>
 
+      {feedbackFor != null && rides[feedbackFor] && (
+        <RouteFeedback
+          route={`${modeName(rides[feedbackFor].line.modeId)}: ${rides[feedbackFor].line.name}`}
+          mc={rides[feedbackFor].line.mc}
+          place={rides[feedbackFor].path[0]}
+          onClose={() => setFeedbackFor(null)}
+        />
+      )}
       {sheet && (
         <PlaceSheet
           title={sheet === 'from' ? t('map.from') : t('map.to')}

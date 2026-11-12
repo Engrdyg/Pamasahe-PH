@@ -1,6 +1,7 @@
 /** Multi-leg trip (e.g. jeep → MRT-3 → bus): legs are snapshots of fare cards. */
 import { distanceFare } from '../engine'
 import type { Centavos, Mode } from '../engine/types'
+import type { Passenger } from './prefs'
 
 /** How the fare of a leg was worked out. */
 export type FareBasis = 'distance' | 'matrix' | 'metered' | 'planner'
@@ -23,8 +24,8 @@ export interface TripLeg {
   /** Fare-data version and the mode's effective date when the leg was saved. */
   fareVersion?: string
   effective?: string
-  /** Passenger type shown when the leg was saved. */
-  passenger?: 'regular' | 'discounted'
+  /** Passenger type shown when the leg was saved ('discounted' on older legs). */
+  passenger?: Passenger | 'discounted'
 }
 
 export const TRIP_KEY = 'pamasahe-ph:trip'
@@ -63,6 +64,15 @@ export function isStale(leg: TripLeg, version: string, modesById: Record<string,
   if (!leg.fareVersion || leg.fareVersion === version) return false
   const m = leg.modeId ? modesById[leg.modeId] : undefined
   return !m || m.effective !== leg.effective
+}
+
+/** A distance-based leg re-priced for a new distance with current data, or null. */
+export function editLegKm(leg: TripLeg, km: number, modesById: Record<string, Mode>): Partial<TripLeg> | null {
+  if (!(km > 0)) return null
+  const f = recalcLeg({ ...leg, km }, modesById)
+  if (!f) return null
+  const m = modesById[leg.modeId!]
+  return { ...f, km, inputSource: 'manual', tripLabel: `${Math.round(km * 10) / 10} km`, effective: m.effective }
 }
 
 /** Current fare for a saved distance-based leg, or null when it cannot be

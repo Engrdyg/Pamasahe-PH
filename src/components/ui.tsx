@@ -2,6 +2,7 @@ import { useId, type HTMLAttributes, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useApp } from '../state'
 import { formatEffective } from '../lib/format'
+import { PASSENGERS, type Passenger } from '../lib/prefs'
 
 export function Chips<T extends string>({
   label,
@@ -136,29 +137,21 @@ export function Select({
   )
 }
 
-export function DiscountToggle({ compact = false }: { compact?: boolean }) {
+/** Passenger type: Regular, Student, Senior, PWD. Shown near fare results. */
+export function PassengerPicker({ compact = false }: { compact?: boolean }) {
   const { t } = useTranslation()
-  const { discount, setDiscount } = useApp()
+  const { passenger, setPassenger } = useApp()
   return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={discount}
-      onClick={() => setDiscount(!discount)}
-      className={`flex min-h-11 items-center gap-3 rounded-full border px-3 py-2 text-left text-sm font-medium transition-colors ${
-        discount ? 'border-accent bg-accent/15 text-ink' : 'border-line-strong bg-surface text-ink-2'
-      }`}
-    >
-      <span
-        aria-hidden="true"
-        className={`relative inline-block h-6 w-11 shrink-0 rounded-full transition-colors ${discount ? 'bg-accent' : 'bg-line-strong'}`}
-      >
-        <span
-          className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${discount ? 'translate-x-5.5' : 'translate-x-0.5'}`}
-        />
-      </span>
-      <span>{compact ? t('discountToggleShort') : t('discountToggle')}</span>
-    </button>
+    <div className="flex flex-col gap-1" data-testid="passenger-picker">
+      {!compact && <span className="text-xs font-medium uppercase tracking-wide text-muted">{t('passenger.title')}</span>}
+      <Chips<Passenger>
+        label={t('passenger.title')}
+        options={PASSENGERS.map((p) => ({ id: p, label: t(`passenger.${p}`) }))}
+        value={passenger}
+        onChange={setPassenger}
+      />
+      {passenger !== 'regular' && <span className="text-xs text-muted">{t('passenger.note')}</span>}
+    </div>
   )
 }
 
