@@ -20,7 +20,9 @@ export function PlaceSheet({
   stations,
   onPick,
   onClose,
+  allowPin = true,
 }: {
+  allowPin?: boolean
   title: string
   near: LatLng | null
   stations: SavedPlace[]
@@ -32,6 +34,9 @@ export function PlaceSheet({
   const [tab, setTab] = useState<Tab>('suggestions')
   const [results, setResults] = useState<SavedPlace[]>([])
   const [busy, setBusy] = useState(false)
+  // Place search (Photon) failed: keep the typed text and offer a retry.
+  const [failed, setFailed] = useState(false)
+  const [attempt, setAttempt] = useState(0)
   const [stored, setStored] = useState(() => loadPlaces())
   const input = useRef<HTMLInputElement>(null)
 
@@ -44,6 +49,7 @@ export function PlaceSheet({
 
   useEffect(() => {
     const query = q.trim()
+    setFailed(false)
     if (query.length < 3) {
       setResults([])
       return
@@ -55,7 +61,10 @@ export function PlaceSheet({
         const res = await searchPlaces(query, near ?? DEFAULT_CENTER, fetch, ctl.signal)
         if (!ctl.signal.aborted) setResults(res)
       } catch {
-        if (!ctl.signal.aborted) setResults([])
+        if (!ctl.signal.aborted) {
+          setResults([])
+          setFailed(true)
+        }
       } finally {
         if (!ctl.signal.aborted) setBusy(false)
       }
@@ -64,7 +73,7 @@ export function PlaceSheet({
       ctl.abort()
       window.clearTimeout(timer)
     }
-  }, [q, near])
+  }, [q, near, attempt])
 
   const query = q.trim().toLowerCase()
   const stationHits = query.length >= 2 ? stations.filter((s) => s.label.toLowerCase().includes(query)).slice(0, 5) : []
@@ -169,7 +178,7 @@ export function PlaceSheet({
                     </span>
                   </button>
                 </li>
-                <li className="border-b border-line">
+                {allowPin && <li className="border-b border-line">
                   <button type="button" onClick={() => onPick({ kind: 'pin' })} className="flex min-h-16 w-full items-center gap-4 py-2 text-left" data-testid="sheet-pin">
                     <span aria-hidden="true" className="text-2xl">
                       📌
@@ -179,13 +188,21 @@ export function PlaceSheet({
                       ›
                     </span>
                   </button>
-                </li>
+                </li>}
               </>
             )}
             {stationHits.map((p) => row(p, `s-${p.label}`, '🚉'))}
             {results.map((p) => row(p, `r-${p.lat},${p.lng}`))}
             {busy && <li className="py-4 text-sm text-muted">{t('map.searching')}</li>}
-            {!busy && query.length >= 3 && results.length === 0 && stationHits.length === 0 && <li className="py-4 text-sm text-muted">{t('map.noResults')}</li>}
+            {!busy && failed && (
+              <li className="flex flex-col items-start gap-2 py-4 text-sm text-ink-2" role="status" data-testid="sheet-failed">
+                {t(navigator.onLine === false ? 'plan.searchOffline' : 'plan.searchFailed')}
+                <button type="button" onClick={() => setAttempt((n) => n + 1)} className="min-h-11 rounded-full border border-line-strong px-4 font-medium text-ink" data-testid="sheet-retry">
+                  {t('plan.retry')}
+                </button>
+              </li>
+            )}
+            {!busy && !failed && query.length >= 3 && results.length === 0 && stationHits.length === 0 && <li className="py-4 text-sm text-muted">{t('map.noResults')}</li>}
           </>
         )}
         {tab === 'saved' && (stored.saved.length ? stored.saved.map((p, i) => row(p, `v-${i}`, '★')) : <li className="py-6 text-sm text-muted">{t('plan.noSaved')}</li>)}

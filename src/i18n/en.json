@@ -9,7 +9,12 @@
     "tables": "Fare tables",
     "about": "About",
     "support": "Support",
-    "plan": "Routes"
+    "plan": "Routes",
+    "fares": "Fares",
+    "trip": "My Trip",
+    "more": "More",
+    "tripBadge_one": "{{count}} leg",
+    "tripBadge_other": "{{count}} legs"
   },
   "effective": "Effective {{date}} · LTFRB",
   "effectiveDate": "Sept 28, 2026",
@@ -80,7 +85,10 @@
     "shareText": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} discounted) — {{source}}",
     "shareTextMetered": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} discounted, LTFRB base fare) — {{source}}",
     "minFare": "Minimum fare {{regular}} / {{discounted}}",
-    "sourceNote": "Source: {{source}} · effective {{date}}"
+    "sourceNote": "Source: {{source}} · effective {{date}}",
+    "minBracket": "{{km}} km is within the minimum fare, which covers the first {{base}} km.",
+    "roundedKm": "{{km}} km is rounded up to {{charged}} km for the fare.",
+    "meteredNote": "Estimate. The meter or the booking app shows the actual fare."
   },
   "compare": {
     "title": "Compare modes",
@@ -218,7 +226,7 @@
     "title": "My trip",
     "bar": "Trip · {{n}} legs · {{total}}",
     "bar_one": "Trip · 1 leg · {{total}}",
-    "empty": "No legs yet. Open any mode, get a fare, and tap \"Add to trip\". Add one leg per ride, e.g. jeep → MRT-3 → bus.",
+    "empty": "No rides yet. Plan a route and add its rides, or open a vehicle, get a fare and tap \"Add to trip\". Add one leg per ride, e.g. jeep → MRT-3 → bus.",
     "total": "Total fare",
     "legs": "Legs",
     "remove": "Remove",
@@ -226,27 +234,40 @@
     "addMore": "Add another leg",
     "share": "Share trip",
     "shareText": "My trip ({{n}} legs): {{total}} regular, {{disc}} Student/Senior/PWD",
-    "note": "Each leg is paid separately; transfers between lines need a new ticket."
+    "note": "Each leg is paid separately; transfers between lines need a new ticket.",
+    "removed": "Removed {{mode}}.",
+    "cleared": "Trip cleared.",
+    "undo": "Undo",
+    "planRoute": "Plan a route",
+    "dataVersion": "fare data {{v}}",
+    "stale": "Fares changed since this was saved (saved with rates effective {{date}}). The saved amount is shown.",
+    "nowFare": "Current fare: {{fare}}.",
+    "useCurrent": "Use the current fare",
+    "moveUp": "Move leg {{n}} up",
+    "moveDown": "Move leg {{n}} down",
+    "shareBasis": "Amounts as saved in Bayad Po; each leg is paid separately."
   },
   "report": {
-    "open": "Report overcharge",
-    "title": "Report an overcharge",
+    "open": "Check a fare charged",
+    "title": "Prepare a fare report",
     "charged": "How much were you charged? (₱)",
     "plate": "Plate or body number",
     "place": "Where / route (optional)",
     "notes": "Other details (optional)",
     "official": "Official fare",
-    "over": "Overcharge: {{amount}} ({{pct}})",
+    "over": "Fare difference: {{amount}} ({{pct}})",
     "notOver": "That is not more than the official fare.",
     "enterAmount": "Enter the amount you paid to compare.",
     "call": "Call LTFRB 1342",
     "copy": "Copy report",
-    "copied": "Report copied",
+    "copied": "Draft copied. It has not been submitted yet.",
     "share": "Share report",
     "preview": "Report preview",
     "tip": "Take a photo of the plate or body number if you can, and keep your receipt.",
     "close": "Close",
-    "railNote": "For trains, report to the line's operator at the station or on its official page."
+    "railNote": "For trains, report to the line's operator at the station or on its official page.",
+    "overEst": "Possible fare difference: {{amount}} ({{pct}})",
+    "draftNote": "This prepares a draft only. Nothing is sent until you copy, share or call."
   },
   "privacy": {
     "title": "Privacy policy",
@@ -264,7 +285,7 @@
     "dataError": "Couldn't load the route data. Check your connection and try again.",
     "searching": "Finding routes…",
     "error": "Something went wrong while planning. Try again.",
-    "none": "No route found within a short walk. Try a nearby landmark or a main road.",
+    "none": "No route found in the available route data within a short walk. Try a nearby landmark or a main road, or change the modes.",
     "walkOnly": "Walk",
     "minutes": "{{n}} min",
     "direct": "Direct",
@@ -275,7 +296,7 @@
     "altFare": "{{mode}}: {{fare}}",
     "addAll": "Add all rides to trip",
     "sourceShort": "LTFRB fares · LTFRB NCR routes",
-    "note": "Routes: LTFRB NCR jeepney and UV Express route data ({{n}} routes, per LTFRB memorandum circulars), plus LRT-1, LRT-2, MRT-3 and the EDSA Busway. Routes are assumed to run both ways along the same roads; times are estimates without traffic or waiting at terminals. Fares are official LTFRB/DOTr fares for each ride. Not affiliated with LTFRB.",
+    "note": "Routes: LTFRB NCR jeepney and UV Express route data ({{n}} routes, per LTFRB memorandum circulars), plus LRT-1, LRT-2, MRT-3 and the EDSA Busway. The return direction is assumed to use the same roads (not verified). Times are estimates: ride time at average speeds plus walking, a fixed wait for each ride and a transfer allowance; no live traffic or schedules. Fares are official LTFRB/DOTr fares for each ride. Not affiliated with LTFRB.",
     "walkTo": "Walk {{m}} m (about {{min}} min) to {{place}}",
     "walkToStop": "Walk {{m}} m (about {{min}} min) to the stop near {{place}}",
     "walkToStation": "Walk {{m}} m (about {{min}} min) to {{station}} station",
@@ -320,7 +341,15 @@
     "legendAlight": "Get off",
     "legendStop": "Stop / station",
     "fromShort": "From",
-    "toShort": "To"
+    "toShort": "To",
+    "searchFailed": "Place search is not available right now. Your text is kept. Try again, or pick a station or a saved place.",
+    "searchOffline": "You are offline, so place search is unavailable. Stations and saved places still work.",
+    "retry": "Try again",
+    "coverage": "This uses LTFRB-authorised NCR jeep and UV routes plus the rail lines and EDSA Busway. A route that is not in this data may still exist.",
+    "allModesRetry": "Include all modes",
+    "checkFares": "Check fares by vehicle",
+    "assumptions": "Route lines are authorised LTFRB routes, not proof a vehicle runs there now. The return direction is assumed to use the same roads, and get-on, get-off and transfer points are approximate. Check with the driver or barker.",
+    "timeIncludes": "Estimate: ride time at average speeds, walking, a fixed wait per ride and a transfer allowance. No live traffic."
   },
   "rate": {
     "addOn": "{{base}} for the first {{km}} km, +{{per}} per succeeding km",
@@ -334,6 +363,62 @@
     "fromPerKm": "{{per}} per km",
     "fromFlag": "From {{flag}} flag-down",
     "fromMin": "From {{min}}",
-    "title": "Fare rule"
+    "title": "Fare rule",
+    "basis": {
+      "minimum": "Minimum fare",
+      "perKm": "Per-km rate",
+      "flagDown": "Flag-down",
+      "matrix": "Station matrix"
+    }
+  },
+  "fares": {
+    "title": "Fares",
+    "intro": "Pick a vehicle to compute its fare.",
+    "basisNote": "Amounts are not all the same kind: a minimum fare covers the first kilometres, a per-km rate grows with distance, a flag-down is only the meter's start, and train fares depend on the stations."
+  },
+  "more": {
+    "settings": "Settings",
+    "passenger": "Passenger type",
+    "data": "Data on this device",
+    "dataNote": "Saved places, recent searches and your trip stay on this phone. Nothing is sent to a server.",
+    "clearPlaces": "Clear saved and recent places ({{n}})",
+    "clearTrip": "Clear trip ({{n}} legs)",
+    "confirmPlaces": "Delete all saved and recent places on this device?",
+    "confirmTrip": "Delete all legs of your trip?",
+    "placesCleared": "Saved and recent places deleted.",
+    "tripCleared": "Trip cleared.",
+    "compareHint": "Same distance, every mode",
+    "tablesHint": "Published fare guides, km by km",
+    "supportHint": "Keep Bayad Po free",
+    "aboutHint": "Sources, fare rules and reporting",
+    "privacyHint": "What stays on your phone"
+  },
+  "home": {
+    "locating": "Getting your location…",
+    "geoDenied": "Location is off or was denied. You can still search for a place.",
+    "shortcuts": "Saved and recent places",
+    "allFares": "All fares"
+  },
+  "basis": {
+    "distance": "Distance-based fare",
+    "matrix": "Published station fare",
+    "metered": "Estimate · meter or app may differ",
+    "planner": "Distance-based fare (route estimate)",
+    "effective": "effective {{date}}",
+    "details": "View calculation and source",
+    "distanceTitle": "Distance used",
+    "sourceTitle": "Source",
+    "input": {
+      "manual": "entered by you",
+      "road": "road estimate (OpenStreetMap/OSRM), not a certified fare distance",
+      "gps": "measured by GPS, an estimate",
+      "route": "length of the mapped route, an estimate"
+    },
+    "limit": {
+      "distance": "The fare rule is from the published LTFRB guide, but the fare is only as exact as the distance used. Partial kilometres are rounded up.",
+      "matrix": "Fare from the operator's published station-to-station matrix for this ticket type.",
+      "metered": "Modeled from the LTFRB rate with the distance and time entered. The taxi meter or the TNVS booking quote may be different (traffic, surge, tolls).",
+      "planner": "Ride distance is measured along the mapped route line and is an estimate."
+    }
   }
 }

@@ -2,9 +2,10 @@ import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { PlaceSheet, type SheetPick } from '../components/PlaceSheet'
 import { Card, ErrorNote } from '../components/ui'
-import { formatPesos, type MatrixMode } from '../engine'
+import { formatPesos } from '../engine'
 import { landmarkNear } from '../lib/geocode'
-import type { SavedPlace } from '../lib/places'
+import { draftLabel, setDraft } from '../lib/places'
+import { stationPlaces } from '../lib/stationPlaces'
 import type { MapMark } from '../components/PlanMap'
 import { KIND_COLOR, rideColors } from '../lib/planColors'
 import type { LineKind, SlimItinerary, SlimLeg } from '../lib/planner'
@@ -40,8 +41,9 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
   const planner = usePlanner(modesById)
   const [from, setFrom] = useState<LatLng | null>(() => parsePoint(fromArg))
   const [to, setTo] = useState<LatLng | null>(() => parsePoint(toArg))
-  const [fromText, setFromText] = useState(() => (parsePoint(fromArg) ? t('map.pinned') : ''))
-  const [toText, setToText] = useState(() => (parsePoint(toArg) ? t('map.pinned') : ''))
+  // Names picked on Home (or earlier here) come back with the coordinates.
+  const [fromText, setFromText] = useState(() => (parsePoint(fromArg) ? (draftLabel(parsePoint(fromArg)) ?? t('map.pinned')) : ''))
+  const [toText, setToText] = useState(() => (parsePoint(toArg) ? (draftLabel(parsePoint(toArg)) ?? t('map.pinned')) : ''))
   const [results, setResults] = useState<SlimItinerary[] | null>(null)
   const [selected, setSelected] = useState(0)
   const [busy, setBusy] = useState(false)
@@ -85,24 +87,12 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
   }, [headerH, showModes])
 
   // Rail and Busway stations as offline search suggestions
-  const stations = useMemo<SavedPlace[]>(() => {
-    const out: SavedPlace[] = []
-    for (const id of ['lrt-1', 'lrt-2', 'mrt-3', 'edsa-busway']) {
-      const m = modesById[id] as MatrixMode | undefined
-      if (m?.method !== 'MATRIX') continue
-      const short = id === 'edsa-busway' ? 'EDSA Busway' : m.name.en
-      const seen = new Set<string>()
-      for (const d of Object.values(m.directions)) {
-        d.stations.forEach((st, i) => {
-          const info = d.stationInfo?.[i]
-          if (!info || seen.has(st)) return
-          seen.add(st)
-          out.push({ label: `${st} (${short})`, detail: t('plan.station'), lat: info.lat, lng: info.lng })
-        })
-      }
-    }
-    return out
-  }, [modesById, t])
+  const stations = useMemo(() => stationPlaces(modesById, t('plan.station')), [modesById, t])
+
+  // Share the current ends with Home, so going back keeps them.
+  useEffect(() => {
+    setDraft({ from: from ? { label: fromText || t('map.pinned'), ...from } : null, to: to ? { label: toText || t('map.pinned'), ...to } : null })
+  }, [from, to, fromText, toText, t])
 
   useEffect(() => {
     setResults(null)
@@ -260,6 +250,11 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
         regular: l.regular,
         discounted: l.discounted,
         source: t('plan.sourceShort'),
+        modeId: l.line.modeId,
+        basis: l.fromStation ? 'matrix' : 'planner',
+        km: l.fromStation ? undefined : l.meters / 1000,
+        inputSource: l.fromStation ? undefined : 'route',
+        effective: modesById[l.line.modeId]?.effective,
       })
     }
     setAdded(true)
@@ -447,10 +442,21 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
           )}
           {error && <ErrorNote>{error}</ErrorNote>}
           {results && results.length === 0 && (
-            <Card>
+            <Card className="flex flex-col gap-2">
               <p className="text-sm text-ink-2" data-testid="plan-none">
                 {t('plan.none')}
               </p>
+              <p className="text-xs text-muted">{t('plan.coverage')}</p>
+              <div className="flex flex-wrap gap-2">
+                {exclude.length > 0 && (
+                  <button type="button" onClick={() => setExclude([])} className="min-h-11 rounded-full border border-line-strong px-4 text-sm font-medium text-ink">
+                    {t('plan.allModesRetry')}
+                  </button>
+                )}
+                <a href="#/fares" className="inline-flex min-h-11 items-center rounded-full border border-line-strong px-4 text-sm font-medium text-ink">
+                  {t('plan.checkFares')}
+                </a>
+              </div>
             </Card>
           )}
 
@@ -472,7 +478,9 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
                     {r.rides === 0 ? t('plan.walkOnly') : formatPesos(discount ? r.discounted : r.regular)}
                     {r.fareIncomplete && '+'}
                   </span>
-                  <span className="text-sm font-medium tabular-nums text-ink-2">≈ {t('plan.minutes', { n: mins(r.minutes) })}</span>
+                  <span className="text-sm font-medium tabular-nums text-ink-2" title={t('plan.timeIncludes')}>
+                    ≈ {t('plan.minutes', { n: mins(r.minutes) })}
+                  </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-1 text-xs">
                   {optRides.map((l, k) => (
@@ -532,6 +540,9 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
                   ),
                 )}
               </ol>
+              <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:bg-amber-900/30 dark:text-amber-200" data-testid="plan-assumptions">
+                ⚠ {t('plan.assumptions')}
+              </p>
               <div className="flex items-center justify-between border-t border-line pt-3">
                 <span className="text-sm text-ink-2">{discount ? t('fare.discounted') : t('fare.regular')}</span>
                 <span className="text-xl font-bold tabular-nums text-ink" data-testid="plan-total">

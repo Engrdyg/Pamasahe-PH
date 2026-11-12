@@ -1,11 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import type { Theme } from '../lib/theme'
 import { useApp } from '../state'
+import { NAV_ITEMS, TripBadge } from './Nav'
 import { Chips, DiscountToggle, EffectiveBadge } from './ui'
 
-const items = [
-  { id: '', key: 'nav.home', icon: '⌂' },
-  { id: 'plan', key: 'nav.plan', icon: '⌖' },
+const secondary = [
   { id: 'compare', key: 'nav.compare', icon: '⇄' },
   { id: 'tables', key: 'nav.tables', icon: '☰' },
   { id: 'support', key: 'nav.support', icon: '♥' },
@@ -13,11 +12,26 @@ const items = [
 ] as const
 
 /** Persistent left navigation for tablets and desktops. */
-export function Sidebar({ active }: { active: string }) {
+export function Sidebar({ active, section }: { active: string; section: string }) {
   const { t } = useTranslation()
   const { lang, setLang, theme, setTheme } = useApp()
+  const link = (id: string, label: string, icon: string, on: boolean) => (
+    <li key={id}>
+      <a
+        href={`#/${id}`}
+        aria-current={on ? 'page' : undefined}
+        className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium ${on ? 'bg-brand/10 text-brand' : 'text-ink-2 hover:bg-canvas-2'}`}
+      >
+        <span className="relative w-6 text-center text-lg leading-none">
+          <span aria-hidden="true">{icon}</span>
+          {id === 'trip' && <TripBadge />}
+        </span>
+        {label}
+      </a>
+    </li>
+  )
   return (
-    <aside className="sticky top-0 flex h-dvh w-64 shrink-0 flex-col gap-6 border-r border-line bg-surface px-5 py-6" data-testid="sidebar">
+    <aside className="sticky top-0 flex h-dvh w-64 shrink-0 flex-col gap-5 overflow-y-auto border-r border-line bg-surface px-5 py-6" data-testid="sidebar">
       <a href="#/" className="flex items-center gap-3">
         <img src={`${import.meta.env.BASE_URL}logo-mark.svg`} alt="" width={40} height={40} className="h-10 w-10" />
         <span className="min-w-0">
@@ -25,25 +39,14 @@ export function Sidebar({ active }: { active: string }) {
         </span>
       </a>
       <EffectiveBadge />
-      <nav aria-label="Main">
+      <nav aria-label="Main" className="flex flex-col gap-4">
         <ul className="flex flex-col gap-1">
-          {items.map((it) => (
-            <li key={it.id}>
-              <a
-                href={`#/${it.id}`}
-                aria-current={active === it.id ? 'page' : undefined}
-                className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium ${
-                  active === it.id ? 'bg-brand/10 text-brand' : 'text-ink-2 hover:bg-canvas-2'
-                }`}
-              >
-                <span aria-hidden="true" className="w-6 text-center text-lg leading-none">
-                  {it.icon}
-                </span>
-                {t(it.key)}
-              </a>
-            </li>
-          ))}
+          {NAV_ITEMS.filter((it) => it.id !== 'more').map((it) => link(it.id, t(it.key), it.icon, active === it.id))}
         </ul>
+        <div>
+          <p className="mb-1 px-3 text-xs font-medium uppercase tracking-wide text-muted">{t('nav.more')}</p>
+          <ul className="flex flex-col gap-1">{secondary.map((it) => link(it.id, t(it.key), it.icon, section === it.id))}</ul>
+        </div>
       </nav>
       <DiscountToggle compact />
       <div className="mt-auto flex flex-col gap-3">

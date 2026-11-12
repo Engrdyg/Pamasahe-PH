@@ -13,6 +13,8 @@ export function ReportOvercharge({
   official,
   officialLabel,
   source,
+  basisText,
+  estimated = true,
   hotline = true,
   onClose,
 }: {
@@ -21,6 +23,8 @@ export function ReportOvercharge({
   official: Centavos
   officialLabel: string
   source: string
+  basisText?: string
+  estimated?: boolean
   hotline?: boolean
   onClose: () => void
 }) {
@@ -38,7 +42,7 @@ export function ReportOvercharge({
   const over = valid ? overcharge(official, paid) : null
   const isOver = over != null && over.amount > 0
   const text = isOver
-    ? buildReport({ modeName, tripLabel, official, officialLabel, charged: paid, plate, place, notes, when: new Date(), source, lang })
+    ? buildReport({ modeName, tripLabel, official, officialLabel, charged: paid, plate, place, notes, when: new Date(), source, lang, basis: basisText, estimated })
     : ''
 
   const copy = async () => {
@@ -64,8 +68,10 @@ export function ReportOvercharge({
           {t('report.close')}
         </button>
       </div>
+      <p className="text-xs text-muted">{t('report.draftNote')}</p>
       <p className="text-sm text-ink-2">
         {t('report.official')}: <span className="font-semibold tabular-nums text-ink">{formatPesos(official)}</span> ({officialLabel})
+        {basisText && <span className="block text-xs text-muted">{basisText}</span>}
       </p>
       <label htmlFor={`${id}-c`} className="text-sm font-medium text-ink-2">{t('report.charged')}</label>
       <input id={`${id}-c`} inputMode="decimal" value={charged} onChange={(e) => setCharged(e.target.value)} className={`${field} text-xl font-semibold tabular-nums`} data-testid="report-charged" />
@@ -73,7 +79,7 @@ export function ReportOvercharge({
       {valid && !isOver && <p role="status" className="text-sm text-green-700 dark:text-green-400">{t('report.notOver')}</p>}
       {isOver && (
         <p role="status" className="text-base font-bold tabular-nums text-red-700 dark:text-red-400" data-testid="report-over">
-          {t('report.over', { amount: formatPesos(over!.amount), pct: fmtPct(over!.pct) })}
+          {t(estimated ? 'report.overEst' : 'report.over', { amount: formatPesos(over!.amount), pct: fmtPct(over!.pct) })}
         </p>
       )}
       <label htmlFor={`${id}-p`} className="text-sm font-medium text-ink-2">{t('report.plate')}</label>

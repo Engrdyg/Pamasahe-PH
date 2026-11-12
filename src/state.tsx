@@ -21,7 +21,10 @@ interface AppState {
   trip: TripLeg[]
   addLeg: (leg: Omit<TripLeg, 'id' | 'addedAt'>) => void
   removeLeg: (id: string) => void
+  updateLeg: (id: string, patch: Partial<TripLeg>) => void
   clearTrip: () => void
+  /** Put back legs, e.g. to undo a clear. */
+  setTripLegs: (legs: TripLeg[]) => void
 }
 
 const Ctx = createContext<AppState | null>(null)
@@ -34,9 +37,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [updated, setUpdated] = useState<Manifest | null>(null)
   const [trip, setTrip] = useState<TripLeg[]>(() => loadTrip())
   useEffect(() => saveTrip(trip), [trip])
-  const addLeg = useCallback((leg: Omit<TripLeg, 'id' | 'addedAt'>) => setTrip((t) => [...t, { ...leg, id: newLegId(), addedAt: Date.now() }]), [])
   const removeLeg = useCallback((id: string) => setTrip((t) => t.filter((l) => l.id !== id)), [])
+  const updateLeg = useCallback((id: string, patch: Partial<TripLeg>) => setTrip((t) => t.map((l) => (l.id === id ? { ...l, ...patch } : l))), [])
   const clearTrip = useCallback(() => setTrip([]), [])
+  const setTripLegs = useCallback((legs: TripLeg[]) => setTrip(legs), [])
 
   useEffect(() => {
     applyTheme(theme)
@@ -54,6 +58,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
       cancelled = true
     }
   }, [])
+
+  // Each leg keeps a snapshot of the fare-data version and passenger type it was priced with.
+  const version = data.manifest.version
+  const addLeg = useCallback(
+    (leg: Omit<TripLeg, 'id' | 'addedAt'>) =>
+      setTrip((t) => [...t, { fareVersion: version, passenger: discount ? 'discounted' : 'regular', ...leg, id: newLegId(), addedAt: Date.now() }]),
+    [version, discount],
+  )
 
   const setDiscount = useCallback((v: boolean) => {
     setDiscountState(v)
@@ -90,9 +102,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       trip,
       addLeg,
       removeLeg,
+      updateLeg,
       clearTrip,
+      setTripLegs,
     }),
-    [data, discount, setDiscount, lang, setLang, theme, setTheme, updated, dismissUpdate, trip, addLeg, removeLeg, clearTrip],
+    [data, discount, setDiscount, lang, setLang, theme, setTheme, updated, dismissUpdate, trip, addLeg, removeLeg, updateLeg, clearTrip, setTripLegs],
   )
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>
 }

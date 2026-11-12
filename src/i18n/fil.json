@@ -9,7 +9,12 @@
     "tables": "Talaan",
     "about": "Tungkol",
     "support": "Suporta",
-    "plan": "Ruta"
+    "plan": "Ruta",
+    "fares": "Pamasahe",
+    "trip": "Biyahe",
+    "more": "Iba pa",
+    "tripBadge_one": "{{count}} leg",
+    "tripBadge_other": "{{count}} leg"
   },
   "effective": "Simula {{date}} · LTFRB",
   "effectiveDate": "Set. 28, 2026",
@@ -80,7 +85,10 @@
     "shareText": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} may diskwento) — {{source}}",
     "shareTextMetered": "{{mode}}, {{trip}}: {{regular}} ({{discounted}} may diskwento, LTFRB base fare) — {{source}}",
     "minFare": "Minimum na pamasahe {{regular}} / {{discounted}}",
-    "sourceNote": "Source: {{source}} · epektibo {{date}}"
+    "sourceNote": "Source: {{source}} · epektibo {{date}}",
+    "minBracket": "Pasok ang {{km}} km sa minimum na pamasahe, na para sa unang {{base}} km.",
+    "roundedKm": "Itinaas ang {{km}} km sa {{charged}} km para sa pamasahe.",
+    "meteredNote": "Tantiya. Ang metro o ang booking app ang magpapakita ng aktuwal na pamasahe."
   },
   "compare": {
     "title": "Ikumpara ang mga mode",
@@ -218,7 +226,7 @@
     "title": "Biyahe ko",
     "bar": "Biyahe · {{n}} leg · {{total}}",
     "bar_one": "Biyahe · 1 leg · {{total}}",
-    "empty": "Wala pang leg. Buksan ang kahit anong mode, kumuha ng pamasahe, at pindutin ang \"Idagdag sa biyahe\". Isang leg bawat sakay, hal. jeep → MRT-3 → bus.",
+    "empty": "Wala pang sakay. Magplano ng ruta at idagdag ang mga sakay, o buksan ang isang sasakyan, kumuha ng pamasahe at pindutin ang \"Idagdag sa biyahe\". Isang leg bawat sakay, hal. jeep → MRT-3 → bus.",
     "total": "Kabuuang pamasahe",
     "legs": "Mga leg",
     "remove": "Alisin",
@@ -226,27 +234,40 @@
     "addMore": "Magdagdag ng leg",
     "share": "Ibahagi ang biyahe",
     "shareText": "Biyahe ko ({{n}} leg): {{total}} regular, {{disc}} Estudyante/Senior/PWD",
-    "note": "Hiwalay ang bayad sa bawat leg; bagong tiket ang paglipat sa ibang linya."
+    "note": "Hiwalay ang bayad sa bawat leg; bagong tiket ang paglipat sa ibang linya.",
+    "removed": "Tinanggal ang {{mode}}.",
+    "cleared": "Nabura ang biyahe.",
+    "undo": "I-undo",
+    "planRoute": "Magplano ng ruta",
+    "dataVersion": "fare data {{v}}",
+    "stale": "Nagbago ang pamasahe mula nang i-save ito (na-save sa rate na simula {{date}}). Ang naka-save na halaga ang ipinapakita.",
+    "nowFare": "Kasalukuyang pamasahe: {{fare}}.",
+    "useCurrent": "Gamitin ang kasalukuyang pamasahe",
+    "moveUp": "Itaas ang leg {{n}}",
+    "moveDown": "Ibaba ang leg {{n}}",
+    "shareBasis": "Mga halaga ayon sa naka-save sa Bayad Po; hiwalay ang bayad sa bawat leg."
   },
   "report": {
-    "open": "I-report ang sobrang singil",
-    "title": "Mag-report ng sobrang singil",
+    "open": "Suriin ang siningil",
+    "title": "Gumawa ng ulat sa pamasahe",
     "charged": "Magkano ang siningil sa'yo? (₱)",
     "plate": "Plate o body number",
     "place": "Saan / ruta (opsyonal)",
     "notes": "Iba pang detalye (opsyonal)",
     "official": "Opisyal na pamasahe",
-    "over": "Sobra: {{amount}} ({{pct}})",
+    "over": "Diperensya: {{amount}} ({{pct}})",
     "notOver": "Hindi ito lampas sa opisyal na pamasahe.",
     "enterAmount": "Ilagay ang ibinayad mo para maikumpara.",
     "call": "Tawagan ang LTFRB 1342",
     "copy": "Kopyahin ang report",
-    "copied": "Nakopya ang report",
+    "copied": "Nakopya ang draft. Hindi pa ito naisusumite.",
     "share": "Ibahagi ang report",
     "preview": "Silip sa report",
     "tip": "Kunan ng litrato ang plate o body number kung kaya, at itago ang resibo.",
     "close": "Isara",
-    "railNote": "Para sa tren, i-report sa operator ng linya sa istasyon o sa opisyal nitong page."
+    "railNote": "Para sa tren, i-report sa operator ng linya sa istasyon o sa opisyal nitong page.",
+    "overEst": "Posibleng diperensya: {{amount}} ({{pct}})",
+    "draftNote": "Draft lang ito. Walang ipapadala hangga't hindi mo kinokopya, sine-share o tumatawag."
   },
   "privacy": {
     "title": "Privacy policy",
@@ -264,7 +285,7 @@
     "dataError": "Hindi ma-load ang route data. Tingnan ang koneksyon at subukan ulit.",
     "searching": "Naghahanap ng ruta…",
     "error": "Nagkaproblema sa paghahanap. Subukan ulit.",
-    "none": "Walang nahanap na ruta na malapit lang lakarin. Subukan ang kalapit na landmark o main road.",
+    "none": "Walang nahanap na ruta sa available na data na malapit lang lakarin. Subukan ang kalapit na landmark o main road, o palitan ang mga sasakyan.",
     "walkOnly": "Lakad",
     "minutes": "{{n}} min",
     "direct": "Diretso",
@@ -275,7 +296,7 @@
     "altFare": "{{mode}}: {{fare}}",
     "addAll": "Idagdag lahat sa biyahe",
     "sourceShort": "LTFRB fares · LTFRB NCR routes",
-    "note": "Mga ruta: LTFRB NCR route data ng jeep at UV Express ({{n}} ruta, ayon sa LTFRB memorandum circulars), at LRT-1, LRT-2, MRT-3 at EDSA Busway. Ipinapalagay na pabalik-balik ang ruta sa parehong kalsada; tantiya lang ang oras, hindi kasama ang traffic at paghihintay sa terminal. Opisyal na LTFRB/DOTr na pamasahe ang bawat sakay. Hindi kaanib ng LTFRB.",
+    "note": "Mga ruta: LTFRB NCR route data ng jeep at UV Express ({{n}} ruta, ayon sa LTFRB memorandum circulars), at LRT-1, LRT-2, MRT-3 at EDSA Busway. Ipinapalagay na pareho ang kalsada pabalik (hindi beripikado). Tantiya ang oras: oras ng sakay sa karaniwang bilis, paglalakad, takdang paghihintay kada sakay at palugit sa paglipat; walang live na traffic o schedule. Opisyal na LTFRB/DOTr na pamasahe ang bawat sakay. Hindi kaanib ng LTFRB.",
     "walkTo": "Maglakad nang {{m}} m (mga {{min}} min) papunta sa {{place}}",
     "walkToStop": "Maglakad nang {{m}} m (mga {{min}} min) papunta sa sakayan malapit sa {{place}}",
     "walkToStation": "Maglakad nang {{m}} m (mga {{min}} min) papunta sa {{station}} station",
@@ -320,7 +341,15 @@
     "legendAlight": "Baba",
     "legendStop": "Hintuan / istasyon",
     "fromShort": "Sakayan",
-    "toShort": "Babaan"
+    "toShort": "Babaan",
+    "searchFailed": "Hindi gumagana ang paghahanap ng lugar ngayon. Nandiyan pa ang tinype mo. Subukan ulit, o pumili ng istasyon o saved na lugar.",
+    "searchOffline": "Offline ka, kaya hindi makapaghanap ng lugar. Gumagana pa rin ang mga istasyon at saved na lugar.",
+    "retry": "Subukan ulit",
+    "coverage": "Gamit nito ang LTFRB-authorised na ruta ng jeep at UV sa NCR, pati mga tren at EDSA Busway. Maaaring may ruta pa rin kahit wala ito sa data.",
+    "allModesRetry": "Isama lahat ng sasakyan",
+    "checkFares": "Tingnan ang pamasahe kada sasakyan",
+    "assumptions": "Mga ruta na awtorisado ng LTFRB ang mga linya, hindi patunay na may bumibiyahe ngayon. Ipinapalagay na pareho ang kalsada pabalik, at tantiya lang ang sakayan, babaan at lipatan. Magtanong sa driver o barker.",
+    "timeIncludes": "Tantiya: oras ng sakay sa karaniwang bilis, paglalakad, takdang paghihintay kada sakay at palugit sa paglipat. Walang live na traffic."
   },
   "rate": {
     "addOn": "{{base}} sa unang {{km}} km, +{{per}} bawat susunod na km",
@@ -334,6 +363,62 @@
     "fromPerKm": "{{per}} bawat km",
     "fromFlag": "Mula {{flag}} flag-down",
     "fromMin": "Mula {{min}}",
-    "title": "Patakaran ng pamasahe"
+    "title": "Patakaran ng pamasahe",
+    "basis": {
+      "minimum": "Minimum na pamasahe",
+      "perKm": "Kada km",
+      "flagDown": "Flag-down",
+      "matrix": "Matrix ng istasyon"
+    }
+  },
+  "fares": {
+    "title": "Pamasahe",
+    "intro": "Pumili ng sasakyan para makompyut ang pamasahe.",
+    "basisNote": "Hindi pare-pareho ang ibig sabihin ng mga halaga: ang minimum na pamasahe ay para sa unang mga kilometro, ang per-km ay lumalaki sa layo, ang flag-down ay simula lang ng metro, at sa tren ay depende sa istasyon."
+  },
+  "more": {
+    "settings": "Settings",
+    "passenger": "Uri ng pasahero",
+    "data": "Data sa device na ito",
+    "dataNote": "Nasa phone mo lang ang mga naka-save na lugar, mga huling hinanap at ang biyahe mo. Walang ipinapadala sa server.",
+    "clearPlaces": "Burahin ang saved at recent na lugar ({{n}})",
+    "clearTrip": "Burahin ang biyahe ({{n}} leg)",
+    "confirmPlaces": "Burahin lahat ng saved at recent na lugar sa device na ito?",
+    "confirmTrip": "Burahin lahat ng leg ng biyahe mo?",
+    "placesCleared": "Nabura na ang saved at recent na lugar.",
+    "tripCleared": "Nabura na ang biyahe.",
+    "compareHint": "Parehong layo, lahat ng sasakyan",
+    "tablesHint": "Mga fare guide, kada km",
+    "supportHint": "Para manatiling libre ang Bayad Po",
+    "aboutHint": "Source, patakaran sa pamasahe at pag-report",
+    "privacyHint": "Ano ang nananatili sa phone mo"
+  },
+  "home": {
+    "locating": "Kinukuha ang lokasyon mo…",
+    "geoDenied": "Naka-off o tinanggihan ang lokasyon. Puwede ka pa ring maghanap ng lugar.",
+    "shortcuts": "Saved at recent na lugar",
+    "allFares": "Lahat ng pamasahe"
+  },
+  "basis": {
+    "distance": "Pamasaheng batay sa layo",
+    "matrix": "Opisyal na pamasahe kada istasyon",
+    "metered": "Tantiya · maaaring iba sa metro o app",
+    "planner": "Batay sa layo (tantiya ng ruta)",
+    "effective": "simula {{date}}",
+    "details": "Tingnan ang computation at source",
+    "distanceTitle": "Layong ginamit",
+    "sourceTitle": "Source",
+    "input": {
+      "manual": "inilagay mo",
+      "road": "tantiya ng kalsada (OpenStreetMap/OSRM), hindi sertipikadong layo",
+      "gps": "sinukat ng GPS, tantiya",
+      "route": "haba ng ruta sa mapa, tantiya"
+    },
+    "limit": {
+      "distance": "Galing sa opisyal na LTFRB fare guide ang patakaran, pero kasing-eksakto lang ng layong ginamit ang pamasahe. Itinataas sa buong kilometro ang kulang.",
+      "matrix": "Galing sa opisyal na station-to-station matrix ng operator para sa ticket na ito.",
+      "metered": "Kinompyut mula sa LTFRB rate gamit ang layo at oras na inilagay. Maaaring iba ang metro ng taxi o ang quote ng TNVS app (traffic, surge, toll).",
+      "planner": "Sinukat ang layo ng sakay sa linya ng ruta sa mapa, kaya tantiya lang."
+    }
   }
 }

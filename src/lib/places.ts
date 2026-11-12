@@ -47,3 +47,39 @@ export function toggleSaved(p: SavedPlace): Stored {
 }
 
 export const isSaved = (v: Stored, p: SavedPlace) => v.saved.some((x) => same(x, p))
+
+export function clearPlaces(): Stored {
+  try {
+    localStorage.removeItem(PLACES_KEY)
+  } catch {
+    /* storage blocked */
+  }
+  return { saved: [], recent: [] }
+}
+
+/** The origin and destination being planned, shared by Home and the planner
+ *  so either screen shows what was picked on the other. Memory only. */
+export interface PlanDraft {
+  from: SavedPlace | null
+  to: SavedPlace | null
+}
+let draft: PlanDraft = { from: null, to: null }
+export const getDraft = (): PlanDraft => draft
+export function setDraft(d: Partial<PlanDraft>): PlanDraft {
+  draft = { ...draft, ...d }
+  return draft
+}
+
+/** Label of the drafted place at `p`, if any (within about 10 m). */
+export function draftLabel(p: LatLng | null): string | null {
+  if (!p) return null
+  for (const x of [draft.from, draft.to])
+    if (x && Math.abs(x.lat - p.lat) < 1e-4 && Math.abs(x.lng - p.lng) < 1e-4) return x.label
+  return null
+}
+
+/** `#/plan/<from>/<to>`; a missing end is written as "-". */
+export function planHref(from: LatLng | null, to: LatLng | null): string {
+  const k = (p: LatLng | null) => (p ? `${p.lat.toFixed(5)},${p.lng.toFixed(5)}` : '-')
+  return from || to ? `#/plan/${k(from)}/${k(to)}` : '#/plan'
+}

@@ -1,5 +1,11 @@
 /** Multi-leg trip (e.g. jeep → MRT-3 → bus): legs are snapshots of fare cards. */
-import type { Centavos } from '../engine/types'
+import { distanceFare } from '../engine'
+import type { Centavos, Mode } from '../engine/types'
+
+/** How the fare of a leg was worked out. */
+export type FareBasis = 'distance' | 'matrix' | 'metered' | 'planner'
+/** Where the distance of a distance-based leg came from. */
+export type InputSource = 'manual' | 'road' | 'gps' | 'route'
 
 export interface TripLeg {
   id: string
@@ -9,6 +15,16 @@ export interface TripLeg {
   discounted: Centavos
   source: string
   addedAt: number
+  /** Snapshot of the calculation (absent on legs saved before v2026.11). */
+  modeId?: string
+  basis?: FareBasis
+  km?: number
+  inputSource?: InputSource
+  /** Fare-data version and the mode's effective date when the leg was saved. */
+  fareVersion?: string
+  effective?: string
+  /** Passenger type shown when the leg was saved. */
+  passenger?: 'regular' | 'discounted'
 }
 
 export const TRIP_KEY = 'pamasahe-ph:trip'
@@ -40,4 +56,24 @@ let seq = 0
 export function newLegId(now = Date.now()): string {
   seq += 1
   return `${now.toString(36)}-${seq}`
+}
+
+/** Fare data for this leg has changed since it was saved. */
+export function isStale(leg: TripLeg, version: string, modesById: Record<string, Mode>): boolean {
+  if (!leg.fareVersion || leg.fareVersion === version) return false
+  const m = leg.modeId ? modesById[leg.modeId] : undefined
+  return !m || m.effective !== leg.effective
+}
+
+/** Current fare for a saved distance-based leg, or null when it cannot be
+ *  recomputed from the snapshot (station, metered and planner legs). */
+export function recalcLeg(leg: TripLeg, modesById: Record<string, Mode>): { regular: Centavos; discounted: Centavos } | null {
+  const m = leg.modeId ? modesById[leg.modeId] : undefined
+  if (!m || leg.basis !== 'distance' || leg.km == null || (m.method !== 'ADD_ON' && m.method !== 'PER_KM')) return null
+  try {
+    const f = distanceFare(m, leg.km)
+    return { regular: f.regular, discounted: f.discounted }
+  } catch {
+    return null
+  }
 }

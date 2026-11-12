@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { BottomNav, TopBar } from './components/Nav'
+import { BottomNav, TopBar, navSection } from './components/Nav'
 import { Sidebar } from './components/Sidebar'
-import { TripBar } from './components/TripBar'
 import type { Category } from './engine/types'
 import { formatEffective } from './lib/format'
 import { useRoute } from './lib/router'
@@ -9,7 +8,9 @@ import { useWide } from './lib/useMediaQuery'
 import { About } from './screens/About'
 import { Calculator } from './screens/Calculator'
 import { Compare } from './screens/Compare'
+import { Fares } from './screens/Fares'
 import { Home } from './screens/Home'
+import { More } from './screens/More'
 import { Plan } from './screens/Plan'
 import { Privacy } from './screens/Privacy'
 import { Support } from './screens/Support'
@@ -38,47 +39,49 @@ export default function App() {
   const route = useRoute()
   const [section, arg] = route
   const wide = useWide()
-  const { trip } = useApp()
-  const tripPad = trip.length > 0 && section !== 'trip'
 
   let screen
   let title: string | undefined
   let back: string | undefined
-  let active = ''
-  if (section === 'calc' && CATEGORIES.includes(arg as Category)) {
+  const isCalc = section === 'calc' && CATEGORIES.includes(arg as Category)
+  const active = navSection(isCalc || section !== 'calc' ? section : undefined)
+  if (isCalc) {
     screen = <Calculator key={arg} category={arg as Category} />
     title = t(`category.${arg}`)
-    back = ''
+    back = 'fares'
+  } else if (section === 'fares') {
+    screen = <Fares />
+    title = t('fares.title')
+  } else if (section === 'more') {
+    screen = <More />
+    title = t('nav.more')
   } else if (section === 'compare') {
     screen = <Compare />
     title = t('compare.title')
-    active = 'compare'
+    back = 'more'
   } else if (section === 'tables') {
     screen = <Tables />
     title = t('tables.title')
-    active = 'tables'
+    back = 'more'
   } else if (section === 'plan') {
     const [, fromArg, toArg] = route
     screen = <Plan key={`${fromArg}/${toArg}`} fromArg={fromArg} toArg={toArg} />
     title = t('plan.title')
-    back = ''
-    active = 'plan'
   } else if (section === 'privacy') {
     screen = <Privacy />
     title = t('privacy.title')
-    back = 'about'
+    back = 'more'
   } else if (section === 'trip') {
     screen = <Trip />
     title = t('trip.title')
-    back = ''
   } else if (section === 'support') {
     screen = <Support />
     title = t('donate.title')
-    active = 'support'
+    back = 'more'
   } else if (section === 'about') {
     screen = <About />
     title = t('about.title')
-    active = 'about'
+    back = 'more'
   } else {
     screen = <Home />
   }
@@ -86,8 +89,8 @@ export default function App() {
   if (wide) {
     return (
       <div className="flex min-h-dvh bg-canvas text-ink">
-        <Sidebar active={active} />
-        <div className={`min-w-0 flex-1 ${tripPad ? 'pb-24' : ''}`}>
+        <Sidebar active={active} section={section ?? ''} />
+        <div className="min-w-0 flex-1">
           <UpdateBanner />
           {title && (
             <div className="mx-auto flex w-full max-w-6xl items-center gap-3 px-8 pt-8">
@@ -100,18 +103,16 @@ export default function App() {
             </div>
           )}
           {screen}
-          {section !== 'trip' && <TripBar wide />}
         </div>
       </div>
     )
   }
 
   return (
-    <div className={`min-h-dvh bg-canvas text-ink ${tripPad ? 'pb-40' : 'pb-20'}`}>
+    <div className="min-h-dvh bg-canvas pb-[calc(4.5rem+env(safe-area-inset-bottom))] text-ink">
       <TopBar title={title} back={back} />
       <UpdateBanner />
       {screen}
-      {section !== 'trip' && <TripBar wide={false} />}
       <BottomNav active={active} />
     </div>
   )

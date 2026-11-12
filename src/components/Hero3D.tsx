@@ -1,15 +1,16 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { distanceFare, formatPesos } from '../engine'
 import { useApp } from '../state'
+import { JeepStill } from './JeepStill'
 
 /**
- * Home hero: a 3D jeepney turning on a turntable (three.js, loaded as its own
- * chunk after first paint so the main bundle stays small). Drag sideways to
- * spin it. Under prefers-reduced-motion it renders a still three-quarter view.
- * Without WebGL only the title and backdrop show.
+ * Home hero: title and the route search (children), with a jeepney beside
+ * it. A static SVG jeep shows at once; a 3D jeepney on a turntable (three.js,
+ * its own chunk, loaded after first paint) replaces it once rendered. Without
+ * WebGL, or if the 3D chunk fails, the static jeep stays.
  */
-export function Hero3D() {
+export function Hero3D({ children }: { children?: ReactNode }) {
   const { t } = useTranslation()
   const stage = useRef<HTMLDivElement>(null)
   const [ready, setReady] = useState(false)
@@ -27,9 +28,9 @@ export function Hero3D() {
           dispose = mountHeroScene(host, { reducedMotion, onReady: () => setReady(true) }).dispose
         })
         .catch(() => {
-          /* no WebGL: keep the plain backdrop */
+          /* no WebGL: keep the static jeep */
         })
-    // Start after first paint so the 3D chunk never delays the fare screens.
+    // Start after first paint so the 3D chunk never delays the fare and route tools.
     const timer = window.setTimeout(() => void start(), 150)
     return () => {
       disposed = true
@@ -48,26 +49,10 @@ export function Hero3D() {
         <p className="hero-kicker">{t('hero.kicker')}</p>
         <h2 className="hero-title">{t('hero.title')}</h2>
         <p className="hero-sub">{t('hero.sub')}</p>
-        <a href="#/plan" className="hero-search" data-testid="plan-open">
-          <span className="hero-field">
-            <span className="hero-dot" style={{ background: '#0b3d91' }} aria-hidden="true" />
-            {t('map.from')}
-          </span>
-          <span className="hero-field">
-            <span className="hero-dot" style={{ background: '#ffc72c' }} aria-hidden="true" />
-            {t('map.to')}
-          </span>
-          <span className="hero-cta">{t('hero.cta')} ›</span>
-        </a>
-        <button
-          type="button"
-          className="hero-link"
-          onClick={() => document.getElementById('fares')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-        >
-          {t('hero.faresLink')} ↓
-        </button>
+        {children}
       </div>
-      <div className="hero-right" aria-hidden="true">
+      <div className={`hero-right ${ready ? 'is-ready' : ''}`} aria-hidden="true">
+        <JeepStill />
         <div ref={stage} className={`hero-stage ${ready ? 'is-ready' : ''}`} data-testid="hero-stage" />
         {minFare && (
           <div className="hero-tag">

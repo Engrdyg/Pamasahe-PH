@@ -14,6 +14,10 @@ export interface ReportInput {
   when: Date
   source: string
   lang: 'en' | 'fil'
+  /** e.g. "Distance-based fare"; tells the reader how the official fare was found. */
+  basis?: string
+  /** The official fare depends on an entered or estimated distance/time. */
+  estimated?: boolean
 }
 
 /** Parse "₱1,234.50", "300", "300.5" → centavos; NaN when not a positive amount. */
@@ -30,11 +34,11 @@ export function overcharge(official: Centavos, charged: Centavos): { amount: Cen
 export function buildReport(r: ReportInput): string {
   const o = overcharge(r.official, r.charged)
   const when = r.when.toLocaleString(r.lang === 'fil' ? 'fil-PH' : 'en-PH', {
-    year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+    year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Manila',
   })
   const L = r.lang === 'fil'
-    ? { title: 'Ulat ng sobrang singil', mode: 'Sasakyan', trip: 'Biyahe', when: 'Petsa/oras', plate: 'Plate / body no.', place: 'Lugar / ruta', charged: 'Siningil', official: 'Opisyal na pamasahe', over: 'Sobra', notes: 'Iba pang detalye', src: 'Batayan' }
-    : { title: 'Overcharge report', mode: 'Vehicle', trip: 'Trip', when: 'Date/time', plate: 'Plate / body no.', place: 'Place / route', charged: 'Fare charged', official: 'Official fare', over: 'Overcharge', notes: 'Notes', src: 'Basis' }
+    ? { title: 'Draft na ulat ng singil sa pamasahe', mode: 'Sasakyan', trip: 'Biyahe', when: 'Petsa/oras (PH)', plate: 'Plate / body no.', place: 'Lugar / ruta', charged: 'Siningil', official: 'Opisyal na pamasahe', over: 'Diperensya', overEst: 'Posibleng diperensya', basis: 'Paraan ng kompyut', est: 'Tantiya lang ang distansya o oras na ginamit; maaaring iba ang eksaktong pamasahe.', notes: 'Iba pang detalye', src: 'Source' }
+    : { title: 'Fare report (draft)', mode: 'Vehicle', trip: 'Trip', when: 'Date/time (PH)', plate: 'Plate / body no.', place: 'Place / route', charged: 'Fare charged', official: 'Official fare', over: 'Fare difference', overEst: 'Possible fare difference', basis: 'Fare basis', est: 'The distance or time used is an estimate; the exact fare may differ.', notes: 'Notes', src: 'Source' }
   const lines = [
     L.title,
     `${L.mode}: ${r.modeName}`,
@@ -44,7 +48,9 @@ export function buildReport(r: ReportInput): string {
     r.place?.trim() ? `${L.place}: ${r.place.trim()}` : null,
     `${L.charged}: ${formatPesos(r.charged)}`,
     `${L.official}: ${formatPesos(r.official)} (${r.officialLabel})`,
-    `${L.over}: ${formatPesos(o.amount)} (+${o.pct.toFixed(1)}%)`,
+    `${r.estimated ? L.overEst : L.over}: ${formatPesos(o.amount)} (+${o.pct.toFixed(1)}%)`,
+    r.basis ? `${L.basis}: ${r.basis}` : null,
+    r.estimated ? L.est : null,
     r.notes?.trim() ? `${L.notes}: ${r.notes.trim()}` : null,
     `${L.src}: ${r.source} · bayad-po.vercel.app`,
   ]

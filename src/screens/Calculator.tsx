@@ -28,6 +28,7 @@ import { fmtKm, formatEffective, localized } from '../lib/format'
 import { getPref, setPref } from '../lib/prefs'
 import { nearestStation, stationPoints } from '../lib/stations'
 import { rateSummary } from '../lib/rates'
+import type { InputSource } from '../lib/trip'
 import { useApp } from '../state'
 
 const num = (s: string) => (s.trim() === '' ? Number.NaN : Number(s))
@@ -117,15 +118,31 @@ function DistanceCalc({ mode }: { mode: DistanceMode }) {
   const { t } = useTranslation()
   const { lang } = useApp()
   const range = mode.tableRange
-  const [km, setKm] = useState(() => String(range?.minKm ?? 1))
+  const [km, setKmState] = useState(() => String(range?.minKm ?? 1))
+  const [src, setSrc] = useState<InputSource>('manual')
+  const setKm = (v: string, from: InputSource = 'manual') => {
+    setKmState(v)
+    setSrc(from)
+  }
   const kmNum = num(km)
 
   let body
   try {
     const f = distanceFare(mode, kmNum)
-    const notes = [t('fare.chargedKm', { km: f.chargedKm })]
+    // Explain the minimum-fare bracket instead of an isolated "charged as 1 km".
+    const notes = [
+      mode.method === 'ADD_ON' && f.chargedKm <= mode.regular.baseKm
+        ? t('fare.minBracket', { km: fmtKm(kmNum), base: mode.regular.baseKm })
+        : f.chargedKm !== kmNum
+          ? t('fare.roundedKm', { km: fmtKm(kmNum), charged: f.chargedKm })
+          : t('fare.chargedKm', { km: f.chargedKm }),
+    ]
     body = (
       <FareCard
+        mode={mode}
+        basis="distance"
+        km={kmNum}
+        inputSource={src}
         modeName={localized(mode.name, lang)}
         tripLabel={`${fmtKm(kmNum)} km`}
         regular={f.regular}
@@ -157,8 +174,8 @@ function DistanceCalc({ mode }: { mode: DistanceMode }) {
             />
           </Card>
           <div className="flex flex-wrap gap-2">
-            <RoutePicker onUse={(k) => setKm(k.toFixed(1))} />
-            <RideTracker onUse={(k) => setKm(k.toFixed(1))} />
+            <RoutePicker onUse={(k) => setKm(k.toFixed(1), 'road')} />
+            <RideTracker onUse={(k) => setKm(k.toFixed(1), 'gps')} />
           </div>
         </>
       }
@@ -224,6 +241,8 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
       const f = matrixFare(mode, dir, from, to)
       body = (
         <FareCard
+          mode={mode}
+          basis="matrix"
           modeName={`${localized(mode.name, lang)} ${t(`input.${dir}`)}`}
           tripLabel={`${from} → ${to}`}
           regular={f.regular}
@@ -231,7 +250,6 @@ function MatrixCalc({ mode }: { mode: MatrixMode }) {
           previous={f.previous ? { regular: f.previous.regular, discounted: Math.round(f.previous.regular * 0.8) } : undefined}
           notes={[
             ticketKind ? `${t('input.ticket')}: ${t(`input.${dir}`)}` : `${t('input.direction')}: ${t(`input.${dir}`)}`,
-            t('fare.sourceNote', { source: mode.source, date: formatEffective(mode.effective, lang) }),
           ]}
           sourceLabel={sourceLabel}
           reportHotline={!ticketKind}
@@ -302,7 +320,12 @@ function MeteredCalc({ mode }: { mode: MeteredMode }) {
   const { t } = useTranslation()
   const { lang } = useApp()
   const stepped = mode.variant === 'stepped'
-  const [dist, setDist] = useState(stepped ? '500' : '5')
+  const [dist, setDistState] = useState(stepped ? '500' : '5')
+  const [src, setSrc] = useState<InputSource>('manual')
+  const setDist = (v: string | ((d: string) => string), from: InputSource = 'manual') => {
+    setDistState(v)
+    setSrc(from)
+  }
   // The distance field is in metres for the airport taxi and in kilometres
   // for the others; convert the entered value when the unit changes so
   // switching types keeps the same trip (1300 m <-> 1.3 km).
@@ -311,7 +334,7 @@ function MeteredCalc({ mode }: { mode: MeteredMode }) {
     const want = stepped ? 'm' : 'km'
     if (unit.current === want) return
     unit.current = want
-    setDist((d) => {
+    setDistState((d) => {
       const n = Number(d)
       if (d.trim() === '' || !Number.isFinite(n)) return d
       return want === 'm' ? String(Math.round(n * 1000)) : String(Math.round(n) / 1000)
@@ -345,6 +368,11 @@ function MeteredCalc({ mode }: { mode: MeteredMode }) {
     const trip = stepped ? `${d} m, ${m} min` : `${fmtKm(d)} km, ${m} min`
     body = (
       <FareCard
+        mode={mode}
+        basis="metered"
+        km={stepped ? d / 1000 : d}
+        inputSource={src}
+        notes={[t('fare.meteredNote')]}
         modeName={localized(mode.name, lang) + vehicleName}
         tripLabel={trip}
         regular={b.total}
@@ -386,13 +414,13 @@ function MeteredCalc({ mode }: { mode: MeteredMode }) {
       <div className="flex flex-wrap gap-2">
         <RoutePicker
           onUse={(k, min) => {
-            setDist(stepped ? String(Math.round(k * 1000)) : k.toFixed(1))
+            setDist(stepped ? String(Math.round(k * 1000)) : k.toFixed(1), 'road')
             setMins(String(min))
           }}
         />
         <RideTracker
           onUse={(k, min) => {
-            setDist(stepped ? String(Math.round(k * 1000)) : k.toFixed(1))
+            setDist(stepped ? String(Math.round(k * 1000)) : k.toFixed(1), 'gps')
             setMins(String(min))
           }}
         />

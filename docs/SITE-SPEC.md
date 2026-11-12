@@ -63,18 +63,20 @@ route data load only when needed.
 
 All routes are hash routes, so any URL works offline from the cached shell.
 
-| URL | Screen | Title shown in top bar (EN / FIL) | Back target |
-|---|---|---|---|
-| `#/` | Home | App name "Bayad Po" + effective-date badge | — |
-| `#/plan` | Route planner | "Route planner" / "Ruta at pamasahe" | Home |
-| `#/plan/<lat,lng>/<lat,lng>` | Route planner with both ends set | same | Home |
-| `#/calc/<category>` | Fare calculator for a category | category name | Home |
-| `#/compare` | Compare modes | "Compare modes" / "Ikumpara…" | — (nav item) |
-| `#/tables` | Fare tables | "Fare tables" / "Talaan ng pamasahe" | — (nav item) |
-| `#/trip` | My trip (multi-leg total) | "My trip" / "Biyahe ko" | Home |
-| `#/support` | Donate | "Support this app" / "Suportahan ang app" | — (nav item) |
-| `#/about` | About & report | "About & report" / "Tungkol & pag-uulat" | — (nav item) |
-| `#/privacy` | Privacy policy | "Privacy policy" | About |
+| URL | Screen | Title shown in top bar (EN / FIL) | Back target | Active nav item |
+|---|---|---|---|---|
+| `#/` | Home | App name "Bayad Po" + effective-date badge | — | Home |
+| `#/plan` | Route planner | "Route planner" | — | Routes |
+| `#/plan/<lat,lng>/<lat,lng>` | Route planner with ends set (`-` for a missing end) | same | — | Routes |
+| `#/fares` | Fares hub (vehicle tiles) | "Fares" / "Pamasahe" | — | Fares |
+| `#/calc/<category>` | Fare calculator for a category | category name | Fares | Fares |
+| `#/trip` | My trip (multi-leg total) | "My trip" | — | My Trip |
+| `#/more` | More (secondary screens, settings, data) | "More" / "Iba pa" | — | More |
+| `#/compare` | Compare modes | "Compare modes" | More | More |
+| `#/tables` | Fare tables | "Fare tables" | More | More |
+| `#/support` | Donate | "Support this app" | More | More |
+| `#/about` | About & report | "About & report" | More | More |
+| `#/privacy` | Privacy policy | "Privacy policy" | More | More |
 
 Categories for `#/calc/<category>`: `jeepney`, `uv`, `bus-city`,
 `bus-provincial`, `busway`, `rail`, `taxi`, `tnvs`.
@@ -88,24 +90,23 @@ Categories for `#/calc/<category>`: `jeepney`, `uv`, `bus-city`,
   cycles) and a round **language** button showing the other language ("EN" /
   "FIL").
 - **Bottom navigation** (fixed, 5 items, icon above label):
-  ⌂ Home · ⇄ Compare (Ikumpara) · ☰ Fare tables (Talaan) · ♥ Support (Suporta) ·
-  ⓘ About (Tungkol). The active item is brand-blue; others grey.
-- **Trip bar** (when the trip has legs): a floating yellow pill above the
-  bottom nav, e.g. "Trip · 2 legs · ₱88.25" (FIL "Biyahe · 2 leg · …"); tap
-  opens `#/trip`.
+  ⌂ Home · ⌖ Routes (Ruta) · ₱ Fares (Pamasahe) · 🧭 My Trip (Biyahe, with a
+  yellow leg-count badge when the trip has legs) · ⋯ More (Iba pa). The active
+  item is brand-blue; others grey. There is no floating trip pill: My Trip and
+  its badge are the single entry point to the trip.
 - **Update banner** (when newer fare data arrives): yellow strip under the top
   bar, "Fares updated — effective {date}" with "Dismiss".
 
 ### Tablet / desktop layout (≥ 768 px)
 
 - Persistent **left sidebar** instead of top/bottom bars: logo + app name +
-  effective badge; menu Home, **Routes** (Ruta, ⌖), Compare, Fare tables,
-  Support, About; the discount toggle; Appearance chips (Light / Dark /
-  System); Language chips (English / Filipino); "Privacy policy" link;
-  "LTFRB 24/7 Hotline: 1342".
+  effective badge; primary menu Home, Routes, Fares, My Trip (badge); a "More"
+  group with Compare, Fare tables, Support, About; the discount toggle;
+  Appearance chips (Light / Dark / System); Language chips (English /
+  Filipino); "Privacy policy" link; "LTFRB 24/7 Hotline: 1342". The sidebar
+  scrolls on short screens.
 - Content column (max ≈ 1150 px) with a page title and round back button.
 - Calculators use two columns (inputs left, fare card right).
-- Trip bar floats bottom-right.
 
 ---
 
@@ -134,34 +135,50 @@ Categories for `#/calc/<category>`: `jeepney`, `uv`, `bus-city`,
 
 ### 5.1 Home (`#/`)
 
-1. **Hero** (full width; on desktop a rounded card with text left, 3D right):
+1. **Hero** (full width; on desktop a rounded card with text left, jeep right):
    - Kicker "BAYAD PO! 👋", headline **"Where are you going?" / "Saan ka
-     pupunta?"**, sub-line "Find the route and the right fare for every ride:
-     jeep, UV, train and Busway."
-   - A **search card** that opens the route planner: two fake inputs
-     "● Where will you get on?" (blue dot) and "● Where will you get off?"
-     (yellow dot) and a filled button **"Find a route ›" / "Hanapin ang ruta ›"**.
-   - Link "Or check the fare for each vehicle ↓" that scrolls to the tiles.
-   - A **3D patok jeepney** (Cubao–Antipolo style: stainless body with
-     airbrushed flames, chrome mags, bull bar, horses, LED strips, antennas,
-     underglow, open cab doorways and passenger cabin with benches and grab
-     rails) slowly turning on a turntable; drag sideways to spin. A tilted
-     yellow price tag on it: "JEEP, MINIMUM ₱14.00" (follows the discount).
-     Reduced-motion users get a still frame; without WebGL only the backdrop.
-2. Heading **"Fares by vehicle" / "Pamasahe kada sasakyan"**.
-3. **Discount toggle** (phone): "Student / Senior / PWD (20% discount)".
-4. **Category tiles** (2 columns phone, 3–4 desktop), each: icon, name, hint,
-   and a bold "from" rate line:
-   - EDSA Busway — "Station to station" — "From ₱18.00"
-   - Train (Tren) — "LRT-1 · LRT-2 · MRT-3" — "From ₱6.00"
-   - Jeepney (Jeep) — "Traditional · Modern" — "₱14.00 · first 4 km"
-   - UV Express — "Traditional · Modern" — "₱2.60 per km"
-   - City Bus — "Metro Manila aircon · ordinary" — "₱15.00 · first 5 km"
-   - Provincial Bus — "Ordinary to Luxury" — cheapest rule
-   - Taxi — "Regular · Premium · Airport" — "From ₱65.00 flag-down"
-   - TNVS / Grab — "Ride-hailing base fare" — "From ₱55.00 flag-down"
-5. **Install card** ("Download the app", "Download app" / "Not now") when the
-   browser offers installation and it was not dismissed.
+     pupunta?"**, sub-line.
+   - **Search card** with two real controls: "● Where will you get on?" (blue
+     dot) opens the origin place picker and "● Where will you get off?"
+     (yellow dot) opens the destination picker (search, stations, saved,
+     recent, "current location"; no map pin on Home). A picked place shows
+     its name and locality; the other end is kept. Location is requested only
+     when "current location" is chosen; if denied, a note says search still
+     works. **"Find a route ›"** opens `#/plan/<from>/<to>` with both ends
+     and their names (shared in memory with the planner, so going back keeps
+     them).
+   - Up to four **saved (★) / recent (🕘) place chips**; tapping one sets the
+     destination.
+   - Jeep illustration: a static SVG jeepney renders immediately and stays if
+     WebGL is unavailable or the 3D chunk fails; the **3D patok jeepney**
+     (stainless body, flames, chrome mags, bull bar, horses, LED strips, open
+     doorways, benches and grab rails) fades in once rendered and slowly turns
+     (drag to spin; still under reduced motion). Yellow price tag "JEEP,
+     MINIMUM ₱14.00" (follows the discount).
+2. **"Fares by vehicle"** heading with an "All fares ›" link to `#/fares`.
+3. **Discount toggle** (phone).
+4. **Compact vehicle tiles** (same as the Fares hub, without hints).
+5. **Install card** when the browser offers installation.
+
+The route search and the first fare tiles are visible on a 390×844 phone
+without scrolling.
+
+### 5.1a Fares hub (`#/fares`)
+
+Intro "Pick a vehicle to compute its fare.", discount toggle (phone), and the
+eight category tiles (Jeepney, Train, EDSA Busway, UV Express, City Bus,
+Provincial Bus, Taxi, TNVS). Each tile: icon, name, hint, a **basis label**
+("Minimum fare", "Per-km rate", "Flag-down", "Station matrix") and the amount
+of the same mode (e.g. "₱14.00 · first 4 km", "₱2.60 per km", "From ₱65.00
+flag-down", "From ₱6.00"). A note explains that these are different kinds of
+amounts, not trip totals. Links to Fare tables and Compare.
+
+### 5.1b More (`#/more`)
+
+List rows (icon, name, hint, ›): Compare, Fare tables, Support, About, Privacy
+policy. **Settings** card: passenger type (discount toggle), Appearance,
+Language. **Data on this device** card: "Clear saved and recent places (n)"
+and "Clear trip (n legs)", each with a confirmation. LTFRB hotline 1342.
 
 ### 5.2 Route planner (`#/plan`) — Sakay.ph-style
 
@@ -223,13 +240,28 @@ walk" or "2 transfers · 750 m walk". The selected option has a blue ring.
   Center-Cubao"), "≈ 21 min", the LTFRB memorandum circular (e.g. "MC
   2020-041"), the ride's fare on the right, and the modern-jeep alternative
   fare when the route allows both.
-- Total (Regular or Student/Senior/PWD) and **"+ Add all rides to trip"**.
+- An amber **assumptions note**: route lines are authorised LTFRB routes, not
+  proof a vehicle runs there now; the return direction is assumed to use the
+  same roads; get-on, get-off and transfer points are approximate; ask the
+  driver or barker.
+- Total (Regular or Student/Senior/PWD) and **"+ Add all rides to trip"**
+  (legs keep their mode, basis and route distance as a snapshot).
+
+Option-card times ("≈ 38 min") are estimates that include ride time at
+average speeds, walking, a fixed wait per ride and a transfer allowance (no
+live traffic); the tooltip says so.
+
+**No route found**: "No route found in the available route data within a short
+walk…", a coverage note (a route missing from this data may still exist),
+"Include all modes" when some modes are switched off, and "Check fares by
+vehicle". Place search failures keep the typed text and show "Try again"
+(or an offline message); stations and saved places still work.
 
 **Notes** (shown with results): drag hint; route data credit (LTFRB NCR
 jeepney and UV Express route data, 579 routes, per LTFRB memorandum circulars,
-plus LRT-1, LRT-2, MRT-3, EDSA Busway); routes assumed to run both ways along
-the same roads; times are estimates without traffic or waiting; landmarks from
-OpenStreetMap; not affiliated with LTFRB.
+plus LRT-1, LRT-2, MRT-3, EDSA Busway); return direction assumed (not
+verified); how times are estimated; landmarks from OpenStreetMap; not
+affiliated with LTFRB.
 
 ### 5.3 Fare calculator (`#/calc/<category>`)
 
@@ -265,25 +297,36 @@ Input variants:
   follows the vehicle), and a **route strip** listing the stations between
   boarding and alighting with notes/coordinates.
 
-**Fare card** (result):
-- Primary fare large ("REGULAR ₱30.00" or "STUDENT / SENIOR / PWD ₱24.00"
-  depending on the toggle) and the other one smaller.
-- "Old fare: ₱27.50 +₱2.50 (+9.1%)" (red when up), or "No previous rate…".
-- Notes: "Charged as 12 km", direction/ticket, source and effective date,
-  "Beyond published table…" warning.
-- Metered breakdown table: Flag-down, Distance, Time, (Pick-up), Total.
-- Buttons: **"+ Add to trip"** (then "Added to trip ✓"), **"Share"** (Web
-  Share API or copies text like "Traditional Jeepney, 12 km: ₱30.00 (₱24.00
-  discounted) — LTFRB Sep 28, 2026"), **"⚠ Report overcharge"**.
+**Fare card** (result), top to bottom:
+- Passenger label and primary fare large ("REGULAR ₱30.00" or "STUDENT /
+  SENIOR / PWD ₱24.00"), the other amount smaller.
+- Trip distance or station pair ("12 km", "North Avenue → Ayala").
+- **Basis chip** plus the mode's own authority and effective date: green
+  "Published station fare" (Busway/rail matrices); amber "Distance-based
+  fare" (jeep/UV/bus) or "Estimate · meter or app may differ" (taxi/TNVS),
+  e.g. "LRMC · effective Apr 2, 2025".
+- Plain notes: for a short jeep ride "1 km is within the minimum fare, which
+  covers the first 4 km."; otherwise "4.2 km is rounded up to 5 km for the
+  fare."; direction/ticket; "Beyond published table…" warning; metered
+  "Estimate. The meter or the booking app shows the actual fare."
+- **"View calculation and source"** (expandable): fare rule, distance used and
+  where it came from (entered by you / road estimate (OSRM), not certified /
+  GPS estimate), metered breakdown (Flag-down, Distance, Time, Pick-up,
+  Total), old-versus-new fare, the source document and effective date (e.g.
+  "LTFRB · Traditional PUJ.pdf · effective Sep 28, 2026"), and a limitation
+  note for that basis.
+- Buttons: **"+ Add to trip"**, **"Share"**, **"⚠ Check a fare charged"**.
 
-**Report overcharge panel** (inline, red-tinted): shows the official fare;
-fields "How much were you charged? (₱)", "Plate or body number", "Where /
-route (optional)", "Other details (optional)"; live result "Overcharge:
-₱10.00 (+33.3%)" or "That is not more than the official fare."; tip about
-photos/receipts; **report preview** (vehicle, trip, date/time, plate, place,
-charged, official, overcharge, notes, basis + site URL); buttons "Call LTFRB
-1342" (tel: link; not shown for trains, which get a note to report to the line
-operator), "Copy report", "Share report", "Close".
+**Fare report panel** (inline, red-tinted; "Prepare a fare report"): says it
+only prepares a draft and nothing is sent until the person copies, shares or
+calls; shows the official fare and its basis; fields "How much were you
+charged? (₱)", plate/body number, place, notes. Result: **"Possible fare
+difference: ₱10.00 (+33.3%)"** for distance-based and metered fares, "Fare
+difference" only for published station fares. Preview text titled "Fare
+report (draft)" with date/time in Philippine time, the fare basis, an
+estimate notice when relevant, and the source. Buttons "Call LTFRB 1342" (not
+for trains), "Copy report" ("Draft copied. It has not been submitted yet."),
+"Share report", "Close".
 
 **Ride tracker** (GPS, Strava-like) card: "Start ride" → live "Distance" (km)
 and "Time" (m:ss), "Tracking · n GPS fixes · ±x m", a small map of the path,
@@ -309,11 +352,15 @@ For station modes: pick a from-station and see fares to every other station
 
 ### 5.6 My trip (`#/trip`)
 
-Big "TOTAL FARE · REGULAR ₱100.25", "Student / Senior / PWD: ₱80.10", note
-"Each leg is paid separately; transfers between lines need a new ticket."
-Numbered legs (mode, trip label, source, fare, "Remove"), buttons "+ Add
-another leg", "Share trip", "Clear trip". Empty state explains how to add legs.
-Stored on the device.
+Big "TOTAL FARE · REGULAR ₱100.25", the other passenger total, note "Each leg
+is paid separately…". Numbered legs: mode, trip label, basis, source, fare
+data version, fare; ↑ / ↓ buttons to reorder; "Remove" with an **Undo** bar
+(also after "Clear trip"). Each leg stores a snapshot (mode id, basis,
+distance and its source, passenger type, fare-data version, effective date,
+time saved). When newer fare data changes a leg's mode, an amber note shows
+the saved amount, the recalculated current fare (distance legs) and "Use the
+current fare"; the saved snapshot stays until then. Empty state offers "Plan
+a route" and "Add another leg" (to `#/fares`). Stored on the device.
 
 ### 5.7 Support (`#/support`)
 
@@ -411,7 +458,9 @@ External requests: `tile.openstreetmap.org` (map tiles), `photon.komoot.io`
 (place search text; stop coordinates for landmark names),
 `router.project-osrm.org` (start/end coordinates, calculator trip planner
 only), Vercel (hosting, cookieless page-view analytics with hash routes
-reported as paths such as `/calc/[category]`). GCash app/store only when the
+reported as paths such as `/calc/[category]`; route-planner links are always
+reported as `/plan`, and the event URL is rewritten the same way, so
+coordinates never reach analytics). GCash app/store only when the
 user taps "Open GCash".
 
 Offline: the app shell, code, icons and fare data are precached; the HTML is
@@ -435,15 +484,16 @@ tiles are cached on first use.
 
 ```
 src/App.tsx                 routes, phone vs desktop shell
-src/components/Nav.tsx      top bar + bottom nav
+src/components/Nav.tsx      top bar, bottom nav, NAV_ITEMS, navSection(), trip badge
 src/components/Sidebar.tsx  desktop sidebar
-src/components/Hero3D.tsx   Home hero (search card, 3D jeep, price tag)
+src/components/Hero3D.tsx   Home hero frame (static JeepStill SVG, 3D jeep, price tag)
+src/components/FareTiles.tsx vehicle tiles with basis labels (Home, Fares)
 src/hero3d/                 three.js scene and the procedural patok jeepney
-src/screens/                Home, Plan, Calculator, Compare, Tables, Trip, Support, About, Privacy
+src/screens/                Home, Plan, Fares, More, Calculator, Compare, Tables, Trip, Support, About, Privacy
 src/components/             FareCard, ReportOvercharge, RideTracker, RoutePicker, RouteMap,
-                            PlanMap, PlaceSheet, PlaceSearch, RouteStrip, TripBar, InstallCard, ui
+                            PlanMap, PlaceSheet, PlaceSearch, RouteStrip, InstallCard, JeepStill, ui
 src/engine/                 fare engine (pure, tested)
-src/lib/                    planner(+worker), rates, places, trip, ride, report, geocode, routing,
+src/lib/                    planner(+worker), rates, places (+plan draft), stationPlaces, trip (snapshots), ride, report, geocode, routing,
                             stations, prefs, theme, updater, router, share
 src/content/privacy.ts      privacy policy text
 src/i18n/{en,fil}.json      every UI string

@@ -1,63 +1,144 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import type { Category } from '../engine/types'
-import { setPref } from '../lib/prefs'
-import { categoryFrom } from '../lib/rates'
-import { useWide } from '../lib/useMediaQuery'
-import { InstallCard } from '../components/InstallCard'
+import { FareTiles } from '../components/FareTiles'
 import { Hero3D } from '../components/Hero3D'
+import { InstallCard } from '../components/InstallCard'
+import { PlaceSheet, type SheetPick } from '../components/PlaceSheet'
 import { DiscountToggle } from '../components/ui'
+import { getDraft, loadPlaces, planHref, setDraft, type PlanDraft, type SavedPlace } from '../lib/places'
+import { stationPlaces } from '../lib/stationPlaces'
+import { useWide } from '../lib/useMediaQuery'
 import { useApp } from '../state'
 
-// One icon set in the same style for every category (public/icons/*.svg),
-// so tiles look identical on every phone instead of mixing emoji fonts.
-const categories: { id: Category; icon: string }[] = [
-  { id: 'busway', icon: 'busway' },
-  { id: 'rail', icon: 'train' },
-  { id: 'jeepney', icon: 'jeepney' },
-  { id: 'uv', icon: 'uv' },
-  { id: 'bus-city', icon: 'bus-city' },
-  { id: 'bus-provincial', icon: 'bus-provincial' },
-  { id: 'taxi', icon: 'taxi' },
-  { id: 'tnvs', icon: 'tnvs' },
-]
+type Field = 'from' | 'to'
 
+/**
+ * Home: where are you going (origin and destination, each with its own
+ * picker), saved and recent places, then fare shortcuts by vehicle.
+ */
 export function Home() {
   const { t } = useTranslation()
   const wide = useWide()
-  const { modes, discount } = useApp()
+  const { modesById } = useApp()
+  const [draft, setDraftState] = useState<PlanDraft>(() => getDraft())
+  const [sheet, setSheet] = useState<Field | null>(null)
+  const [geoError, setGeoError] = useState(false)
+  const [locating, setLocating] = useState<Field | null>(null)
+  const [stored] = useState(() => loadPlaces())
+  const shortcuts = [...stored.saved.map((p) => ({ p, saved: true })), ...stored.recent.map((p) => ({ p, saved: false }))]
+    .filter((x, i, a) => a.findIndex((y) => y.p.label === x.p.label) === i)
+    .slice(0, 4)
+
+  const put = (f: Field, p: SavedPlace | null) => setDraftState(setDraft({ [f]: p }))
+  // Ask for location only after the person chooses it; on refusal, search stays available.
+  const locate = (f: Field) => {
+    setGeoError(false)
+    if (!navigator.geolocation) return setGeoError(true)
+    setLocating(f)
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocating(null)
+        put(f, { label: t('map.myLocationLabel'), lat: pos.coords.latitude, lng: pos.coords.longitude })
+      },
+      () => {
+        setLocating(null)
+        setGeoError(true)
+      },
+      { enableHighAccuracy: true, timeout: 10000 },
+    )
+  }
+  const onPick = (f: Field, r: SheetPick) => {
+    setSheet(null)
+    if (r.kind === 'place') put(f, r.place)
+    else if (r.kind === 'here') locate(f)
+  }
+
+  const field = (f: Field) => {
+    const v = draft[f]
+    const label = f === 'from' ? t('map.from') : t('map.to')
+    return (
+      <button
+        type="button"
+        onClick={() => setSheet(f)}
+        className={`hero-field ${v ? 'has-value' : ''}`}
+        aria-label={v ? `${label}: ${v.label}` : label}
+        data-testid={`home-${f}`}
+      >
+        <span className="hero-dot" style={{ background: f === 'from' ? '#0b3d91' : '#ffc72c' }} aria-hidden="true" />
+        <span className="hero-field-text">
+          {v ? (
+            <>
+              <span className="hero-field-label">{f === 'from' ? t('plan.fromShort') : t('plan.toShort')}</span>
+              {v.label}
+              {v.detail && <span className="font-normal text-muted"> · {v.detail}</span>}
+            </>
+          ) : locating === f ? (
+            t('home.locating')
+          ) : (
+            label
+          )}
+        </span>
+      </button>
+    )
+  }
+
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-4 pb-4 md:max-w-6xl md:gap-6 md:px-8 md:py-8">
       <div className="md:overflow-hidden md:rounded-3xl md:shadow-lg">
-        <Hero3D />
-      </div>
-      <div className="flex flex-col gap-4 px-4 md:gap-6 md:px-0">
-      <h2 id="fares" className="scroll-mt-20 text-lg font-bold text-ink md:text-xl">{t('hero.faresTitle')}</h2>
-      {!wide && <DiscountToggle />}
-      <ul className="grid auto-rows-fr grid-cols-2 gap-3 md:grid-cols-3 md:gap-4 lg:grid-cols-4">
-        {categories.map((c) => (
-          <li key={c.id}>
-            <a
-              href={`#/calc/${c.id}`}
-              onClick={() => setPref('lastCategory', c.id)}
-              className="flex h-full min-h-32 flex-col justify-start gap-3 rounded-2xl border border-line bg-surface p-4 shadow-sm transition-colors hover:border-brand active:bg-brand/5"
-              data-testid={`tile-${c.id}`}
-            >
-              <img src={`${import.meta.env.BASE_URL}icons/${c.icon}.svg`} alt="" width={44} height={44} className="h-11 w-11" />
-              <span>
-                <span className="block text-base font-semibold text-ink">{t(`category.${c.id}`)}</span>
-                <span className="block text-xs text-muted">{t(`categoryHint.${c.id}`)}</span>
-                {categoryFrom(c.id, modes, discount, t) && (
-                  <span className="mt-1.5 block text-sm font-bold text-brand" data-testid={`tile-rate-${c.id}`}>
-                    {categoryFrom(c.id, modes, discount, t)}
-                  </span>
-                )}
-              </span>
+        <Hero3D>
+          <div className="hero-search" data-testid="home-search">
+            {field('from')}
+            {field('to')}
+            <a href={planHref(draft.from, draft.to)} className="hero-cta" data-testid="plan-open">
+              {t('hero.cta')} ›
             </a>
-          </li>
-        ))}
-      </ul>
-      <InstallCard />
+          </div>
+          {geoError && (
+            <p role="status" className="text-xs text-ink-2" data-testid="home-geo-error">
+              {t('home.geoDenied')}
+            </p>
+          )}
+          {shortcuts.length > 0 && (
+            <div className="flex flex-wrap gap-2" aria-label={t('home.shortcuts')} data-testid="home-shortcuts">
+              {shortcuts.map(({ p, saved }) => (
+                <button
+                  key={`${p.label}-${p.lat}`}
+                  type="button"
+                  onClick={() => put('to', p)}
+                  className="inline-flex min-h-9 max-w-[12rem] items-center gap-1 rounded-full border border-line bg-surface px-3 text-xs font-medium text-ink"
+                >
+                  <span aria-hidden="true">{saved ? '★' : '🕘'}</span>
+                  <span className="truncate">{p.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </Hero3D>
       </div>
+      <div className="flex flex-col gap-3 px-4 md:gap-5 md:px-0">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 id="fares" className="scroll-mt-20 text-lg font-bold text-ink md:text-xl">
+            {t('hero.faresTitle')}
+          </h2>
+          <a href="#/fares" className="text-sm font-semibold text-brand" data-testid="home-all-fares">
+            {t('home.allFares')} ›
+          </a>
+        </div>
+        {!wide && <DiscountToggle />}
+        <FareTiles compact />
+        <InstallCard />
+      </div>
+
+      {sheet && (
+        <PlaceSheet
+          title={sheet === 'from' ? t('map.from') : t('map.to')}
+          near={draft.from ?? draft.to}
+          stations={stationPlaces(modesById, t('plan.station'))}
+          allowPin={false}
+          onPick={(r) => onPick(sheet, r)}
+          onClose={() => setSheet(null)}
+        />
+      )}
     </main>
   )
 }

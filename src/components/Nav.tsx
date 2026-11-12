@@ -2,13 +2,51 @@ import { useTranslation } from 'react-i18next'
 import { useApp } from '../state'
 import { EffectiveBadge } from './ui'
 
-const items = [
+/** Primary destinations, the same on phones (bottom bar) and wide screens (sidebar). */
+export const NAV_ITEMS = [
   { id: '', key: 'nav.home', icon: '⌂' },
-  { id: 'compare', key: 'nav.compare', icon: '⇄' },
-  { id: 'tables', key: 'nav.tables', icon: '☰' },
-  { id: 'support', key: 'nav.support', icon: '♥' },
-  { id: 'about', key: 'nav.about', icon: 'ⓘ' },
+  { id: 'plan', key: 'nav.plan', icon: '⌖' },
+  { id: 'fares', key: 'nav.fares', icon: '₱' },
+  { id: 'trip', key: 'nav.trip', icon: '🧭' },
+  { id: 'more', key: 'nav.more', icon: '⋯' },
 ] as const
+
+/** Which primary destination a route belongs to. */
+export function navSection(section: string | undefined): string {
+  switch (section) {
+    case 'plan':
+    case 'trip':
+    case 'fares':
+      return section
+    case 'calc':
+      return 'fares'
+    case 'more':
+    case 'compare':
+    case 'tables':
+    case 'support':
+    case 'about':
+    case 'privacy':
+      return 'more'
+    default:
+      return ''
+  }
+}
+
+/** Leg count on the My Trip destination. */
+export function TripBadge() {
+  const { t } = useTranslation()
+  const { trip } = useApp()
+  if (!trip.length) return null
+  return (
+    <span
+      className="absolute -right-2.5 -top-1.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-accent px-1 text-[11px] font-bold leading-none text-[#0b3d91]"
+      aria-label={t('nav.tripBadge', { count: trip.length })}
+      data-testid="trip-badge"
+    >
+      {trip.length}
+    </span>
+  )
+}
 
 export function TopBar({ title, back }: { title?: string; back?: string }) {
   const { t } = useTranslation()
@@ -55,7 +93,7 @@ export function BottomNav({ active }: { active: string }) {
   return (
     <nav aria-label="Main" className="fixed inset-x-0 bottom-0 z-10 border-t border-line bg-surface pb-[env(safe-area-inset-bottom)]">
       <ul className="mx-auto flex max-w-lg">
-        {items.map((it) => (
+        {NAV_ITEMS.map((it) => (
           <li key={it.id} className="flex-1">
             <a
               href={`#/${it.id}`}
@@ -63,9 +101,11 @@ export function BottomNav({ active }: { active: string }) {
               className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium ${
                 active === it.id ? 'text-brand' : 'text-muted'
               }`}
+              data-testid={`nav-${it.id || 'home'}`}
             >
-              <span aria-hidden="true" className="text-lg leading-none">
-                {it.icon}
+              <span className="relative text-lg leading-none">
+                <span aria-hidden="true" className={it.id === 'trip' ? 'grayscale' : ''}>{it.icon}</span>
+                {it.id === 'trip' && <TripBadge />}
               </span>
               {t(it.key)}
             </a>
