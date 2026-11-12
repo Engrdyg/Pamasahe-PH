@@ -349,7 +349,9 @@
     "allModesRetry": "Isama lahat ng sasakyan",
     "checkFares": "Tingnan ang pamasahe kada sasakyan",
     "assumptions": "Mga ruta na awtorisado ng LTFRB ang mga linya, hindi patunay na may bumibiyahe ngayon. Ipinapalagay na pareho ang kalsada pabalik, at tantiya lang ang sakayan, babaan at lipatan. Magtanong sa driver o barker.",
-    "timeIncludes": "Tantiya: oras ng sakay sa karaniwang bilis, paglalakad, takdang paghihintay kada sakay at palugit sa paglipat. Walang live na traffic."
+    "timeIncludes": "Tantiya: oras ng sakay sa karaniwang bilis, paglalakad, takdang paghihintay kada sakay at palugit sa paglipat. Walang live na traffic.",
+    "found_one": "{{count}} rutang nakita · pinakamabilis muna",
+    "found_other": "{{count}} rutang nakita · pinakamabilis muna"
   },
   "rate": {
     "addOn": "{{base}} sa unang {{km}} km, +{{per}} bawat susunod na km",

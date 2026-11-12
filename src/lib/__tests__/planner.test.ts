@@ -62,6 +62,18 @@ describe('planner (NCR data)', () => {
     expect(ms).toBeLessThan(1500)
   })
 
+  it('offers every reasonable route, not just the fastest few', () => {
+    const its = plan(net, modesById, { lat: 14.5987, lng: 120.9837 }, { lat: 14.6197, lng: 121.0537 })
+    expect(its.length).toBeGreaterThan(10)
+    const rides = its.map((i) => i.legs.filter((l): l is RideLeg => l.type === 'ride').map((l) => l.line.name).join('>'))
+    expect(new Set(rides).size).toBe(rides.length) // no duplicates
+    expect(rides).toContain('LRT-2')
+    expect(rides.filter((r) => !r.includes('>') && r !== 'LRT-2').length).toBeGreaterThan(5) // many direct jeeps too
+    // Sorted fastest first, and nothing absurdly slow.
+    for (let i = 1; i < its.length; i++) expect(its[i].minutes).toBeGreaterThanOrEqual(its[i - 1].minutes)
+    expect(its[its.length - 1].minutes).toBeLessThanOrEqual(its[0].minutes * 2 + 20)
+  })
+
   it('uses rail when it is the natural choice (North Ave → Ayala along EDSA)', () => {
     const its = plan(net, modesById, { lat: 14.6525, lng: 121.0325 }, { lat: 14.5492, lng: 121.0277 })
     const kinds = its[0].legs.filter((l): l is RideLeg => l.type === 'ride').map((l) => l.line.kind)

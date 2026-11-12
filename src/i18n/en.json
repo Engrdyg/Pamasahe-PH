@@ -349,7 +349,9 @@
     "allModesRetry": "Include all modes",
     "checkFares": "Check fares by vehicle",
     "assumptions": "Route lines are authorised LTFRB routes, not proof a vehicle runs there now. The return direction is assumed to use the same roads, and get-on, get-off and transfer points are approximate. Check with the driver or barker.",
-    "timeIncludes": "Estimate: ride time at average speeds, walking, a fixed wait per ride and a transfer allowance. No live traffic."
+    "timeIncludes": "Estimate: ride time at average speeds, walking, a fixed wait per ride and a transfer allowance. No live traffic.",
+    "found_one": "{{count}} route found · fastest first",
+    "found_other": "{{count}} routes found · fastest first"
   },
   "rate": {
     "addOn": "{{base}} for the first {{km}} km, +{{per}} per succeeding km",

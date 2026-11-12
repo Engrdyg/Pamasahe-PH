@@ -460,6 +460,11 @@ export function Plan({ fromArg, toArg }: { fromArg?: string; toArg?: string }) {
             </Card>
           )}
 
+          {results && results.length > 1 && (
+            <p className="text-sm font-semibold text-ink" data-testid="plan-count">
+              {t('plan.found', { count: results.length })}
+            </p>
+          )}
           {results?.map((r, i) => {
             const optRides = r.legs.filter((l): l is Exclude<SlimLeg, { type: 'walk' }> => l.type === 'ride')
             const optColors = rideColors(optRides.map((l) => l.line))

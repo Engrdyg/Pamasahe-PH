@@ -69,6 +69,9 @@ const ROUNDS = 3 // rides (so up to 2 transfers)
 const SPEED: Record<LineKind, number> = { jeep: 230, uv: 320, rail: 500, busway: 380 } // m per minute
 const WAIT: Record<LineKind, number> = { jeep: 4, uv: 7, rail: 5, busway: 5 }
 const TRANSFER_PENALTY = 3
+// Routes up to SLACK × the fastest time + SLACK_MIN minutes are offered as alternatives.
+const SLACK = 2
+const SLACK_MIN = 20
 const MIN_RIDE: Record<LineKind, number> = { jeep: 700, uv: 1000, rail: 0, busway: 0 } // shorter rides are not worth it
 const FASTEST = Math.max(...Object.values({ jeep: 230, uv: 320, rail: 500, busway: 380 }))
 
@@ -254,10 +257,11 @@ function legFare(line: Line, from: number, to: number, meters: number, modesById
 }
 
 /**
- * Plan trips from `a` to `b`. Returns up to `max` itineraries: the best for
- * each number of rides, plus other direct routes, sorted by time.
+ * Plan trips from `a` to `b`. Returns up to `max` itineraries, sorted by time:
+ * every direct route, and for each line reaching the destination the best way
+ * to it with one or two transfers, within a reasonable time of the fastest.
  */
-export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b: LatLng, max = 5, exclude: LineKind[] = []): Itinerary[] {
+export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b: LatLng, max = 30, exclude: LineKind[] = []): Itinerary[] {
   const skip = new Set(exclude)
   const allowed = (g: number) => !skip.has(net.lines[net.sLine[g]].kind)
   const N = net.sx.length
@@ -279,6 +283,9 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
   })
 
   let bestTotal = Infinity
+  // Transfers are explored up to this cost (not only those beating the best),
+  // so slower alternatives with other lines are found too.
+  const limit = () => bestTotal * 1.3 + 10
   const finals: { round: number; g: number; total: number }[] = []
 
   for (let k = 0; k < ROUNDS && seeds.size; k++) {
@@ -324,8 +331,8 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
       }
     }
     rounds.push(R)
-    // Arrivals at the destination
-    let roundBest: { g: number; total: number } | null = null
+    // Arrivals at the destination: the best one for every line that gets there
+    const byLine = new Map<number, { g: number; total: number }>()
     const longEnough = (g: number) => {
       const li = net.sLine[g]
       const f0 = net.first[li]
@@ -334,11 +341,13 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
     }
     for (const [g, d] of egress) {
       const total = R.ride[g] + d / WALK
-      if (total < Infinity && longEnough(g) && (!roundBest || total < roundBest.total)) roundBest = { g, total }
+      if (!(total < Infinity) || !longEnough(g)) continue
+      const cur = byLine.get(net.sLine[g])
+      if (!cur || total < cur.total) byLine.set(net.sLine[g], { g, total })
     }
-    if (roundBest) {
-      finals.push({ round: k, ...roundBest })
-      bestTotal = Math.min(bestTotal, roundBest.total)
+    for (const f of byLine.values()) {
+      finals.push({ round: k, ...f })
+      bestTotal = Math.min(bestTotal, f.total)
     }
     // Transfers seed the next round
     const next = new Map<number, { cost: number; prev: number; walk: number }>()
@@ -349,12 +358,12 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
         for (let g = f0; g < net.first[li + 1]; g++) {
           const c = R.ride[g]
           // A*-style bound: even the fastest mode in a straight line can't beat the best so far
-          if (!(c + Math.max(0, Math.hypot(net.sx[g] - bx, net.sy[g] - by) - MAX_ACCESS) / FASTEST < bestTotal)) continue
+          if (!(c + Math.max(0, Math.hypot(net.sx[g] - bx, net.sy[g] - by) - MAX_ACCESS) / FASTEST < limit())) continue
           if (R.rideFrom[g] >= 0 && Math.abs(l.s[g - f0] - l.s[R.rideFrom[g] - f0]) < MIN_RIDE[l.kind]) continue
           near(net, net.sx[g], net.sy[g], MAX_TRANSFER, (h, d) => {
             if (net.sLine[h] === li || !allowed(h)) return
             const cost = c + d / WALK + WAIT[net.lines[net.sLine[h]].kind] + TRANSFER_PENALTY
-            if (cost >= bestTotal) return
+            if (cost >= limit()) return
             const cur = next.get(h)
             if (!cur || cost < cur.cost) next.set(h, { cost, prev: g, walk: d })
           })
@@ -430,15 +439,18 @@ export function plan(net: Network, modesById: Record<string, Mode>, a: LatLng, b
     out.push(it)
   }
   for (const f of finals) push(build(f.round, f.g))
-  ;[...directByLine.values()].sort((x, y) => x.total - y.total).slice(0, 3).forEach((d) => push(build(0, d.g)))
-  // Keep an option only if it is not much slower than the best, and an option
-  // with more rides only if it saves real time over every option with fewer.
-  const fastest = Math.min(...out.map((o) => o.minutes))
-  const kept = out
-    .filter((o) => o.minutes <= fastest * 1.6 + 10)
-    .filter((o) => out.every((p) => p === o || p.rides >= o.rides || o.minutes < p.minutes - 5))
-    .filter((o) => !o.legs.some((l) => l.type === 'ride' && l.meters < MIN_RIDE[l.line.kind]))
+  ;[...directByLine.values()].forEach((d) => push(build(0, d.g)))
+  // Show every reasonable route: drop only those far slower than the best,
+  // and those that just add a ride to a shorter option using the same lines.
+  const valid = out.filter((o) => !o.legs.some((l) => l.type === 'ride' && l.meters < MIN_RIDE[l.line.kind]))
+  const fastest = Math.min(...valid.map((o) => o.minutes))
+  const names = (o: Itinerary) => o.legs.filter((l): l is RideLeg => l.type === 'ride').map((l) => l.line.name)
+  const kept = valid
+    .filter((o) => o.minutes <= fastest * SLACK + SLACK_MIN)
+    .filter((o) => !valid.some((p) => p.rides < o.rides && names(p).every((n) => names(o).includes(n))))
     .sort((x, y) => x.minutes - y.minutes)
+    // Same vehicles in the same order look identical in the list: keep the fastest.
+    .filter((o, i, arr) => arr.findIndex((p) => names(p).join('>') === names(o).join('>')) === i)
     .slice(0, max)
   if (direct <= DIRECT_WALK) {
     kept.push({ legs: [{ type: 'walk', meters: direct * 1.25, minutes: (direct * 1.25) / WALK, from: a, to: b }], minutes: (direct * 1.25) / WALK, rides: 0, walkMeters: direct * 1.25, regular: 0, discounted: 0, fareIncomplete: false })
