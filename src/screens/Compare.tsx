@@ -38,7 +38,6 @@ export function Compare() {
             <li key={mode.id} className="flex items-center justify-between gap-3 rounded-xl border border-line bg-surface px-4 py-3">
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-ink">{localized(mode.name, lang)}</p>
-                {fare.beyondTable && <p className="text-xs text-amber-700 dark:text-amber-300">⚠ {t('compare.beyond')}</p>}
               </div>
               <div className="text-right">
                 <p className="text-xl font-bold tabular-nums text-ink">{formatPesos(primary)}</p>

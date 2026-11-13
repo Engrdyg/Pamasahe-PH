@@ -397,8 +397,8 @@ the fare" checkbox.
 
 "Fare for the same distance across all distance-based modes, cheapest first."
 A distance input, then a list of every distance-based mode with its regular
-and discounted fare for that distance, sorted cheapest first; rows past a
-mode's published table say "beyond table".
+and discounted fare for that distance, sorted cheapest first (past a mode's published table the fare is computed
+from the same formula; no label is shown).
 
 ### 5.5 Fare tables (`#/tables`)
 
